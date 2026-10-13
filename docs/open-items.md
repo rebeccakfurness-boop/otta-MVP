@@ -12,7 +12,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **About us**: the three values (Forward thinking, Re-invention, Continuous Improvement) are draft copy; "The Otta success story" needs its story.
 - **Partners**: partner names are shown as text tiles until logos are supplied.
 - **Our Team, Case Studies**: copy, team profiles and photos.
-- **Hero video**: licensed lake footage needed at `public/media/hero.mp4`, plus a still at `public/media/hero-poster.jpg`. A teal gradient shows until then.
+- **Hero video**: `public/media/hero.mp4` is a watermarked, low-resolution iStock preview (iStock 1057485042) used as a placeholder. License the full clip (or replace it) and swap both `hero.mp4` and `hero-poster.jpg` before launch.
 - **Photography**: all images are placeholders (dark blocks on the home page, gradient blocks elsewhere).
 - **Home page case study**: heading, summary and copy are placeholders.
 - **Documents**: PDFs for fact sheets, policy wordings, proposal forms, renewal declarations and claim forms.

@@ -1,6 +1,6 @@
-// Full-bleed background video. Until the licensed lake footage is added at
-// public/media/hero.mp4 (and a still at public/media/hero-poster.jpg), the
-// gradient behind the video shows instead.
+// Full-bleed background video. public/media/hero.mp4 is currently a
+// watermarked iStock preview (iStock 1057485042) used as a placeholder only;
+// replace it and hero-poster.jpg with licensed footage before launch.
 export function HeroVideo({
   src = "/media/hero.mp4",
   poster = "/media/hero-poster.jpg",
