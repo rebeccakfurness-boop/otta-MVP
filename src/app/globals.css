@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/*
+ * Otta brand tokens (from the Otta brand palette).
+ *   Ocean  #76bab2  PMS 563   – primary
+ *   Cloud  #e9eae9  Cool Gray 1 @ 50%
+ *   Sunset #713089  PMS 526
+ *   Deep   #004988  PMS 301
+ * Darker ocean shades are for text and buttons, where the light brand teal
+ * would not meet contrast guidelines on white.
+ */
+@theme {
+  --color-ocean-50: #f1f8f7;
+  --color-ocean-100: #dcefec;
+  --color-ocean-200: #bfe1dc;
+  --color-ocean: #76bab2;
+  --color-ocean-500: #60bbaf;
+  --color-ocean-600: #3f9a8f;
+  --color-ocean-700: #2e7d74;
+  --color-ocean-800: #24625b;
+  --color-cloud: #e9eae9;
+  --color-cloud-50: #f5f6f5;
+  --color-sunset: #713089;
+  --color-deep: #004988;
+  --color-deep-900: #00305a;
+  --color-ink: #1f2b33;
+  --color-muted: #5a6670;
+
+  --font-sans: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white text-ink antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-bold tracking-tight text-ink;
+  }
+  ::selection {
+    @apply bg-ocean-200;
+  }
+}
