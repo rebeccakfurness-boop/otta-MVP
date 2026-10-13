@@ -11,7 +11,8 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Important information**: Fair Insurance Code, cooling off, dispute resolution, complaints and FSP number wording (`src/content/legal.ts`), plus the Fair Insurance Code and Complaints pages.
 - **About us**: the three values (Forward thinking, Re-invention, Continuous Improvement) are draft copy; "The Otta success story" needs its story.
 - **Partners**: partner names are shown as text tiles until logos are supplied.
-- **Our Team, Case Studies**: copy, team profiles and photos.
+- **Our Team**: Craig Furness is added; the other five members, roles and photos are placeholders (`src/content/team.ts`).
+- **Case Studies**: copy and photos.
 - **Hero video**: `public/media/hero.mp4` is a watermarked, low-resolution iStock preview (iStock 1390591506) used as a placeholder. License the full clip (or replace it) and swap both `hero.mp4` and `hero-poster.jpg` before launch.
 - **Photography**: all images are placeholders (dark blocks on the home page, gradient blocks elsewhere).
 - **Home page case study**: heading, summary and copy are placeholders.
