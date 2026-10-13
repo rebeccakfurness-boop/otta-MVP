@@ -12,6 +12,8 @@ export type RecordRow = {
   status: string;
   /** Text searched by the filter box. */
   search: string;
+  /** Product slug, used by the product tabs. */
+  product?: string;
   cells: ReactNode[];
 };
 
@@ -25,7 +27,10 @@ export function RecordList({
   statuses,
   searchPlaceholder,
   emptyTitle,
+  productTabs,
 }: {
+  /** Optional product tabs above the filters ({ key: product slug, label }). */
+  productTabs?: { key: string; label: string }[];
   columns: string[];
   rows: RecordRow[];
   statuses: { key: string; label: string; match: string[] }[];
@@ -37,20 +42,52 @@ export function RecordList({
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const active = statuses.find((s) => s.key === params.get("status")) ?? statuses[0];
+  const product = productTabs?.some((t) => t.key === params.get("product")) ? params.get("product")! : "";
 
-  function setStatus(key: string) {
-    router.replace(key === statuses[0].key ? pathname : `${pathname}?status=${key}`, { scroll: false });
+  function setParam(key: string, value: string) {
+    const next = new URLSearchParams(params.toString());
+    if (value) next.set(key, value);
+    else next.delete(key);
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
+  const setStatus = (key: string) => setParam("status", key === statuses[0].key ? "" : key);
 
+  const inProduct = (r: RecordRow) => !product || r.product === product;
   const q = query.trim().toLowerCase();
-  const visible = rows.filter((r) => (active.match.length === 0 || active.match.includes(r.status)) && (!q || r.search.toLowerCase().includes(q)));
+  const visible = rows.filter(
+    (r) => inProduct(r) && (active.match.length === 0 || active.match.includes(r.status)) && (!q || r.search.toLowerCase().includes(q)),
+  );
 
   return (
     <div>
+      {productTabs && (
+        <div role="tablist" aria-label="Product" className="-mx-5 mb-6 flex gap-1 overflow-x-auto border-b border-[#e3e3e3] px-5 md:mx-0 md:px-0">
+          {[{ key: "", label: "All products" }, ...productTabs].map((t) => {
+            const on = t.key === product;
+            const count = rows.filter((r) => !t.key || r.product === t.key).length;
+            return (
+              <button
+                key={t.key || "all"}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => setParam("product", t.key)}
+                className={`-mb-px flex shrink-0 items-center gap-2 border-b-2 px-4 pt-2 pb-3.5 text-[14px] whitespace-nowrap transition-colors ${
+                  on ? "border-site-teal font-medium text-[#2e7d74]" : "border-transparent text-body hover:text-charcoal"
+                }`}
+              >
+                {t.label}
+                <span className={`rounded-full px-2 py-0.5 text-[11px] ${on ? "bg-[#e6f4f2] text-[#2e7d74]" : "bg-[#eee] text-[#666]"}`}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by status">
           {statuses.map((s) => {
-            const count = rows.filter((r) => s.match.length === 0 || s.match.includes(r.status)).length;
+            const count = rows.filter((r) => inProduct(r) && (s.match.length === 0 || s.match.includes(r.status))).length;
             const on = s.key === active.key;
             return (
               <button

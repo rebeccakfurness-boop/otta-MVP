@@ -6,7 +6,7 @@ import { z } from "zod";
 import { findUserByEmail } from "@/lib/portal/data";
 import { clearSession, sessionSecret, writeSession } from "@/lib/portal/session";
 
-export type LoginState = { error?: string; email?: string; ok?: boolean };
+import type { SignInState as LoginState } from "@/components/auth/SignInForm";
 
 const schema = z.object({
   email: z.email().max(200),

@@ -40,6 +40,12 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Replace the demo brokerage, quotes and policies with Neon Postgres; upload forms and documents (Vercel Blob).
 - Decide how brokers request quotes online (currently via proposal forms).
 
+## Admin portal
+- Set `NEXT_PUBLIC_ADMIN_HOST` in Vercel and add the `admin.ottainsurance.co.nz` domain (see `docs/admin-portal.md`).
+- Register staff SSO (Microsoft 365 tenant or Google Workspace) and set the `ADMIN_*` keys.
+- Replace the demo staff account with real staff users before any real data is loaded.
+- Manual entry screens (add or edit a policy or quote) and the InsuredHQ sync job once Neon is in place.
+
 ## Later stages
 - Compliance review (Privacy Act 2020, FMC Act, Fair Trading Act, CoFI, etc.).
 - Remove `robots: noindex` in `src/app/layout.tsx` at launch.

@@ -1,11 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
-import { logout } from "@/app/(portal)/portal/login/actions";
-import { portalPath } from "@/lib/portal/config";
 import { Icon } from "./Icon";
 
-export function SignOutButton() {
+export function SignOutButton({ action, redirectTo }: { action: () => Promise<void>; redirectTo: string }) {
   const [pending, start] = useTransition();
   return (
     <button
@@ -13,8 +11,8 @@ export function SignOutButton() {
       disabled={pending}
       onClick={() =>
         start(async () => {
-          await logout();
-          window.location.assign(portalPath("/login"));
+          await action();
+          window.location.assign(redirectTo);
         })
       }
       className="inline-flex items-center gap-1.5 text-[13px] text-charcoal hover:text-site-teal disabled:opacity-60"

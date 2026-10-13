@@ -1,4 +1,6 @@
+import { logout } from "@/app/(portal)/portal/login/actions";
 import { requireBroker } from "@/lib/portal/auth";
+import { portalPath } from "@/lib/portal/config";
 import { SignOutButton } from "./SignOutButton";
 
 export async function SidebarUser() {
@@ -21,7 +23,7 @@ export async function SidebarUser() {
         </div>
       </div>
       <div className="mt-4">
-        <SignOutButton />
+        <SignOutButton action={logout} redirectTo={portalPath("/login")} />
       </div>
     </div>
   );

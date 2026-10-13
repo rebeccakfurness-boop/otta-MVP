@@ -7,6 +7,17 @@ export type Brokerage = {
   microsoftTenantIds: string[];
 };
 
+/** Where a record came from: typed in by Otta staff, or synced from InsuredHQ. */
+export type RecordSource = "manual" | "ihq";
+
+export type StaffUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: "Admin" | "Underwriter" | "Operations";
+  passwordHash?: string;
+};
+
 export type PortalUser = {
   id: string;
   name: string;
@@ -30,6 +41,7 @@ export type QuoteRequest = {
   history: { date: string; event: string }[];
   /** Policy created when the quote was bound. */
   policyId?: string;
+  source: RecordSource;
 };
 
 export type PolicyDocument = { id: string; name: string; kind: string; issued: string; file?: string };
@@ -45,6 +57,9 @@ export type Policy = {
   premium: number;
   sumInsured?: string;
   documents: PolicyDocument[];
+  source: RecordSource;
+  /** Reference in InsuredHQ, when synced from there. */
+  ihqRef?: string;
 };
 
 export type FormType = "Proposal form" | "Renewal declaration" | "Claim form" | "General";

@@ -4,40 +4,46 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
-import { portalPath } from "@/lib/portal/config";
 import { Icon, type IconName } from "./Icon";
 
-const nav: { label: string; path: string; icon: IconName }[] = [
-  { label: "Dashboard", path: "/", icon: "home" },
-  { label: "Forms", path: "/forms", icon: "forms" },
-  { label: "Quote requests", path: "/quotes", icon: "quotes" },
-  { label: "Policies", path: "/policies", icon: "policies" },
-  { label: "Documents", path: "/documents", icon: "documents" },
-  { label: "Help & contact", path: "/help", icon: "help" },
-];
+export type NavItem = { label: string; href: string; icon: IconName };
 
-function NavLinks({ onNavigate, highlight = true }: { onNavigate: () => void; highlight?: boolean }) {
-  return highlight ? <ActiveNavLinks onNavigate={onNavigate} /> : <NavList pathname={null} onNavigate={onNavigate} />;
+type ShellProps = {
+  /** Small label beside the logo, e.g. "Broker Portal". */
+  label: string;
+  labelClassName?: string;
+  homeHref: string;
+  nav: NavItem[];
+  user: ReactNode;
+  websiteUrl: string;
+  children: ReactNode;
+};
+
+function NavLinks({ nav, homeHref, onNavigate, highlight = true }: { nav: NavItem[]; homeHref: string; onNavigate: () => void; highlight?: boolean }) {
+  return highlight ? (
+    <ActiveNavLinks nav={nav} homeHref={homeHref} onNavigate={onNavigate} />
+  ) : (
+    <NavList nav={nav} homeHref={homeHref} pathname={null} onNavigate={onNavigate} />
+  );
 }
 
-function ActiveNavLinks({ onNavigate }: { onNavigate: () => void }) {
-  return <NavList pathname={usePathname()} onNavigate={onNavigate} />;
+function ActiveNavLinks(props: { nav: NavItem[]; homeHref: string; onNavigate: () => void }) {
+  return <NavList {...props} pathname={usePathname()} />;
 }
 
-function NavList({ pathname, onNavigate }: { pathname: string | null; onNavigate: () => void }) {
-  const isActive = (path: string) => {
+function NavList({ nav, homeHref, pathname, onNavigate }: { nav: NavItem[]; homeHref: string; pathname: string | null; onNavigate: () => void }) {
+  const isActive = (href: string) => {
     if (!pathname) return false;
-    const href = portalPath(path);
-    return path === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+    return href === homeHref ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
   };
   return (
     <ul className="space-y-1">
       {nav.map((item) => {
-        const active = isActive(item.path);
+        const active = isActive(item.href);
         return (
-          <li key={item.path}>
+          <li key={item.href}>
             <Link
-              href={portalPath(item.path)}
+              href={item.href}
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={`flex items-center gap-3 border-l-[3px] px-4 py-3 text-[15px] transition-colors ${
@@ -56,22 +62,22 @@ function NavList({ pathname, onNavigate }: { pathname: string | null; onNavigate
   );
 }
 
-export function PortalShell({ user, websiteUrl, children }: { user: ReactNode; websiteUrl: string; children: ReactNode }) {
+export function PortalShell({ label, labelClassName = "text-site-teal", homeHref, nav, user, websiteUrl, children }: ShellProps) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="px-6 pt-7 pb-6">
-        <Link href={portalPath("/")} onClick={close} className="inline-flex items-end gap-3" aria-label="Otta Broker Portal home">
+        <Link href={homeHref} onClick={close} className="inline-flex items-end gap-3" aria-label={`Otta ${label} home`}>
           <Image src="/brand/otta-logo.png" alt="Otta" width={513} height={191} className="h-8 w-auto" priority />
-          <span className="mb-[3px] text-[10px] font-semibold tracking-[0.2em] text-site-teal uppercase">Broker Portal</span>
+          <span className={`mb-[3px] text-[10px] font-semibold tracking-[0.2em] uppercase ${labelClassName}`}>{label}</span>
         </Link>
       </div>
       <nav aria-label="Portal" className="flex-1 px-3">
         {/* The current-page highlight reads the URL, so it streams in. */}
-        <Suspense fallback={<NavLinks onNavigate={close} highlight={false} />}>
-          <NavLinks onNavigate={close} />
+        <Suspense fallback={<NavLinks nav={nav} homeHref={homeHref} onNavigate={close} highlight={false} />}>
+          <NavLinks nav={nav} homeHref={homeHref} onNavigate={close} />
         </Suspense>
       </nav>
       <div className="border-t border-[#eaeaea] px-6 py-5">
@@ -100,9 +106,9 @@ export function PortalShell({ user, websiteUrl, children }: { user: ReactNode; w
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobile top bar */}
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#eaeaea] bg-white px-5 lg:hidden">
-          <Link href={portalPath("/")} className="inline-flex items-end gap-2">
+          <Link href={homeHref} className="inline-flex items-end gap-2">
             <Image src="/brand/otta-logo.png" alt="Otta" width={513} height={191} className="h-7 w-auto" />
-            <span className="mb-[2px] text-[9px] font-semibold tracking-[0.2em] text-site-teal uppercase">Broker Portal</span>
+            <span className={`mb-[2px] text-[9px] font-semibold tracking-[0.2em] uppercase ${labelClassName}`}>{label}</span>
           </Link>
           <button type="button" onClick={() => setOpen(true)} aria-label="Open menu" className="p-2 text-charcoal">
             <Icon name="menu" className="h-6 w-6" />

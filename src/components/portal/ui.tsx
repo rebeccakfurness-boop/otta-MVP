@@ -164,3 +164,16 @@ export function LoadingBlocks({ rows = 4 }: { rows?: number }) {
     </div>
   );
 }
+
+/** Where a record came from: manual entry by Otta staff, or synced from InsuredHQ. */
+export function SourceBadge({ source }: { source: "manual" | "ihq" }) {
+  return source === "ihq" ? (
+    <span className="inline-flex items-center gap-1 rounded-sm bg-[#e3eef3] px-2 py-1 text-[11px] font-semibold tracking-[0.06em] whitespace-nowrap text-site-blue uppercase">
+      InsuredHQ
+    </span>
+  ) : (
+    <span className="inline-flex items-center rounded-sm bg-[#f3f0e8] px-2 py-1 text-[11px] font-semibold tracking-[0.06em] whitespace-nowrap text-[#7a6a3a] uppercase">
+      Manual
+    </span>
+  );
+}
