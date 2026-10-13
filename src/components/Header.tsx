@@ -32,35 +32,32 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-cloud bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-20 max-w-7xl items-center gap-6 px-5 md:px-8">
-        <Logo className="h-9 w-auto" />
+    <header className="sticky top-0 z-50 bg-white shadow-[0_1px_0_rgba(0,0,0,0.06)]">
+      <div className="mx-auto flex h-[50px] max-w-[1366px] items-center gap-6 px-5 md:px-4">
+        <Logo className="h-[22px] w-auto" />
 
         {/* Desktop navigation */}
         <nav aria-label="Main" className="ml-auto hidden lg:block">
-          <ul className="flex items-center gap-1">
+          <ul className="flex items-center">
             {mainNav.map((item) => (
               <li key={item.href} className="group relative">
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-1 rounded-md px-3 py-2 text-[15px] font-semibold transition-colors hover:text-ocean-700 ${
-                    isActive(pathname, item.href) ? "text-ocean-700" : "text-ink"
+                  className={`flex h-[50px] items-center px-[16px] text-[15px] xl:px-[16.5px] tracking-[0.05em] transition-colors hover:text-[#8a8a8a] ${
+                    isActive(pathname, item.href) ? "text-[#8a8a8a]" : "text-charcoal"
                   }`}
                 >
                   {item.label}
-                  {item.children && (
-                    <Chevron className="transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
-                  )}
                 </Link>
                 {item.children && (
-                  <div className="invisible absolute top-full left-0 pt-2 opacity-0 transition-all group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-                    <ul className="min-w-72 rounded-xl border border-cloud bg-white p-2 shadow-xl shadow-ink/5">
+                  <div className="invisible absolute top-full left-0 opacity-0 transition-all group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                    <ul className="min-w-72 border-t-2 border-site-teal bg-white py-3 shadow-lg shadow-black/10">
                       {item.children.map((child) => (
                         <li key={child.href}>
                           <Link
                             href={child.href}
-                            className={`block rounded-lg px-4 py-2.5 text-sm font-medium transition-colors hover:bg-ocean-50 hover:text-ocean-800 ${
-                              pathname === child.href ? "bg-ocean-50 text-ocean-800" : "text-ink"
+                            className={`block px-6 py-2 text-[14px] tracking-[0.03em] transition-colors hover:text-site-teal ${
+                              pathname === child.href ? "text-site-teal" : "text-charcoal"
                             }`}
                           >
                             {child.label}
@@ -77,7 +74,7 @@ export function Header() {
 
         <Link
           href={site.portalUrl}
-          className="ml-auto hidden rounded-full bg-ocean-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-ocean-800 sm:inline-flex lg:ml-2"
+          className="ml-auto hidden h-[43px] items-center border border-charcoal px-8 text-[15px] font-medium tracking-[0.12em] text-charcoal uppercase transition-colors hover:bg-charcoal hover:text-white sm:inline-flex lg:ml-[17px]"
         >
           Account Login
         </Link>
@@ -98,7 +95,7 @@ export function Header() {
 
       {/* Mobile navigation */}
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile" className="max-h-[calc(100vh-5rem)] overflow-y-auto border-t border-cloud bg-white lg:hidden">
+        <nav id="mobile-nav" aria-label="Mobile" className="max-h-[calc(100vh-50px)] overflow-y-auto border-t border-cloud bg-white lg:hidden">
           <ul className="px-5 py-4">
             {mainNav.map((item) => (
               <li key={item.href} className="border-b border-cloud last:border-0">
@@ -135,7 +132,7 @@ export function Header() {
           <div className="px-5 pb-6 sm:hidden">
             <Link
               href={site.portalUrl}
-              className="block rounded-full bg-ocean-700 px-5 py-3 text-center font-semibold text-white"
+              className="block border border-charcoal px-5 py-3 text-center font-medium tracking-[0.12em] text-charcoal uppercase"
             >
               Account Login
             </Link>

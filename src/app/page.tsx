@@ -1,210 +1,188 @@
 import Link from "next/link";
-import { ButtonLink } from "@/components/Button";
-import { ImagePlaceholder } from "@/components/ImagePlaceholder";
-import { ClaimsBand } from "@/components/ClaimsBand";
-import { Eyebrow, Section } from "@/components/Section";
-import { productCategories, products } from "@/content/products";
+import type { ReactNode } from "react";
+import { HeroVideo } from "@/components/HeroVideo";
+import { getProduct } from "@/content/products";
 
-const pillars = [
+// Home page columns. Landlord has its own column (it is sold through property
+// managers rather than brokers), which gives the four columns in the mockup.
+const columns = [
   {
-    title: "Broad appetite",
-    body: "Mainstream or complex, we look at every risk on its merits – genuine underwriting based on the data and facts.",
+    title: "Accident and Personal Insurance",
+    body: "Protection for your people at home, at work and on the road. We have appetite for the unusual and high-risk – including pilots, professional athletes and forestry contractors.",
+    products: ["corporate-travel-insurance", "personal-accident-insurance"],
   },
   {
-    title: "Direct access",
-    body: "Quick turnaround and a direct line to the underwriter, so we can make the complex simple.",
+    title: "Property Insurance",
+    body: "Comprehensive cover for residential rental properties and social and community housing, including intentional damage and methamphetamine contamination.",
+    products: ["rental-property-insurance", "social-and-community-housing-insurance"],
   },
   {
-    title: "Lloyd's of London",
-    body: "Comprehensive coverage backed by global strength and certainty delivered through Lloyd's of London.",
+    title: "Liability Insurance",
+    body: "Professional Indemnity, Public, Statutory and Employers Liability. Your reputation is your most valuable asset – we help safeguard it.",
+    products: ["liability-insurance"],
+  },
+  {
+    title: "Landlord Insurance",
+    body: "Protect your rental income with cover for loss of rent if tenants default or your property becomes uninhabitable, plus tenant damage and legal liability.",
+    products: ["landlord-insurance"],
   },
 ];
+
+function SquareButton({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center bg-white px-8 py-[15px] text-[12px] font-medium tracking-[0.12em] text-charcoal uppercase transition-colors hover:bg-charcoal hover:text-white"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function DarkPlaceholder({ label, className = "" }: { label: string; className?: string }) {
+  return (
+    <div
+      role="img"
+      aria-label={`${label} (placeholder image)`}
+      className={`bg-placeholder ${className}`}
+    />
+  );
+}
 
 export default function Home() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-ocean-700 text-white">
-        <svg
-          aria-hidden
-          className="absolute top-1/2 -right-40 h-[44rem] w-[44rem] -translate-y-1/2 text-ocean md:-right-24"
-          viewBox="0 0 100 100"
-        >
-          <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" strokeWidth="18" opacity="0.55" />
-        </svg>
-        <div className="relative mx-auto max-w-6xl px-5 py-24 md:px-8 md:py-36">
-          <p className="mb-5 text-sm font-bold uppercase tracking-[0.25em] text-ocean-100">
-            Insurance that works
-          </p>
-          <h1 className="max-w-3xl text-5xl leading-[1.05] text-white md:text-7xl">
+      {/* Hero video */}
+      <section className="relative flex h-[69vh] min-h-[460px] items-center justify-center overflow-hidden">
+        <HeroVideo />
+        <div className="relative px-5 text-center">
+          <h1 className="text-[38px] leading-[1.2] font-bold tracking-normal text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.15)] md:text-[50px]">
             Welcome to Otta.
-            <span className="block text-ocean-100">Insurance that works.</span>
+            <br />
+            Insurance that works.
           </h1>
-          <p className="mt-8 max-w-xl text-lg text-ocean-50 md:text-xl">
+          <Link
+            href="/solutions"
+            className="mt-10 inline-flex items-center bg-site-teal px-12 py-[19px] text-[17px] font-medium text-white transition-colors hover:bg-[#4fa99c]"
+          >
+            Discover Otta Solutions
+          </Link>
+        </div>
+      </section>
+
+      {/* Intro + two feature blocks */}
+      <section className="grid md:grid-cols-4">
+        <div className="flex items-center bg-site-teal px-5 py-16 md:col-span-2 md:min-h-[282px] md:px-[100px]">
+          <p className="max-w-[720px] text-[18px] leading-[1.78] text-white">
             At Otta we provide simple insurance solutions for complex problems so your business,
             life and investments can benefit from stability, confidence and continuity.
           </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <ButtonLink href="/solutions" variant="light" size="lg">
-              Discover Otta Solutions
-            </ButtonLink>
-            <ButtonLink href="/contact" variant="ghost" size="lg">
-              Talk to an underwriter
-            </ButtonLink>
+        </div>
+        <FeatureBlock
+          className="bg-site-blue"
+          title="Specialised insurance solutions to keep you in tune"
+          href="/solutions"
+        />
+        <FeatureBlock
+          className="bg-site-purple"
+          title="Landlord insurance to protect your investment"
+          href="/solutions/landlord-insurance"
+        />
+      </section>
+
+      {/* Meet Otta */}
+      <section className="bg-white pt-[30px] pb-[110px] md:pt-[30px]">
+        <div className="mx-auto max-w-[1366px] px-5 md:px-4">
+          <div className="mx-auto max-w-[960px] pt-8 text-center">
+            <h2 className="text-[32px] leading-[1.2] font-bold tracking-[-0.03em] text-charcoal md:text-[40px]">
+              Meet the New Zealand insurer that keeps business and life moving
+            </h2>
+            <div className="mx-auto mt-7 h-[2px] w-[90px] bg-site-teal" />
+            <p className="mx-auto mt-10 max-w-[880px] text-[16px] leading-[1.75] text-body">
+              Otta brings simple insurance solutions to complex problems. We have a broad appetite
+              to cover all risks – whether mainstream or complex – with quick turnaround and direct
+              access to the underwriter. Every policy offers comprehensive coverage backed by
+              global strength and certainty delivered through Lloyd&apos;s of London.
+            </p>
+          </div>
+
+          <div className="mt-[110px] grid gap-x-9 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
+            {columns.map((col) => (
+              <article key={col.title}>
+                <DarkPlaceholder label={col.title} className="aspect-[3/2]" />
+                <h3 className="mt-11 text-[25px] leading-[1.15] font-semibold tracking-normal text-charcoal">
+                  {col.title}
+                </h3>
+                <p className="mt-6 text-[16px] leading-[1.75] text-body">{col.body}</p>
+                <ul className="mt-7 space-y-[3px]">
+                  {col.products.map((slug) => {
+                    const product = getProduct(slug)!;
+                    return (
+                      <li key={slug}>
+                        <Link
+                          href={`/solutions/${slug}`}
+                          className="group flex items-center gap-2.5 text-[16px] text-body transition-colors hover:text-charcoal"
+                        >
+                          <svg aria-hidden viewBox="0 0 16 16" className="h-4 w-4 shrink-0 text-site-teal" fill="none" stroke="currentColor" strokeWidth="1.3">
+                            <path d="M1.5 8h12M9 3.5 13.5 8 9 12.5" />
+                          </svg>
+                          {product.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Two feature tiles */}
-      <Section>
-        <div className="grid gap-6 md:grid-cols-2">
-          <FeatureTile
-            title="Specialised insurance solutions to keep you in tune"
-            body="From corporate travel to professional indemnity, our specialist products are built for New Zealand businesses with risks that don't fit the standard mould."
-            href="/solutions"
-            tone="deep"
-          />
-          <FeatureTile
-            title="Landlord insurance to protect your investment"
-            body="Cover for loss of rent, intentional damage, methamphetamine contamination and more – designed with property managers and landlords."
-            href="/solutions/landlord-insurance"
-            tone="sunset"
-          />
-        </div>
-      </Section>
-
-      {/* Meet Otta */}
-      <Section tone="ocean">
-        <div className="grid items-center gap-12 md:grid-cols-2">
-          <div>
-            <Eyebrow>About Otta</Eyebrow>
-            <h2 className="text-3xl md:text-5xl">
-              Meet the New Zealand insurer that keeps business and life moving
-            </h2>
-            <p className="mt-6 text-lg text-muted">
-              Otta brings together specialist underwriting expertise and the backing of Lloyd&apos;s of
-              London. We work with brokers and property managers to place cover that is clear,
-              fair and built for the real world.
-            </p>
-            <ButtonLink href="/about-us" variant="outline" className="mt-8">
-              More about us
-            </ButtonLink>
-          </div>
-          <ul className="grid gap-4">
-            {pillars.map((p) => (
-              <li key={p.title} className="rounded-2xl border-l-4 border-ocean-600 bg-white p-6 shadow-sm">
-                <h3 className="text-lg">{p.title}</h3>
-                <p className="mt-2 text-muted">{p.body}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Section>
-
-      {/* Product categories */}
-      <Section>
-        <div className="mb-12 max-w-2xl">
-          <Eyebrow>Our solutions</Eyebrow>
-          <h2 className="text-3xl md:text-4xl">Insurance for the risks that matter to you</h2>
-        </div>
-        <div className="grid gap-8 md:grid-cols-3">
-          {productCategories.map((cat, i) => (
-            <article key={cat.key} className="flex flex-col overflow-hidden rounded-2xl border border-cloud bg-white shadow-sm">
-              <ImagePlaceholder
-                label={cat.title}
-                tone={(["ocean", "deep", "sunset"] as const)[i]}
-                className="aspect-[3/2]"
-              />
-              <div className="flex flex-1 flex-col p-6">
-                <h3 className="text-xl">{cat.title}</h3>
-                <p className="mt-3 text-muted">{cat.blurb}</p>
-                <ul className="mt-6 space-y-2 border-t border-cloud pt-5">
-                  {products
-                    .filter((p) => p.category === cat.key)
-                    .map((p) => (
-                      <li key={p.slug}>
-                        <Link
-                          href={`/solutions/${p.slug}`}
-                          className="group flex items-center justify-between font-semibold text-ocean-700 hover:text-ocean-800"
-                        >
-                          {p.name}
-                          <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-                        </Link>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-            </article>
-          ))}
-        </div>
-      </Section>
-
       {/* Property banner */}
-      <section className="relative">
-        <ImagePlaceholder label="Property image" tone="deep" className="h-80 md:h-[28rem]" />
-        <div className="absolute inset-0 flex items-center">
-          <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
-            <h2 className="max-w-xl text-3xl text-white md:text-5xl">
-              Protecting the homes that hold communities together
-            </h2>
-            <ButtonLink
-              href="/solutions/social-and-community-housing-insurance"
-              variant="light"
-              className="mt-8"
-            >
-              Social and Community Housing
-            </ButtonLink>
-          </div>
-        </div>
+      <section className="relative flex min-h-[420px] items-center justify-center bg-placeholder px-5 md:h-[676px]">
+        <span className="sr-only">Property image (placeholder)</span>
+        <h2 className="text-center text-[28px] font-semibold tracking-normal text-white">
+          Comprehensive cover for landlords to protect their investment
+        </h2>
       </section>
 
       {/* Case study */}
-      <Section tone="cloud">
-        <div className="grid items-center gap-12 md:grid-cols-2">
-          <ImagePlaceholder label="Case study" className="aspect-[4/3] rounded-2xl" tone="sunset" />
-          <div>
-            <Eyebrow>Case study</Eyebrow>
-            <h2 className="text-3xl md:text-4xl">Client heading placeholder case study</h2>
-            <p className="mt-4 text-lg font-semibold text-ocean-700">
-              A short summary of the client&apos;s challenge and how Otta helped.
-            </p>
-            <p className="mt-4 text-muted">
-              Case study copy to come. This block will introduce the client, the risk they needed
-              to place and the outcome Otta delivered.
-            </p>
-            <ButtonLink href="/about-us/case-studies" className="mt-8">
-              View the Case Study
-            </ButtonLink>
+      <section className="bg-site-teal py-[104px]">
+        <div className="mx-auto max-w-[1366px] px-5 md:px-4">
+          <h2 className="text-center text-[34px] leading-[1.15] font-bold tracking-[-0.04em] text-white md:text-[44px]">
+            Client heading placeholder case study
+          </h2>
+          <div className="mx-auto mt-[100px] grid max-w-[1000px] items-center gap-9 md:grid-cols-2">
+            <div>
+              <h3 className="text-[24px] leading-[1.17] font-semibold tracking-normal text-white">
+                Case study summary to come – the client&apos;s challenge in a sentence.
+              </h3>
+              <p className="mt-11 text-[16px] leading-[1.75] text-white">
+                Case study copy to come. This section will introduce the client, the risk they
+                needed to place and how Otta made the complex simple, with quick turnaround and
+                direct access to the underwriter.
+              </p>
+              <div className="mt-10">
+                <SquareButton href="/about-us/case-studies">View the case study</SquareButton>
+              </div>
+            </div>
+            <DarkPlaceholder label="Case study" className="aspect-[3/2]" />
           </div>
         </div>
-      </Section>
-
-      <ClaimsBand />
+      </section>
     </>
   );
 }
 
-function FeatureTile({
-  title,
-  body,
-  href,
-  tone,
-}: {
-  title: string;
-  body: string;
-  href: string;
-  tone: "deep" | "sunset";
-}) {
+function FeatureBlock({ title, href, className }: { title: string; href: string; className: string }) {
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-cloud">
-      <ImagePlaceholder label={title} tone={tone} className="aspect-[16/9]" />
-      <div className="flex flex-1 flex-col p-8">
-        <h3 className="text-2xl md:text-3xl">{title}</h3>
-        <p className="mt-4 flex-1 text-muted">{body}</p>
-        <ButtonLink href={href} variant="outline" className="mt-6 self-start">
-          Learn More
-        </ButtonLink>
+    <div className={`flex flex-col items-center justify-center px-8 py-16 text-center md:min-h-[282px] ${className}`}>
+      <h2 className="max-w-[360px] text-[25px] leading-[1.17] font-bold tracking-[-0.04em] text-white">
+        {title}
+      </h2>
+      <div className="mt-10">
+        <SquareButton href={href}>Learn more</SquareButton>
       </div>
-    </article>
+    </div>
   );
 }

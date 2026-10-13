@@ -50,8 +50,8 @@ export const mainNav: NavItem[] = [
       { label: "Case Studies", href: "/about-us/case-studies" },
     ],
   },
-  { label: "Our Solutions", href: "/solutions", children: solutionsNav },
-  { label: "Resources", href: "/resources", children: resourcesNav },
+  { label: "Solutions", href: "/solutions", children: solutionsNav },
   { label: "Claims", href: "/claims" },
+  { label: "Resources", href: "/resources", children: resourcesNav },
   { label: "Contact Us", href: "/contact" },
 ];

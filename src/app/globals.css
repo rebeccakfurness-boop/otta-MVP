@@ -26,7 +26,17 @@
   --color-ink: #1f2b33;
   --color-muted: #5a6670;
 
-  --font-sans: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
+  /* Colours sampled from the website mockup. */
+  --color-site-teal: #61b9ad;
+  --color-site-blue: #014c69;
+  --color-site-purple: #5e008d;
+  --color-charcoal: #303133;
+  --color-body: #777777;
+  --color-placeholder: #292929;
+  --color-footer: #f7f7f7;
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-raleway), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -40,7 +50,7 @@
   h2,
   h3,
   h4 {
-    @apply font-bold tracking-tight text-ink;
+    @apply font-heading font-bold tracking-tight text-ink;
   }
   ::selection {
     @apply bg-ocean-200;
