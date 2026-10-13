@@ -6,11 +6,11 @@ export const site = {
   tagline: "Insurance that works",
   description:
     "Otta provides simple insurance solutions for complex problems, backed by Lloyd's of London.",
-  // TODO(stage 0): confirm final domain and email addresses once DNS is set up.
-  url: "https://www.otta.co.nz",
+  // TODO(stage 2): confirm the claims email address.
+  url: "https://www.ottainsurance.co.nz",
   phone: "0800 003 545",
-  email: "hello@otta.co.nz",
-  claimsEmail: "claims@otta.co.nz",
+  email: "hello@ottainsurance.co.nz",
+  claimsEmail: "claims@ottainsurance.co.nz",
   // TODO(stage 2): claims phone number is "0800 xxx xxxx" in the source copy.
   claimsPhone: "0800 XXX XXXX",
   address: ["Level 1", "3/527A Rosebank Road", "Avondale, Auckland 1026", "New Zealand"],
