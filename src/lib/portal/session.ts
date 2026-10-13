@@ -14,12 +14,19 @@ export type PortalSession = {
 
 const TTL_SECONDS = 8 * 60 * 60; // a working day
 
-/** The session secret, or null when SESSION_SECRET is not configured. */
+/** True while the portal runs on fictional demo data (see docs/broker-portal.md). */
+export const demoMode = process.env.PORTAL_DEMO_LOGIN !== "false";
+
+/**
+ * The session secret, or null when none is available.
+ * Without SESSION_SECRET, a fixed fallback is used in local development and in
+ * demo mode only. It is in the source code, so it must never protect real broker
+ * data: set SESSION_SECRET and PORTAL_DEMO_LOGIN=false before loading real data.
+ */
 export function sessionSecret(): string | null {
   const secret = process.env.SESSION_SECRET;
   if (secret && secret.length >= 32) return secret;
-  // Local development only: a fixed secret so the portal works out of the box.
-  if (process.env.NODE_ENV !== "production") return "dev-only-secret-do-not-use-in-production-0000";
+  if (process.env.NODE_ENV !== "production" || demoMode) return "otta-portal-demo-only-secret-not-for-real-data-0000";
   return null;
 }
 

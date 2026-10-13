@@ -38,7 +38,12 @@ Brokers only ever see their own brokerage's records: every query in
 ## Security
 
 - Sessions: iron-session encrypted cookie, 8 hour lifetime, httpOnly, secure,
-  scoped to the portal host only. Needs `SESSION_SECRET`.
+  scoped to the portal host only, encrypted with `SESSION_SECRET`.
+- **Demo mode** (`PORTAL_DEMO_LOGIN` not `false`): if `SESSION_SECRET` is not set,
+  a fallback secret from the source code is used so the demo account works.
+  Anyone with the code could forge a session, which is acceptable only while
+  the portal holds fictional data. Set `SESSION_SECRET` and
+  `PORTAL_DEMO_LOGIN=false` before any real broker data goes in.
 - Passwords: bcrypt hashes; the same error for unknown email and wrong password;
   5 failed attempts per email and IP per 15 minutes.
 - Single sign-on (arctic, OAuth with PKCE and state):

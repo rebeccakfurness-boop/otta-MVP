@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Container, DarkPlaceholder, LargeButton, PageIntro } from "@/components/Mockup";
+import { Container, ImagePlaceholder, LargeButton, PageIntro } from "@/components/Mockup";
 import { team } from "@/content/team";
 
 export const metadata: Metadata = { title: "Our Team" };
@@ -29,7 +29,7 @@ export default function TeamPage() {
                   className="aspect-square w-full object-cover"
                 />
               ) : (
-                <DarkPlaceholder label={`${m.name} portrait`} className="aspect-square" />
+                <ImagePlaceholder label={`${m.name} portrait`} className="aspect-square" />
               )}
               <h2 className="mt-8 text-[25px] font-semibold tracking-normal text-charcoal">{m.name}</h2>
               <p className="mt-1 text-[16px] text-site-teal">{m.role}</p>

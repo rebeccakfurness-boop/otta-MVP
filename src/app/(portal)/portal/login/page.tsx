@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Icon } from "@/components/portal/Icon";
 import { site } from "@/content/site";
 import { PORTAL_HOST } from "@/lib/portal/config";
+import { demoMode } from "@/lib/portal/session";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = { title: "Sign in" };
@@ -17,7 +18,7 @@ const benefits = [
 
 export default function LoginPage() {
   // Demo credentials are shown while the portal runs on demo data.
-  const showDemo = process.env.PORTAL_DEMO_LOGIN !== "false";
+  const showDemo = demoMode;
   const websiteUrl = PORTAL_HOST ? site.url : "/";
 
   return (

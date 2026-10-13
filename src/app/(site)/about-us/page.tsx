@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CentredHeading, Container, DarkPlaceholder, LargeButton } from "@/components/Mockup";
+import { CentredHeading, Container, ImagePlaceholder, LargeButton } from "@/components/Mockup";
 
 export const metadata: Metadata = { title: "About us" };
 
@@ -52,7 +52,7 @@ export default function AboutPage() {
           <div className="grid gap-x-9 gap-y-16 md:grid-cols-3">
             {values.map((v) => (
               <article key={v.title}>
-                <DarkPlaceholder label={v.title} className="aspect-[3/2]" />
+                <ImagePlaceholder label={v.title} className="aspect-[3/2]" />
                 <h2 className="mt-11 text-[25px] leading-[1.15] font-semibold tracking-normal text-charcoal">
                   {v.title}
                 </h2>

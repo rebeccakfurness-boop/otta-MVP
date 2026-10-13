@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Container, DarkPlaceholder, SquareButton } from "@/components/Mockup";
+import { Container, ImagePlaceholder, SquareButton } from "@/components/Mockup";
 import { Tabs } from "@/components/Tabs";
 import { importantInformation } from "@/content/legal";
 import { getProduct, products } from "@/content/products";
@@ -36,7 +36,7 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
     <>
       {/* Split hero: image left, introduction right */}
       <section className="grid lg:min-h-[710px] lg:grid-cols-[46%_1fr]">
-        <DarkPlaceholder label={product.name} className="min-h-[320px] lg:min-h-full" />
+        <ImagePlaceholder label={product.name} className="min-h-[320px] lg:min-h-full" />
         <div className="flex items-center px-5 py-16 lg:pr-[46px] lg:pl-[145px]">
           <div>
             <h1 className="text-[32px] leading-[1.2] font-bold tracking-normal text-charcoal md:text-[38px]">

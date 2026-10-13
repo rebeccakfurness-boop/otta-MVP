@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Container, DarkPlaceholder, PageIntro, SquareButton } from "@/components/Mockup";
+import { Container, ImagePlaceholder, PageIntro, SquareButton } from "@/components/Mockup";
 
 export const metadata: Metadata = { title: "Case Studies" };
 
@@ -18,7 +18,7 @@ export default function CaseStudiesPage() {
           <div className="mt-[72px] grid gap-x-9 gap-y-16 md:grid-cols-3">
             {[1, 2, 3].map((n) => (
               <article key={n}>
-                <DarkPlaceholder label={`Case study ${n}`} className="aspect-[3/2]" />
+                <ImagePlaceholder label={`Case study ${n}`} className="aspect-[3/2]" />
                 <h2 className="mt-11 text-[25px] leading-[1.15] font-semibold tracking-normal text-charcoal">
                   Client heading placeholder case study
                 </h2>

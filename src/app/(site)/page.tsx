@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { HeroVideo } from "@/components/HeroVideo";
-import { DarkPlaceholder, SquareButton } from "@/components/Mockup";
+import { ImagePlaceholder, SquareButton } from "@/components/Mockup";
 import { getProduct } from "@/content/products";
 
 // Home page columns. Landlord has its own column (it is sold through property
@@ -88,7 +88,7 @@ export default function Home() {
           <div className="mt-[110px] grid gap-x-9 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
             {columns.map((col) => (
               <article key={col.title}>
-                <DarkPlaceholder label={col.title} className="aspect-[3/2]" />
+                <ImagePlaceholder label={col.title} className="aspect-[3/2]" />
                 <h3 className="mt-11 text-[25px] leading-[1.15] font-semibold tracking-normal text-charcoal">
                   {col.title}
                 </h3>
@@ -119,8 +119,10 @@ export default function Home() {
 
       {/* Property banner */}
       <section className="relative flex min-h-[420px] items-center justify-center bg-placeholder px-5 md:h-[676px]">
-        <span className="sr-only">Property image (placeholder)</span>
-        <h2 className="text-center text-[28px] font-semibold tracking-normal text-white">
+        <span className="absolute right-6 bottom-5 text-[14px] font-light text-white/90 italic">
+          placeholder image
+        </span>
+        <h2 className="text-center text-[28px] font-semibold tracking-normal text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.12)]">
           Comprehensive cover for landlords to protect their investment
         </h2>
       </section>
@@ -145,7 +147,7 @@ export default function Home() {
                 <SquareButton href="/about-us/case-studies">View the case study</SquareButton>
               </div>
             </div>
-            <DarkPlaceholder label="Case study" className="aspect-[3/2]" />
+            <ImagePlaceholder label="Case study" className="aspect-[3/2]" />
           </div>
         </div>
       </section>

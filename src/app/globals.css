@@ -32,7 +32,7 @@
   --color-site-purple: #5e008d;
   --color-charcoal: #303133;
   --color-body: #777777;
-  --color-placeholder: #292929;
+  --color-placeholder: #a3c7c2; /* soft muted teal for placeholder images */
   --color-footer: #f7f7f7;
 
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;

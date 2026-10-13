@@ -24,7 +24,7 @@ and tight; body text is light grey and airy.
 | Body grey | `#777777` | Paragraph text, secondary buttons |
 | Off-white | `#f7f7f7` | Footer, grey panels, tab area |
 | Rule grey | `#eaeaea` | Thin dividers and borders |
-| Image placeholder | `#292929` | Stand-in for photography |
+| Image placeholder | `#a3c7c2` | Soft muted teal stand-in for photography, labelled "placeholder image" in light italic |
 
 Brand palette from the Otta guidelines (print values): Ocean `#76bab2`,
 Cloud `#e9eae9`, Sunset `#713089`, Deep `#004988`. The website uses the
@@ -105,4 +105,4 @@ Hover: teal darkens to `#4fa99c`; white and grey buttons invert to charcoal.
 
 - Full-bleed photography or video for heroes; square or 3:2 crops elsewhere.
 - Portraits on a flat teal background (see the team page).
-- Placeholders are flat dark grey blocks until real photos arrive.
+- Placeholders are soft muted teal blocks labelled "placeholder image" until real photos arrive.

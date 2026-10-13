@@ -52,10 +52,18 @@ export function LargeButton({
   );
 }
 
-/** Dark grey block standing in for photography. */
-export function DarkPlaceholder({ label, className = "" }: { label: string; className?: string }) {
+/** Soft teal block standing in for photography until real images arrive. */
+export function ImagePlaceholder({ label, className = "" }: { label: string; className?: string }) {
   return (
-    <div role="img" aria-label={`${label} (placeholder image)`} className={`bg-placeholder ${className}`} />
+    <div
+      role="img"
+      aria-label={`${label} (placeholder image)`}
+      className={`flex items-center justify-center bg-placeholder ${className}`}
+    >
+      <span aria-hidden className="text-[14px] font-light text-white/90 italic">
+        placeholder image
+      </span>
+    </div>
   );
 }
 

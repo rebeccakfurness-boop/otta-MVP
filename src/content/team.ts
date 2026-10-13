@@ -1,9 +1,17 @@
-// Team members shown on /about-us/our-team. Add a photo to public/team/
-// (square, about 900px) and reference it here.
+// Team members shown on /about-us/our-team, in display order. Add a photo to
+// public/team/ (square, about 900px) and reference it here.
 export type TeamMember = { name: string; role: string; photo?: string };
 
 export const team: TeamMember[] = [
   { name: "Craig Furness", role: "CEO & Director", photo: "/team/craig-furness.jpg" },
-  // TODO(stage 2): remaining team members.
-  ...Array.from({ length: 5 }, (_, i) => ({ name: `Team member ${i + 2}`, role: "Role title" })),
+  { name: "Jonathon Gilham", role: "Director" },
+  { name: "Katrina O'Connor", role: "Client Relationships Manager" },
+  { name: "Rosanna Clements", role: "Broker Market Manager" },
+  { name: "Shabnam Sarang", role: "Finance and Operations Partner" },
+  { name: "Michelle Smith", role: "Operations Manager" },
+  { name: "Jemma Lee-Matson", role: "Claims Manager" },
+  { name: "Gaby Cook", role: "People & Capability Partner" },
+  { name: "Carmel Cross", role: "Finance and Accounting Partner" },
+  { name: "Jen Whitcombe", role: "Operations" },
+  { name: "Rebecca Furness", role: "Operations" },
 ];

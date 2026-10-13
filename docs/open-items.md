@@ -11,10 +11,10 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Important information**: Fair Insurance Code, cooling off, dispute resolution, complaints and FSP number wording (`src/content/legal.ts`), plus the Fair Insurance Code and Complaints pages.
 - **About us**: the three values (Forward thinking, Re-invention, Continuous Improvement) are draft copy; "The Otta success story" needs its story.
 - **Partners**: partner names are shown as text tiles until logos are supplied.
-- **Our Team**: Craig Furness is added; the other five members, roles and photos are placeholders (`src/content/team.ts`).
+- **Our Team**: all eleven members are listed; photos needed for everyone except Craig (`src/content/team.ts`, `public/team/`).
 - **Case Studies**: copy and photos.
 - **Hero video**: `public/media/hero.mp4` is a watermarked, low-resolution iStock preview (iStock 1390591506) used as a placeholder. License the full clip (or replace it) and swap both `hero.mp4` and `hero-poster.jpg` before launch.
-- **Photography**: all images are placeholders (dark blocks on the home page, gradient blocks elsewhere).
+- **Photography**: all images are placeholders (soft teal blocks labelled "placeholder image").
 - **Home page case study**: heading, summary and copy are placeholders.
 - **Documents**: PDFs for fact sheets, policy wordings, proposal forms, renewal declarations and claim forms.
 - **Product page "Why choose Otta" text**: the paragraph under each statement is draft copy drawn from the product summaries (`statementDetails` in `products.ts`).
@@ -33,7 +33,9 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - The rate limit is per server instance and best effort; add a shared store (for example Vercel KV) if traffic grows.
 
 ## Broker portal
-- Set `SESSION_SECRET` and `NEXT_PUBLIC_PORTAL_HOST` in Vercel and add the `portal.ottainsurance.co.nz` domain (see `docs/broker-portal.md`).
+- The demo account works now using a demo-only fallback secret. Before any real broker data: set `SESSION_SECRET` and `PORTAL_DEMO_LOGIN=false` in Vercel.
+- Set `NEXT_PUBLIC_PORTAL_HOST` in Vercel and add the `portal.ottainsurance.co.nz` domain (see `docs/broker-portal.md`).
+- Explore an InsuredHQ (IHQ-API) integration: draft quotes from portal forms, live policy counts and documents. Needs IHQ API access and documentation.
 - Register the Microsoft and Google SSO apps.
 - Replace the demo brokerage, quotes and policies with Neon Postgres; upload forms and documents (Vercel Blob).
 - Decide how brokers request quotes online (currently via proposal forms).
