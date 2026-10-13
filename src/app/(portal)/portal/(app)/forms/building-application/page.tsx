@@ -37,6 +37,7 @@ async function BuildingApplication() {
         action={submitBuildingApplication}
         defaults={{ broker: broker.brokerageName, signedDate: today }}
         pdfUrl={portalPath("/forms/building-application/pdf")}
+        addressUrl={portalPath("/address-search")}
         links={{
           back: { href: portalPath("/applications"), label: "All applications" },
           applicationsBase: portalPath("/applications"),

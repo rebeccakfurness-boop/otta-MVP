@@ -3,6 +3,7 @@
 import { startTransition, useActionState, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Icon } from "@/components/portal/Icon";
 import { Card } from "@/components/portal/ui";
+import { AddressInput, AddressSearchUrl } from "./AddressInput";
 import { buildingApplication, type Field, type Section } from "@/content/building-application";
 import {
   answersFromFormData,
@@ -29,13 +30,23 @@ type Props = {
   action: (state: SubmitState, data: FormData) => Promise<SubmitState>;
   defaults: Answers;
   pdfUrl: string;
+  /** Address suggestions endpoint (see src/lib/address-route.ts). */
+  addressUrl?: string;
   /** Broker only: where to go after sending. */
   links?: { back: { href: string; label: string }; applicationsBase?: string };
   /** Client only: the brokerage that sent the link. */
   brokerageName?: string;
 };
 
-export function ApplicationForm({ audience, action, defaults, pdfUrl, links, brokerageName }: Props) {
+export function ApplicationForm(props: Props) {
+  return (
+    <AddressSearchUrl value={props.addressUrl ?? null}>
+      <Form {...props} />
+    </AddressSearchUrl>
+  );
+}
+
+function Form({ audience, action, defaults, pdfUrl, links, brokerageName }: Props) {
   const isClient = audience === "client";
   const formRef = useRef<HTMLFormElement>(null);
   const [answers, setAnswers] = useState<Answers>(defaults);
@@ -413,7 +424,9 @@ function FieldInput({ field, error, defaultValue }: { field: Field; error?: stri
       );
       break;
     default:
-      control = (
+      control = field.address ? (
+        <AddressInput {...common} postcodeField={field.address.postcodeField} placeholder={field.placeholder} className={`${inputClass} ${border(error)}`} />
+      ) : (
         <input
           {...common}
           type={field.kind}

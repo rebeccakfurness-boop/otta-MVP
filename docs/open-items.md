@@ -43,6 +43,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Building insurance application: add `BREVO_API_KEY` in Vercel and verify `no-reply@ottainsurance.co.nz` (or the `ENQUIRY_FROM_EMAIL` address) as a sender in Brevo, or emails will be rejected. Change `APPLICATION_TO_EMAIL` if applications should go somewhere other than rebecca@tai.co.nz.
 - **Demo emails**: while `PORTAL_DEMO_LOGIN` is on, every email goes to rebecca@tai.co.nz with a "[Demo for ...]" subject. Set `EMAIL_DEMO_TO=off` at go-live so client links and broker notices reach their real recipients.
 - **Save applications permanently**: add the Neon integration in Vercel (sets `DATABASE_URL`). Until then, the Applications lists reset when the server restarts.
+- **Address suggestions**: currently free OpenStreetMap data, which can miss newer addresses. For production, sign up to Addressfinder (addressfinder.nz) and set `ADDRESSFINDER_KEY` and `ADDRESSFINDER_SECRET` in Vercel.
 - Have the declaration and duty of disclosure wording on the application form reviewed for Otta (it is carried over from the TAI form).
 
 ## Admin portal

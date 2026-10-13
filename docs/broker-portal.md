@@ -33,6 +33,11 @@ online form, in Otta branding.
   Replies go to the broker who sent it.
 - **Download PDF** works at any point: a blank form prints for filling by hand,
   a partly filled one prints as is.
+- The mailing and property address fields suggest NZ addresses as you type,
+  and choosing one fills in the post code. Suggestions come from
+  `src/lib/address.ts`: Addressfinder if `ADDRESSFINDER_KEY` is set, Google
+  Places if `GOOGLE_PLACES_API_KEY` is set, otherwise free OpenStreetMap data.
+  Free typing (for example a PO Box) always works.
 - Every application is saved under **Applications** in the portal (and in the
   admin portal), with its answers and a PDF download.
 

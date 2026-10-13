@@ -17,6 +17,8 @@ type Base = {
   /** Columns out of 6 on wide screens. Defaults to the full row. */
   span?: 2 | 3 | 4 | 6;
   placeholder?: string;
+  /** Suggest NZ addresses as the person types (and fill in a post code field). */
+  address?: { postcodeField?: string };
 };
 
 export type Field =
@@ -85,7 +87,14 @@ export const buildingApplication = {
           fields: [
             { kind: "text", name: "insuredName", label: "Insured's name", span: 4 },
             { kind: "date", name: "dateOfBirth", label: "Date of birth", span: 2 },
-            { kind: "text", name: "mailingAddress", label: "Mailing address", span: 4 },
+            {
+              kind: "text",
+              name: "mailingAddress",
+              label: "Mailing address",
+              placeholder: "Start typing an address",
+              span: 4,
+              address: { postcodeField: "postCode" },
+            },
             { kind: "text", name: "postCode", label: "Post code", span: 2 },
             { kind: "tel", name: "phone", label: "Phone", span: 2 },
             { kind: "email", name: "email", label: "Email", span: 4 },
@@ -111,7 +120,7 @@ export const buildingApplication = {
           title: "Risk Details",
           fields: [
             { kind: "date", name: "inceptionDate", label: "Policy inception date", span: 2 },
-            { kind: "text", name: "propertyAddress", label: "Property address" },
+            { kind: "text", name: "propertyAddress", label: "Property address", placeholder: "Start typing the property address", address: {} },
             {
               kind: "choice",
               name: "propertyType",

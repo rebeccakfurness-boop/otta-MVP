@@ -65,6 +65,7 @@ async function ClientApplication({ params }: { params: PageProps<"/apply/buildin
         }}
         pdfUrl={`/apply/building/${encodeURIComponent(token)}/pdf`}
         brokerageName={link.brokerageName}
+        addressUrl="/address-search"
       />
     </>
   );
