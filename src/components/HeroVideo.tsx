@@ -1,5 +1,5 @@
 // Full-bleed background video. public/media/hero.mp4 is currently a
-// watermarked iStock preview (iStock 1057485042) used as a placeholder only;
+// watermarked iStock preview (iStock 1390591506) used as a placeholder only;
 // replace it and hero-poster.jpg with licensed footage before launch.
 export function HeroVideo({
   src = "/media/hero.mp4",
