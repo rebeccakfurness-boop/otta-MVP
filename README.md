@@ -1,6 +1,6 @@
 # Otta website
 
-Public website (and future broker portal) for **Otta – Insurance that works**.
+Public website (and future broker portal) for **Otta: Insurance that works**.
 
 Built on the stack in the Otta technology proposal: Next.js + TypeScript, Tailwind CSS,
 GitHub, Vercel, with Zod for form validation and Brevo for email. Neon Postgres,
@@ -10,7 +10,7 @@ iron-session, bcryptjs and Vercel Blob are planned for the broker portal.
 
 ```bash
 npm install
-cp .env.example .env.local   # optional – the site runs without any env vars
+cp .env.example .env.local   # optional; the site runs without any env vars
 npm run dev                  # http://localhost:3000
 ```
 
@@ -29,17 +29,17 @@ Before pushing: `npm run check` (lint + typecheck). CI runs lint, typecheck and 
 | Shared UI (header, footer, buttons…) | `src/components/` |
 | Contact form (Zod schema, server action, email) | `src/lib/schemas.ts`, `src/app/contact/`, `src/lib/email.ts` |
 
-To change copy, edit the files in `src/content/` – every page that uses it updates.
+To change copy, edit the files in `src/content/` and every page that uses it updates.
 
 ## Site map
 
 - `/` Home
-- `/about-us` – `/our-team`, `/partners`, `/case-studies`
-- `/solutions` – one page per product at `/solutions/<slug>` (generated from `products.ts`)
-- `/resources` – `/product-fact-sheets`, `/policy-wording`, `/proposal-forms`, `/renewal-declarations`, `/claim-forms`
+- `/about-us`: `/our-team`, `/partners`, `/case-studies`
+- `/solutions`: one page per product at `/solutions/<slug>` (generated from `products.ts`)
+- `/resources`: `/product-fact-sheets`, `/policy-wording`, `/proposal-forms`, `/renewal-declarations`, `/claim-forms`
 - `/claims`
 - `/contact` (accepts `?product=<slug>` to pre-fill the form, used by "Apply now")
-- `/portal/login` – Account Login placeholder for the broker portal
+- `/portal/login`: Account Login placeholder for the broker portal
 - `/fair-insurance-code`, `/complaints`
 
 ## Deployment

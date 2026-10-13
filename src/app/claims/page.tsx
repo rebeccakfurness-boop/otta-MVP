@@ -36,7 +36,7 @@ export default function ClaimsPage() {
         </div>
         {travel?.claim.emergencyPhone && (
           <div className="mt-8 rounded-2xl border-l-4 border-sunset bg-cloud-50 p-8">
-            <p className="text-sm font-bold uppercase tracking-wider text-sunset">Corporate Travel – in an emergency call</p>
+            <p className="text-sm font-bold uppercase tracking-wider text-sunset">Corporate Travel: in an emergency call</p>
             <p className="mt-1 text-3xl font-bold">{travel.claim.emergencyPhone}</p>
           </div>
         )}

@@ -8,7 +8,7 @@ import { getProduct } from "@/content/products";
 const columns = [
   {
     title: "Accident and Personal Insurance",
-    body: "Protection for your people at home, at work and on the road. We have appetite for the unusual and high-risk – including pilots, professional athletes and forestry contractors.",
+    body: "Protection for your people at home, at work and on the road. We have appetite for the unusual and high-risk, including pilots, professional athletes and forestry contractors.",
     products: ["corporate-travel-insurance", "personal-accident-insurance"],
   },
   {
@@ -18,7 +18,7 @@ const columns = [
   },
   {
     title: "Liability Insurance",
-    body: "Professional Indemnity, Public, Statutory and Employers Liability. Your reputation is your most valuable asset – we help safeguard it.",
+    body: "Professional Indemnity, Public, Statutory and Employers Liability. Your reputation is your most valuable asset, and we help safeguard it.",
     products: ["liability-insurance"],
   },
   {
@@ -79,7 +79,7 @@ export default function Home() {
             <div className="mx-auto mt-7 h-[2px] w-[90px] bg-site-teal" />
             <p className="mx-auto mt-10 max-w-[880px] text-[16px] leading-[1.75] text-body">
               Otta brings simple insurance solutions to complex problems. We have a broad appetite
-              to cover all risks – whether mainstream or complex – with quick turnaround and direct
+              to cover all risks, whether mainstream or complex, with quick turnaround and direct
               access to the underwriter. Every policy offers comprehensive coverage backed by
               global strength and certainty delivered through Lloyd&apos;s of London.
             </p>
@@ -134,7 +134,7 @@ export default function Home() {
           <div className="mx-auto mt-[100px] grid max-w-[1000px] items-center gap-9 md:grid-cols-2">
             <div>
               <h3 className="text-[24px] leading-[1.17] font-semibold tracking-normal text-white">
-                Case study summary to come – the client&apos;s challenge in a sentence.
+                Case study summary to come: the client&apos;s challenge in a sentence.
               </h3>
               <p className="mt-11 text-[16px] leading-[1.75] text-white">
                 Case study copy to come. This section will introduce the client, the risk they

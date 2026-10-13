@@ -11,7 +11,7 @@ export default function ContactPage() {
   return (
     <>
       <PageHeader eyebrow="Contact us" title="Talk directly to us">
-        Quick turnaround and access to the underwriter – if you&apos;re not sure whether we can
+        Quick turnaround and access to the underwriter. If you&apos;re not sure whether we can
         help, get in touch.
       </PageHeader>
       <Section>

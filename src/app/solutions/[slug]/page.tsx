@@ -213,7 +213,7 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
                       {product.claim.showContactOptions && (
                         <ul className="list-disc space-y-1 pl-5">
                           <li>
-                            Complete the claim form –{" "}
+                            Complete the claim form:{" "}
                             <Link href="/resources/claim-forms" className="text-charcoal underline hover:text-site-teal">
                               click here
                             </Link>

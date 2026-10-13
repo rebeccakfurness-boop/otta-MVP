@@ -1,4 +1,4 @@
-// Product copy for the Our Solutions pages. Source: "Product Summaries – Website".
+// Product copy for the Our Solutions pages. Source: "Product Summaries, Website".
 // "Hummi" and "TAI" in the source copy have been replaced with "Otta".
 
 export type Product = {
@@ -52,19 +52,19 @@ export const products: Product[] = [
       { label: "Product", value: "Corporate Travel" },
       {
         label: "Underwriter",
-        value: "Certain Underwriters at Lloyd's of London. Lead syndicate – Canopius 4444",
+        value: "Certain Underwriters at Lloyd's of London. Lead syndicate: Canopius 4444",
       },
       { label: "Target Market", value: "Commercial entities" },
       { label: "Policy Term", value: "Annual" },
     ],
     statements: [
-      "Otta has a broad appetite to cover all risks – whether mainstream or complex",
-      "Quick turnaround and access to the underwriter – talk directly to us to help us make the complex simple",
+      "Otta has a broad appetite to cover all risks, whether mainstream or complex",
+      "Quick turnaround and access to the underwriter. Talk directly to us to help us make the complex simple",
       "Comprehensive coverage backed by global strength and certainty delivered through Lloyd's of London",
     ],
     statementDetails: [
-      "Medical, baggage, cancellation and curtailment are covered as standard, and we have appetite for the unusual and high-risk \u2013 including specialist cover for athletes and sportspeople.",
-      "Talk directly to the underwriter who can make the decision. Most risks can be underwritten and included \u2013 if you're not sure, just ask.",
+      "Medical, baggage, cancellation and curtailment are covered as standard, and we have appetite for the unusual and high-risk, including specialist cover for athletes and sportspeople.",
+      "Talk directly to the underwriter who can make the decision. Most risks can be underwritten and included. If you're not sure, just ask.",
       "Your cover is placed with Certain Underwriters at Lloyd's of London, with Canopius 4444 as lead syndicate.",
     ],
     coverageTagline: "Smart organisations don't leave home without Otta onboard.",
@@ -74,13 +74,13 @@ export const products: Product[] = [
         items: [
           "Medical, baggage, cancellation and curtailment",
           "Pre-existing conditions covered unless travelling against medical advice",
-          "Appetite for the unusual and high-risk – talk to us if you're not sure",
+          "Appetite for the unusual and high-risk. Talk to us if you're not sure",
         ],
       },
       { title: "Age limits", items: ["Up to 80", "Individual consideration above age 80"] },
       {
         title: "Underwriting approach",
-        items: ["Appetite for all risks – genuine underwriting based on the data and facts"],
+        items: ["Appetite for all risks, with genuine underwriting based on the data and facts"],
       },
       {
         title: "Optional extras",
@@ -98,7 +98,7 @@ export const products: Product[] = [
         title: "Other",
         items: [
           "Travel to sanctioned countries and territories is excluded.",
-          "Most other risks can be underwritten and included – if you're not sure, talk directly to the underwriter who can make the decision",
+          "Most other risks can be underwritten and included. If you're not sure, talk directly to the underwriter who can make the decision",
         ],
       },
     ],
@@ -129,11 +129,11 @@ export const products: Product[] = [
       {
         label: "Product",
         value:
-          "Landlord Insurance – cover for landlords protecting them from losses associated with the tenancy of their property",
+          "Landlord Insurance: cover for landlords protecting them from losses associated with the tenancy of their property",
       },
       {
         label: "Underwriter",
-        value: "Certain Underwriters at Lloyd's of London – lead syndicate Beazley 2623",
+        value: "Certain Underwriters at Lloyd's of London, lead syndicate Beazley 2623",
       },
       { label: "Target Market", value: "Commercial entities" },
       { label: "Policy Term", value: "Annual" },
@@ -211,7 +211,7 @@ export const products: Product[] = [
     overview:
       "Otta's Rental Property insurance is specifically designed to give landlords peace of mind. It includes the standard covers such as for the building and natural disasters, and adds in additional cover specific to rental properties. These include intentional damage and methamphetamine contamination.",
     intro: [
-      "Rental housing plays a prominent role in the New Zealand housing landscape. Approximately one in three Kiwi households—around 33%—are renters, marking a notable increase over recent decades and highlighting the growing importance of effective landlord insurance strategies. Given this substantial portion of the population relies on renting, landlords face unique risks, from natural disasters and tenant-related incidents to potential gaps in coverage that traditional homeowner insurance simply doesn't address.",
+      "Rental housing plays a prominent role in the New Zealand housing landscape. Approximately one in three Kiwi households (around 33%) are renters, marking a notable increase over recent decades and highlighting the growing importance of effective landlord insurance strategies. Given this substantial portion of the population relies on renting, landlords face unique risks, from natural disasters and tenant-related incidents to potential gaps in coverage that traditional homeowner insurance simply doesn't address.",
       "Otta's Rental Property insurance is specifically designed to give landlords peace of mind. It includes the standard covers such as for the building and natural disasters, and adds in additional cover specific to rental properties. These include intentional damage and methamphetamine contamination.",
       "The policy can be paired with a comprehensive Landlord policy providing even more protection from tenant related risks such as absconding tenants and pet damage.",
     ],
@@ -219,7 +219,7 @@ export const products: Product[] = [
       { label: "Product", value: "Property cover for residential rental properties" },
       {
         label: "Underwriter",
-        value: "Certain Underwriters at Lloyd's of London – lead syndicate Beazley 2623",
+        value: "Certain Underwriters at Lloyd's of London, lead syndicate Beazley 2623",
       },
       { label: "Target Market", value: "Residential rental properties" },
       { label: "Policy Term", value: "Annual" },
@@ -297,7 +297,7 @@ export const products: Product[] = [
       },
       {
         label: "Underwriter",
-        value: "Certain Underwriters at Lloyd's of London. Lead syndicate – Beazley 2623",
+        value: "Certain Underwriters at Lloyd's of London. Lead syndicate: Beazley 2623",
       },
       {
         label: "Target Market",
@@ -381,19 +381,19 @@ export const products: Product[] = [
       { label: "Product", value: "Personal Accident and Illness" },
       {
         label: "Underwriter",
-        value: "Certain Underwriters at Lloyd's of London – lead syndicate Canopius 4444",
+        value: "Certain Underwriters at Lloyd's of London, lead syndicate Canopius 4444",
       },
       { label: "Target Market", value: "Sole traders and commercial entities" },
       { label: "Policy Term", value: "Annual" },
     ],
     statements: [
       "Personal accident and illness insurance provides a financial lifeline if injury or illness prevents you from working, ensuring you can keep meeting everyday expenses",
-      "ACC in New Zealand covers accidents, but not illness—this insurance fills the gap, protecting your income when health challenges strike",
+      "ACC in New Zealand covers accidents, but not illness. This insurance fills the gap, protecting your income when health challenges strike",
       "With cover in place, you can focus on recovery, not financial stress",
     ],
     statementDetails: [
       "Weekly benefits of up to 75% of income for up to 2 years if accident or illness stops you working, plus lump sum payments for serious injury or death.",
-      "About a third of medical issues that prevent people from working are accident related \u2013 the rest are illness, which ACC does not cover.",
+      "About a third of medical issues that prevent people from working are accident related. The rest are illness, which ACC does not cover.",
       "Agreed value cover with a broad appetite for all occupations, including pilots, forestry workers, miners and athletes.",
     ],
     coverageTagline: "Don't leave home without Otta onboard.",
@@ -463,7 +463,7 @@ export const products: Product[] = [
       },
       {
         label: "Underwriter",
-        value: "Certain Underwriters at Lloyd's of London – lead syndicate MS Amlin",
+        value: "Certain Underwriters at Lloyd's of London, lead syndicate MS Amlin",
       },
       { label: "Target Market", value: "Commercial entities" },
       { label: "Policy Term", value: "Annual" },
@@ -471,7 +471,7 @@ export const products: Product[] = [
     statements: [
       "Professional indemnity insurance protects New Zealand businesses from the financial fallout of claims alleging professional mistakes, negligence, or breaches of duty.",
       "Your reputation is your most valuable asset. Professional indemnity insurance helps safeguard it by covering legal defence costs and settlement expenses.",
-      "Professional indemnity insurance provides certainty in an uncertain world—so you can concentrate on growth, not risk.",
+      "Professional indemnity insurance provides certainty in an uncertain world, so you can concentrate on growth, not risk.",
     ],
     statementDetails: [
       "Cover for legal liability arising out of professional mistakes, negligence or breach of duty, including investigations by regulators or industry bodies.",
@@ -522,7 +522,7 @@ export const productCategories = [
     key: "accident-travel",
     title: "Accident and Travel Insurance",
     blurb:
-      "Protection for your people – at home, at work and on the road – with appetite for the unusual and high-risk.",
+      "Protection for your people at home, at work and on the road, with appetite for the unusual and high-risk.",
   },
   {
     key: "property",

@@ -30,7 +30,7 @@ export async function submitContact(_prev: ContactState, formData: FormData): Pr
     await sendEmail({
       to: env.enquiryToEmail,
       replyTo: d.email,
-      subject: `Website enquiry: ${d.enquiryType}${d.product ? ` – ${d.product}` : ""}`,
+      subject: `Website enquiry: ${d.enquiryType}${d.product ? `: ${d.product}` : ""}`,
       text: [
         `Name: ${d.name}`,
         `Email: ${d.email}`,
@@ -51,5 +51,5 @@ export async function submitContact(_prev: ContactState, formData: FormData): Pr
     };
   }
 
-  return { status: "success", message: "Thanks – we've received your enquiry and will be in touch shortly." };
+  return { status: "success", message: "Thanks, we've received your enquiry and will be in touch shortly." };
 }

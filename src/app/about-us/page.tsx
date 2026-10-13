@@ -35,7 +35,7 @@ export default function AboutPage() {
             Otta is a New Zealand insurer bringing specialist underwriting, backed by Lloyd&apos;s
             of London, to businesses, landlords and community housing providers. We provide
             liability, accident, travel and property cover through brokers, and landlord insurance
-            through approved property managers – with quick turnaround and direct access to the
+            through approved property managers, with quick turnaround and direct access to the
             underwriter.
           </p>
           <div className="mt-10">
@@ -72,7 +72,7 @@ export default function AboutPage() {
               Making the complex simple for New Zealand brokers, landlords and businesses.
             </p>
             <p className="mt-12 text-[16px] leading-[1.75] text-body">
-              The Otta story – copy to come. This section will tell how Otta began, the people
+              The Otta story: copy to come. This section will tell how Otta began, the people
               behind it and how we work with our partners to place cover that is clear, fair and
               built for the real world.
             </p>
