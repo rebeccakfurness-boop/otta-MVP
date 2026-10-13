@@ -44,15 +44,15 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-white text-ink antialiased;
+    @apply bg-white text-charcoal antialiased;
   }
   h1,
   h2,
   h3,
   h4 {
-    @apply font-heading font-bold tracking-tight text-ink;
+    @apply font-heading font-bold tracking-tight text-charcoal;
   }
   ::selection {
-    @apply bg-ocean-200;
+    @apply bg-site-teal text-white;
   }
 }

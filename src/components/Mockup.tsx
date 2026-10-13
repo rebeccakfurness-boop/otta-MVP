@@ -74,3 +74,41 @@ export function CentredHeading({ children, className = "" }: { children: ReactNo
 export function Container({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={`mx-auto max-w-[1366px] px-5 md:px-4 ${className}`}>{children}</div>;
 }
+
+/** Centred teal page heading with a thin rule and intro text (Contact, Partners, placeholders). */
+export function PageIntro({
+  title,
+  children,
+  as: Heading = "h1",
+}: {
+  title: string;
+  children?: ReactNode;
+  as?: "h1" | "h2";
+}) {
+  return (
+    <div className="text-center">
+      <Heading className="font-heading text-[30px] font-semibold tracking-normal text-site-teal">{title}</Heading>
+      <div className="mx-auto mt-4 h-px w-[226px] bg-[#eaeaea]" />
+      {children && (
+        <div className="mx-auto mt-7 max-w-[890px] text-[17px] leading-[1.65] text-body">{children}</div>
+      )}
+    </div>
+  );
+}
+
+/** Grey rounded panel used for secondary content blocks. */
+export function GreyBlock({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`rounded-sm bg-footer p-9 ${className}`}>{children}</div>;
+}
+
+/** Grey square button used for downloads ("Travel Claim Form"). */
+export function GreyButton({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center px-6 py-[13px] text-[12px] font-medium tracking-[0.12em] text-white uppercase transition-colors bg-[#777] hover:bg-charcoal"
+    >
+      {children}
+    </Link>
+  );
+}

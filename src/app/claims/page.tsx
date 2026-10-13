@@ -1,61 +1,77 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ButtonLink } from "@/components/Button";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
-import { products } from "@/content/products";
+import { Container, GreyBlock, GreyButton, PageIntro } from "@/components/Mockup";
+import { getProduct, products } from "@/content/products";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = { title: "Claims" };
 
 export default function ClaimsPage() {
-  const travel = products.find((p) => p.slug === "corporate-travel-insurance");
+  const emergencyPhone = getProduct("corporate-travel-insurance")?.claim.emergencyPhone;
   return (
-    <>
-      <PageHeader eyebrow="Claims" title="Making a claim">
-        For non-emergency claims please contact your broker to discuss the process. You can also
-        contact us directly.
-      </PageHeader>
-      <Section>
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl bg-ocean-50 p-8">
-            <h2 className="text-xl">Complete a claim form</h2>
-            <p className="mt-3 text-muted">Download the claim form for your product and send it to us with supporting documents.</p>
-            <ButtonLink href="/resources/claim-forms" className="mt-6">Claim forms</ButtonLink>
+    <section className="pt-[118px] pb-[120px]">
+      <Container>
+        <PageIntro title="How to make an insurance claim">
+          <p>
+            For non-emergency claims please contact your broker to discuss the process, or get in
+            touch with us directly using the details below. Landlord Insurance claims are lodged by
+            your property manager, who will work with us throughout the process.
+          </p>
+        </PageIntro>
+
+        <div className="mt-[72px] grid gap-9 lg:grid-cols-3">
+          {/* Emergency */}
+          <div className="flex flex-col items-center justify-center rounded-sm bg-site-teal px-9 py-16 text-center text-white">
+            <h2 className="text-[28px] font-semibold tracking-normal text-white">In an emergency</h2>
+            <p className="mt-2 text-[14px] text-white/85">Corporate Travel Insurance</p>
+            <p className="mt-6 text-[16px]">In an emergency call</p>
+            {emergencyPhone && (
+              <a
+                href={`tel:${emergencyPhone.replace(/\s/g, "")}`}
+                className="mt-1 font-heading text-[30px] font-bold text-white hover:underline"
+              >
+                {emergencyPhone}
+              </a>
+            )}
           </div>
-          <div className="rounded-2xl bg-ocean-50 p-8">
-            <h2 className="text-xl">Call us</h2>
-            <p className="mt-3 text-2xl font-bold text-ocean-700">{site.claimsPhone}</p>
-          </div>
-          <div className="rounded-2xl bg-ocean-50 p-8">
-            <h2 className="text-xl">Email us</h2>
-            <a href={`mailto:${site.claimsEmail}`} className="mt-3 block text-xl font-bold text-ocean-700 underline">
-              {site.claimsEmail}
-            </a>
-          </div>
-        </div>
-        {travel?.claim.emergencyPhone && (
-          <div className="mt-8 rounded-2xl border-l-4 border-sunset bg-cloud-50 p-8">
-            <p className="text-sm font-bold uppercase tracking-wider text-sunset">Corporate Travel: in an emergency call</p>
-            <p className="mt-1 text-3xl font-bold">{travel.claim.emergencyPhone}</p>
-          </div>
-        )}
-      </Section>
-      <Section tone="cloud">
-        <h2 className="text-3xl">Claims by product</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {products.map((p) => (
-            <div key={p.slug} className="rounded-2xl bg-white p-8 shadow-sm">
-              <h3 className="text-xl">
-                <Link href={`/solutions/${p.slug}`} className="hover:text-ocean-700">{p.name}</Link>
-              </h3>
-              {p.claim.paragraphs.map((para) => (
-                <p key={para.slice(0, 32)} className="mt-3 text-muted">{para}</p>
-              ))}
+
+          {/* Non emergency */}
+          <GreyBlock>
+            <h2 className="text-[20px] font-semibold tracking-normal text-charcoal">Non emergency claims</h2>
+            <div className="mt-5 space-y-4 text-[15px] leading-[1.75] text-body">
+              <p>
+                For non-emergency claims please contact your broker to discuss the process. You will
+                need to complete a claim form and provide the relevant supporting documents such as
+                receipts, medical reports or police reports which are outlined in the claim form.
+              </p>
+              <p>
+                Send your completed claim form along with the supporting documents to{" "}
+                <a href={`mailto:${site.claimsEmail}`} className="text-charcoal hover:text-site-teal">
+                  {site.claimsEmail}
+                </a>{" "}
+                or to your broker to lodge on your behalf. You can also call us on {site.claimsPhone}.
+              </p>
             </div>
-          ))}
+          </GreyBlock>
+
+          {/* Claim forms */}
+          <GreyBlock>
+            <h2 className="text-[20px] font-semibold tracking-normal text-charcoal">Claim Forms</h2>
+            <p className="mt-5 text-[15px] leading-[1.75] text-body">
+              Download the claim form for your product and send it to us with your supporting
+              documents.
+            </p>
+            <ul className="mt-6 flex flex-col items-start gap-3">
+              {products.map((p) => (
+                <li key={p.slug}>
+                  <GreyButton href={`/resources/claim-forms#${p.slug}`}>
+                    {p.name.replace(" Insurance", "")} Claim Form
+                  </GreyButton>
+                </li>
+              ))}
+            </ul>
+          </GreyBlock>
         </div>
-      </Section>
-    </>
+      </Container>
+    </section>
   );
 }

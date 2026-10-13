@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
+import { Container, PageIntro } from "@/components/Mockup";
 import { products } from "@/content/products";
 import { resourcesNav } from "@/content/site";
 
@@ -22,31 +22,34 @@ export default async function ResourceTypePage({ params }: PageProps<"/resources
   if (!entry) notFound();
 
   return (
-    <>
-      <PageHeader eyebrow="Resources" title={entry.label}>
-        Download the {entry.label.toLowerCase()} for each Otta product.
-      </PageHeader>
-      <Section>
+    <section className="pt-[118px] pb-[120px]">
+      <Container>
+        <PageIntro title={entry.label}>
+          <p>Download the {entry.label.toLowerCase()} for each Otta product. Documents to come.</p>
+        </PageIntro>
         {/* TODO(stage 2): link to real PDFs (Vercel Blob) once documents are supplied. */}
-        <ul className="divide-y divide-cloud overflow-hidden rounded-2xl border border-cloud">
+        <ul className="mx-auto mt-[72px] max-w-[1000px] space-y-4">
           {products.map((p) => (
-            <li key={p.slug} id={p.slug} className="flex scroll-mt-28 flex-col gap-3 bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-4">
-                <span className="flex h-12 w-10 items-center justify-center rounded-md bg-ocean-100 text-[10px] font-bold text-ocean-800">
-                  PDF
-                </span>
-                <div>
-                  <p className="font-bold">{p.name}</p>
-                  <p className="text-sm text-muted">{entry.label}</p>
-                </div>
+            <li
+              key={p.slug}
+              id={p.slug}
+              className="flex scroll-mt-28 flex-col gap-4 rounded-sm bg-footer px-8 py-6 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <p className="font-heading text-[20px] font-semibold text-charcoal">
+                  <Link href={`/solutions/${p.slug}`} className="hover:text-site-teal">
+                    {p.name}
+                  </Link>
+                </p>
+                <p className="mt-1 text-[14px] text-body">{entry.label}</p>
               </div>
-              <span className="self-start rounded-full bg-cloud px-4 py-2 text-sm font-semibold text-muted sm:self-auto">
+              <span className="self-start bg-[#c9c9c9] px-6 py-[13px] text-[12px] font-medium tracking-[0.12em] text-white uppercase sm:self-auto">
                 Coming soon
               </span>
             </li>
           ))}
         </ul>
-      </Section>
-    </>
+      </Container>
+    </section>
   );
 }

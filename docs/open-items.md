@@ -5,6 +5,8 @@ Placeholders in the prototype that need real content or decisions. Search the co
 
 ## Content (Stage 2)
 - **Claims phone number**: source copy says "0800 xxx xxxx" (`src/content/site.ts`).
+- **Claims page**: the intro paragraph and claim forms blurb are draft copy; the original mockup used admin@tai.co.nz, now the Otta claims address.
+- **Contact page**: intro paragraph drawn from the product copy.
 - **Domain and email addresses**: assumed `otta.co.nz`, `hello@otta.co.nz`, `claims@otta.co.nz`.
 - **Important information**: Fair Insurance Code, cooling off, dispute resolution, complaints and FSP number wording (`src/content/legal.ts`), plus the Fair Insurance Code and Complaints pages.
 - **About us**: the three values (Forward thinking, Re-invention, Continuous Improvement) are draft copy; "The Otta success story" needs its story.

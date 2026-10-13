@@ -1,31 +1,36 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
+import { Container, GreyBlock, GreyButton, PageIntro } from "@/components/Mockup";
 import { resourcesNav } from "@/content/site";
 
 export const metadata: Metadata = { title: "Resources" };
 
+const blurbs: Record<string, string> = {
+  "Product Fact Sheets": "A one-page summary of the cover, limits and key exclusions for each product.",
+  "Policy Wording": "The full policy wording for each Otta product.",
+  "Proposal Forms": "Forms to apply for cover, completed by you or your broker.",
+  "Renewal Declarations": "Declarations to complete when your policy comes up for renewal.",
+  "Claim Forms": "Forms to lodge a claim, along with the supporting documents we need.",
+};
+
 export default function ResourcesPage() {
   return (
-    <>
-      <PageHeader eyebrow="Resources" title="Documents and forms">
-        Fact sheets, policy wordings and forms for every Otta product.
-      </PageHeader>
-      <Section>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <section className="pt-[118px] pb-[120px]">
+      <Container>
+        <PageIntro title="Resources">
+          <p>Fact sheets, policy wordings and forms for every Otta product.</p>
+        </PageIntro>
+        <div className="mt-[72px] grid gap-9 md:grid-cols-2 lg:grid-cols-3">
           {resourcesNav.map((r) => (
-            <Link
-              key={r.href}
-              href={r.href}
-              className="group flex items-center justify-between rounded-2xl border border-cloud bg-white p-7 shadow-sm transition hover:border-ocean hover:shadow-md"
-            >
-              <span className="text-xl font-bold group-hover:text-ocean-700">{r.label}</span>
-              <span aria-hidden className="text-ocean-700 transition-transform group-hover:translate-x-1">→</span>
-            </Link>
+            <GreyBlock key={r.href} className="flex flex-col items-start">
+              <h2 className="text-[20px] font-semibold tracking-normal text-charcoal">{r.label}</h2>
+              <p className="mt-4 flex-1 text-[15px] leading-[1.75] text-body">{blurbs[r.label]}</p>
+              <div className="mt-6">
+                <GreyButton href={r.href}>View {r.label.toLowerCase()}</GreyButton>
+              </div>
+            </GreyBlock>
           ))}
         </div>
-      </Section>
-    </>
+      </Container>
+    </section>
   );
 }

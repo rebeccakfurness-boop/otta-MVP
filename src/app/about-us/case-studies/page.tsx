@@ -1,29 +1,44 @@
 import type { Metadata } from "next";
-import { ImagePlaceholder } from "@/components/ImagePlaceholder";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
+import { Container, DarkPlaceholder, PageIntro, SquareButton } from "@/components/Mockup";
 
 export const metadata: Metadata = { title: "Case Studies" };
 
+// TODO(stage 2): real case studies.
 export default function CaseStudiesPage() {
   return (
     <>
-      <PageHeader eyebrow="About us" title="Case Studies">
-        How Otta has helped clients place complex and unusual risks. Case studies to come.
-      </PageHeader>
-      <Section>
-        <div className="grid gap-8 md:grid-cols-3">
-          {[1, 2, 3].map((n) => (
-            <article key={n} className="overflow-hidden rounded-2xl border border-cloud bg-white shadow-sm">
-              <ImagePlaceholder label="Case study" className="aspect-[3/2]" tone={n === 2 ? "deep" : "ocean"} />
-              <div className="p-6">
-                <h2 className="text-xl">Client heading placeholder case study</h2>
-                <p className="mt-3 text-muted">Summary of the client&apos;s challenge and the outcome.</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </Section>
+      <section className="pt-[118px] pb-[110px]">
+        <Container>
+          <PageIntro title="Case Studies">
+            <p>
+              How Otta has helped clients place complex and unusual risks, with quick turnaround and
+              direct access to the underwriter. Case studies to come.
+            </p>
+          </PageIntro>
+          <div className="mt-[72px] grid gap-x-9 gap-y-16 md:grid-cols-3">
+            {[1, 2, 3].map((n) => (
+              <article key={n}>
+                <DarkPlaceholder label={`Case study ${n}`} className="aspect-[3/2]" />
+                <h2 className="mt-11 text-[25px] leading-[1.15] font-semibold tracking-normal text-charcoal">
+                  Client heading placeholder case study
+                </h2>
+                <p className="mt-6 text-[16px] leading-[1.75] text-body">
+                  A short summary of the client&apos;s challenge and how Otta made the complex simple.
+                </p>
+              </article>
+            ))}
+          </div>
+        </Container>
+      </section>
+      <section className="bg-site-teal py-[84px] text-center">
+        <Container>
+          <h2 className="text-[30px] font-bold tracking-normal text-white">Have a complex risk to place?</h2>
+          <p className="mt-6 text-[18px] text-white">Talk directly to the underwriter who can make the decision.</p>
+          <div className="mt-10">
+            <SquareButton href="/contact">Contact us</SquareButton>
+          </div>
+        </Container>
+      </section>
     </>
   );
 }

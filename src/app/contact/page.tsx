@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
+import { Container, GreyBlock, PageIntro } from "@/components/Mockup";
 import { site } from "@/content/site";
 import { ContactForm } from "./ContactForm";
 
@@ -9,42 +8,42 @@ export const metadata: Metadata = { title: "Contact Us" };
 
 export default function ContactPage() {
   return (
-    <>
-      <PageHeader eyebrow="Contact us" title="Talk directly to us">
-        Quick turnaround and access to the underwriter. If you&apos;re not sure whether we can
-        help, get in touch.
-      </PageHeader>
-      <Section>
-        <div className="grid gap-12 md:grid-cols-12">
-          <div className="md:col-span-8">
+    <section className="pt-[118px] pb-[120px]">
+      <Container>
+        <PageIntro title="Contact Otta">
+          <p>
+            Quick turnaround and access to the underwriter. Talk directly to us to help us make the
+            complex simple. If you&apos;re not sure whether we can help, get in touch.
+          </p>
+        </PageIntro>
+
+        <div className="mx-auto mt-[72px] grid max-w-[1100px] gap-9 lg:grid-cols-3">
+          <div className="lg:col-span-2">
             <Suspense>
               <ContactForm />
             </Suspense>
           </div>
-          <aside className="space-y-8 md:col-span-4">
-            <div>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-ocean-700">Phone</h2>
-              <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="mt-2 block text-2xl font-bold">
+          <GreyBlock className="self-start">
+            <h2 className="text-[20px] font-semibold tracking-normal text-charcoal">Our Address</h2>
+            <address className="mt-4 text-[15px] leading-[1.75] text-body not-italic">
+              {site.address.map((line) => (
+                <div key={line}>{line}</div>
+              ))}
+            </address>
+            <p className="mt-5 text-[15px] leading-[1.75] text-body">
+              T:{" "}
+              <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="text-charcoal hover:text-site-teal">
                 {site.phone}
               </a>
-            </div>
-            <div>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-ocean-700">Email</h2>
-              <a href={`mailto:${site.email}`} className="mt-2 block text-lg font-semibold underline">
+              <br />
+              E:{" "}
+              <a href={`mailto:${site.email}`} className="text-charcoal hover:text-site-teal">
                 {site.email}
               </a>
-            </div>
-            <div>
-              <h2 className="text-sm font-bold uppercase tracking-widest text-ocean-700">Our address</h2>
-              <address className="mt-2 not-italic leading-relaxed text-muted">
-                {site.address.map((l) => (
-                  <div key={l}>{l}</div>
-                ))}
-              </address>
-            </div>
-          </aside>
+            </p>
+          </GreyBlock>
         </div>
-      </Section>
-    </>
+      </Container>
+    </section>
   );
 }

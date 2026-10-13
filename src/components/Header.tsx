@@ -99,7 +99,7 @@ export function Header() {
 
         <button
           type="button"
-          className="ml-auto rounded-md p-2 text-ink sm:ml-0 lg:hidden"
+          className="ml-auto p-2 text-charcoal sm:ml-0 lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}
@@ -118,7 +118,7 @@ export function Header() {
             {mainNav.map((item) => (
               <li key={item.href} className="border-b border-cloud last:border-0">
                 <div className="flex items-center">
-                  <Link href={item.href} className="flex-1 py-3 font-semibold">
+                  <Link href={item.href} className="flex-1 py-3 font-medium tracking-[0.03em] text-charcoal">
                     {item.label}
                   </Link>
                   {item.children && (
@@ -137,7 +137,7 @@ export function Header() {
                   <ul className="pb-3 pl-4">
                     {item.children.map((child) => (
                       <li key={child.href}>
-                        <Link href={child.href} className="block py-2 text-sm text-muted">
+                        <Link href={child.href} className="block py-2 text-sm text-body">
                           {child.label}
                         </Link>
                       </li>

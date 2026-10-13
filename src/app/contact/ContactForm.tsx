@@ -9,7 +9,7 @@ import { submitContact, type ContactState } from "./actions";
 const initial: ContactState = { status: "idle" };
 
 const inputClass =
-  "mt-1.5 block w-full rounded-lg border border-cloud bg-white px-4 py-3 text-ink shadow-sm outline-none transition focus:border-ocean-600 focus:ring-2 focus:ring-ocean-200 aria-[invalid=true]:border-red-500";
+  "mt-2 block w-full border border-[#e0e0e0] bg-white px-4 py-3 text-[15px] text-charcoal outline-none transition focus:border-site-teal aria-[invalid=true]:border-red-500";
 
 export function ContactForm() {
   const params = useSearchParams();
@@ -19,9 +19,9 @@ export function ContactForm() {
 
   if (state.status === "success") {
     return (
-      <div role="status" className="rounded-2xl bg-ocean-50 p-8">
-        <h2 className="text-2xl text-ocean-800">Message sent</h2>
-        <p className="mt-2 text-muted">{state.message}</p>
+      <div role="status" className="rounded-sm bg-footer p-9">
+        <h2 className="text-[20px] font-semibold tracking-normal text-site-teal">Message sent</h2>
+        <p className="mt-3 text-[15px] text-body">{state.message}</p>
       </div>
     );
   }
@@ -32,7 +32,7 @@ export function ContactForm() {
   return (
     <form action={action} className="grid gap-5 sm:grid-cols-2" noValidate>
       {state.status === "error" && (
-        <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-700 sm:col-span-2">
+        <p role="alert" className="bg-red-50 px-4 py-3 text-sm font-medium text-red-700 sm:col-span-2">
           {state.message}
         </p>
       )}
@@ -77,7 +77,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-full bg-ocean-700 px-8 py-3.5 font-semibold text-white transition-colors hover:bg-ocean-800 disabled:opacity-60"
+          className="bg-site-teal px-8 py-[15px] text-[12px] font-medium tracking-[0.12em] text-white uppercase transition-colors hover:bg-[#4fa99c] disabled:opacity-60"
         >
           {pending ? "Sending…" : "Send enquiry"}
         </button>
@@ -101,9 +101,9 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={name} className="text-sm font-semibold">
+      <label htmlFor={name} className="text-[14px] font-medium text-charcoal">
         {label}
-        {required && <span className="text-ocean-700"> *</span>}
+        {required && <span className="text-site-teal"> *</span>}
       </label>
       {children}
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
