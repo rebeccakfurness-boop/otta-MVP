@@ -3,8 +3,7 @@
 Public website and broker portal for **Otta: Insurance that works**.
 
 Built on the stack in the Otta technology proposal: Next.js + TypeScript, Tailwind CSS,
-GitHub, Vercel, with Zod for form validation and Brevo for email. Neon Postgres,
-The broker portal uses iron-session, bcryptjs and arctic (Microsoft and Google SSO); Neon Postgres and Vercel Blob are next.
+GitHub, Vercel, with Zod for form validation and Brevo for email. The broker portal uses iron-session, bcryptjs and arctic (Microsoft and Google SSO); Neon Postgres and Vercel Blob are next.
 
 ## Getting started
 
