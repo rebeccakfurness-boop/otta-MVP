@@ -17,6 +17,7 @@ export default function AdminAppLayout({ children }: { children: React.ReactNode
         { label: "Overview", href: adminPath("/"), icon: "home" },
         { label: "Policies", href: adminPath("/policies"), icon: "policies" },
         { label: "Quote requests", href: adminPath("/quotes"), icon: "quotes" },
+        { label: "Applications", href: adminPath("/applications"), icon: "apply" },
         { label: "Brokers", href: adminPath("/brokers"), icon: "users" },
         { label: "Documents", href: adminPath("/documents"), icon: "documents" },
         { label: "Forms", href: adminPath("/forms"), icon: "forms" },

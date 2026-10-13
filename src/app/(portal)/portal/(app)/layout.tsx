@@ -13,6 +13,7 @@ export default function PortalAppLayout({ children }: { children: React.ReactNod
       homeHref={portalPath("/")}
       nav={[
         { label: "Dashboard", href: portalPath("/"), icon: "home" },
+        { label: "Applications", href: portalPath("/applications"), icon: "apply" },
         { label: "Forms", href: portalPath("/forms"), icon: "forms" },
         { label: "Quote requests", href: portalPath("/quotes"), icon: "quotes" },
         { label: "Policies", href: portalPath("/policies"), icon: "policies" },

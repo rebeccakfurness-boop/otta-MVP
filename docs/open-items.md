@@ -41,6 +41,8 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Decide how brokers request quotes online (currently via proposal forms).
 
 - Building insurance application: add `BREVO_API_KEY` in Vercel and verify `no-reply@ottainsurance.co.nz` (or the `ENQUIRY_FROM_EMAIL` address) as a sender in Brevo, or emails will be rejected. Change `APPLICATION_TO_EMAIL` if applications should go somewhere other than rebecca@tai.co.nz.
+- **Demo emails**: while `PORTAL_DEMO_LOGIN` is on, every email goes to rebecca@tai.co.nz with a "[Demo for ...]" subject. Set `EMAIL_DEMO_TO=off` at go-live so client links and broker notices reach their real recipients.
+- **Save applications permanently**: add the Neon integration in Vercel (sets `DATABASE_URL`). Until then, the Applications lists reset when the server restarts.
 - Have the declaration and duty of disclosure wording on the application form reviewed for Otta (it is carried over from the TAI form).
 
 ## Admin portal
@@ -48,6 +50,9 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Register staff SSO (Microsoft 365 tenant or Google Workspace) and set the `ADMIN_*` keys.
 - Replace the demo staff account with real staff users before any real data is loaded.
 - Manual entry screens (add or edit a policy or quote) and the InsuredHQ sync job once Neon is in place.
+
+## Website search
+- The search index is built from `src/content/` (products, `search.ts` for other pages). Add new pages to `src/content/search.ts`.
 
 ## Later stages
 - Compliance review (Privacy Act 2020, FMC Act, Fair Trading Act, CoFI, etc.).

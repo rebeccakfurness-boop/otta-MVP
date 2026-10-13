@@ -16,6 +16,12 @@ type Email = {
  * Returns whether it was actually sent.
  */
 export async function sendEmail({ to, subject, text, replyTo, senderName = "Otta website", attachments }: Email) {
+  // Demo mode: every email goes to one inbox, labelled with who it was for.
+  if (env.emailDemoTo && to.toLowerCase() !== env.emailDemoTo.toLowerCase()) {
+    text = `[Demo email. In production this would go to ${to}.]\n\n${text}`;
+    subject = `[Demo for ${to}] ${subject}`;
+    to = env.emailDemoTo;
+  }
   if (!env.brevoApiKey) {
     console.info("[email:dev] would send", { to, subject, text, attachments: attachments?.map((a) => a.name) });
     return false;

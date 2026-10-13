@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { mainNav, site } from "@/content/site";
 import { Logo } from "./Logo";
+import { SiteSearch } from "./SiteSearch";
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -18,8 +19,21 @@ function Chevron({ className = "" }: { className?: string }) {
   );
 }
 
+// The header highlights the current page, which on a dynamic route (such as a
+// client's application link) is only known at request time.
 export function Header() {
-  const pathname = usePathname();
+  return (
+    <Suspense fallback={<HeaderView pathname="" />}>
+      <HeaderWithPath />
+    </Suspense>
+  );
+}
+
+function HeaderWithPath() {
+  return <HeaderView pathname={usePathname()} />;
+}
+
+function HeaderView({ pathname }: { pathname: string }) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -90,16 +104,18 @@ export function Header() {
           </ul>
         </nav>
 
+        <SiteSearch className="ml-auto lg:ml-2" />
+
         <Link
           href={site.portalUrl}
-          className="ml-auto hidden h-[43px] items-center border border-charcoal px-8 text-[15px] font-medium tracking-[0.12em] text-charcoal uppercase transition-colors hover:bg-charcoal hover:text-white sm:inline-flex lg:ml-[17px]"
+          className="hidden h-[43px] items-center border border-charcoal px-8 text-[15px] font-medium tracking-[0.12em] text-charcoal uppercase transition-colors hover:bg-charcoal hover:text-white sm:ml-2 sm:inline-flex lg:ml-[17px]"
         >
           Account Login
         </Link>
 
         <button
           type="button"
-          className="ml-auto p-2 text-charcoal sm:ml-0 lg:hidden"
+          className="p-2 text-charcoal lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}

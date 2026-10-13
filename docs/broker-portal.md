@@ -33,6 +33,29 @@ online form, in Otta branding.
   Replies go to the broker who sent it.
 - **Download PDF** works at any point: a blank form prints for filling by hand,
   a partly filled one prints as is.
+- Every application is saved under **Applications** in the portal (and in the
+  admin portal), with its answers and a PDF download.
+
+### Sending the form to a client
+
+From Applications (or the Forms page) a broker chooses **Send to a client**,
+enters the client's name and, optionally, their email and a note.
+
+1. Otta creates a secure link to the form on the website
+   (`/apply/building/<token>`), valid for 30 days. The token is sealed with
+   `SESSION_SECRET`, so it can't be altered or pointed at another brokerage.
+2. The link is emailed to the client from Otta (replies go to the broker), or
+   the broker copies it and sends it themselves.
+3. The client fills in the form on the website with their name, email and the
+   brokerage already filled in, and can download a PDF copy.
+4. On submit, the application goes straight to Otta (the same email and PDF
+   as a broker submission), appears in the broker's Applications marked
+   "Completed by client", and the broker gets an email. The link then shows
+   "already submitted" so it can't be sent twice.
+
+Applications and links are stored in Neon when `DATABASE_URL` is set (tables
+are created automatically). Without it they are kept in memory for the demo;
+the emails still always go out.
 
 ## How it is wired
 

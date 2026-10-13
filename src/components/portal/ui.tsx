@@ -94,6 +94,10 @@ const badgeTones: Record<string, string> = {
   Active: "bg-[#e6f4f2] text-[#2e7d74]",
   "Renewal due": "bg-[#f1e6f5] text-site-purple",
   Expired: "bg-[#efefef] text-[#555]",
+  "Sent to Otta": "bg-[#e6f4f2] text-[#2e7d74]",
+  "Waiting for client": "bg-[#fdf3e1] text-[#8a5a00]",
+  "Completed by client": "bg-site-teal text-white",
+  "Link expired": "bg-[#efefef] text-[#555]",
 };
 
 export function StatusBadge({ status }: { status: string }) {

@@ -56,3 +56,8 @@
     @apply bg-site-teal text-white;
   }
 }
+
+/* Keep Steve's chat launcher clear of a page's sticky action bar (the online application form). */
+body:has([data-sticky-actions]) [data-steve] {
+  bottom: 7rem;
+}

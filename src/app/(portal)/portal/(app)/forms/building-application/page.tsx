@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { LoadingBlocks, PageHeader } from "@/components/portal/ui";
+import { ButtonLink, LoadingBlocks, PageHeader } from "@/components/portal/ui";
 import { buildingApplication } from "@/content/building-application";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
-import { ApplicationForm } from "./ApplicationForm";
+import { ApplicationForm } from "@/components/forms/ApplicationForm";
+import { submitBuildingApplication } from "./actions";
 
 export const metadata: Metadata = { title: buildingApplication.shortTitle };
 
@@ -25,11 +26,21 @@ async function BuildingApplication() {
         back={{ href: portalPath("/forms"), label: "Forms" }}
         title={buildingApplication.title}
         description={buildingApplication.summary}
+        actions={
+          <ButtonLink href={portalPath("/applications/send")} variant="secondary" icon="send">
+            Send to a client instead
+          </ButtonLink>
+        }
       />
       <ApplicationForm
+        audience="broker"
+        action={submitBuildingApplication}
         defaults={{ broker: broker.brokerageName, signedDate: today }}
         pdfUrl={portalPath("/forms/building-application/pdf")}
-        formsUrl={portalPath("/forms")}
+        links={{
+          back: { href: portalPath("/applications"), label: "All applications" },
+          applicationsBase: portalPath("/applications"),
+        }}
       />
     </>
   );

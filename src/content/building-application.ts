@@ -56,6 +56,24 @@ export const buildingApplication = {
     "Apply for building insurance for a rental or investment property. Fill it in online and send it straight to the Otta team, or download it as a PDF.",
   fileName: "Otta-Building-Insurance-Application",
   sendTo: "the Otta property team",
+  /** The email a broker sends their client with a link to the form. */
+  invite: {
+    subject: (brokerage: string) => `Your building insurance application from ${brokerage}`,
+    body: (o: { clientName: string; brokerName: string; brokerage: string; url: string; days: number; note?: string }) =>
+      [
+        `Kia ora ${o.clientName.split(" ")[0]},`,
+        ``,
+        `${o.brokerName} at ${o.brokerage} has asked you to complete a building insurance application with Otta.`,
+        ...(o.note ? [``, o.note] : []),
+        ``,
+        `Fill it in online here (it takes about 10 minutes):`,
+        o.url,
+        ``,
+        `The link works for ${o.days} days. When you submit, it goes straight to ${o.brokerage} and the Otta team. If you have questions, reply to this email to reach ${o.brokerName}.`,
+        ``,
+        `Otta, insurance that works`,
+      ].join("\n"),
+  },
   parts: [
     {
       id: "application",

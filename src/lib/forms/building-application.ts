@@ -5,6 +5,12 @@ import { buildingApplication, type Condition, type Field, type Section } from "@
 
 export type Answers = Record<string, string>;
 export type Errors = Record<string, string>;
+
+export type SubmitState =
+  | { status: "idle" }
+  | { status: "invalid"; errors: Errors }
+  | { status: "error"; message: string }
+  | { status: "sent"; reference: string; emailed: boolean; id?: string };
 export type UnitsField = Extract<Field, { kind: "units" }>;
 
 export const CONFIRM_FIELD = "declarationConfirmed";

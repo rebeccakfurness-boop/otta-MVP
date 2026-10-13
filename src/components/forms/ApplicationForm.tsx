@@ -12,9 +12,9 @@ import {
   validate,
   type Answers,
   type Errors,
+  type SubmitState,
   type UnitsField,
 } from "@/lib/forms/building-application";
-import { submitBuildingApplication, type SubmitState } from "./actions";
 
 const inputClass =
   "block w-full border bg-white px-3.5 py-2.5 text-[15px] text-charcoal outline-none transition placeholder:text-[#a6a6a6] focus:border-site-teal focus:ring-2 focus:ring-[#e6f4f2]";
@@ -23,11 +23,24 @@ const span = { 2: "md:col-span-2", 3: "md:col-span-3", 4: "md:col-span-4", 6: "m
 const fieldId = (name: string) => `f-${name}`;
 const errorId = (name: string) => `f-${name}-error`;
 
-export function ApplicationForm({ defaults, pdfUrl, formsUrl }: { defaults: Answers; pdfUrl: string; formsUrl: string }) {
+type Props = {
+  /** Who is filling it in: a signed-in broker, or a client from a broker's link. */
+  audience: "broker" | "client";
+  action: (state: SubmitState, data: FormData) => Promise<SubmitState>;
+  defaults: Answers;
+  pdfUrl: string;
+  /** Broker only: where to go after sending. */
+  links?: { back: { href: string; label: string }; applicationsBase?: string };
+  /** Client only: the brokerage that sent the link. */
+  brokerageName?: string;
+};
+
+export function ApplicationForm({ audience, action, defaults, pdfUrl, links, brokerageName }: Props) {
+  const isClient = audience === "client";
   const formRef = useRef<HTMLFormElement>(null);
   const [answers, setAnswers] = useState<Answers>(defaults);
   const [showErrors, setShowErrors] = useState(false);
-  const [state, dispatch, sending] = useActionState<SubmitState, FormData>(submitBuildingApplication, { status: "idle" });
+  const [state, dispatch, sending] = useActionState<SubmitState, FormData>(action, { status: "idle" });
   const [download, setDownload] = useState<{ busy: boolean; error?: string }>({ busy: false });
   const [submitted, setSubmitted] = useState<FormData | null>(null);
 
@@ -59,7 +72,7 @@ export function ApplicationForm({ defaults, pdfUrl, formsUrl }: { defaults: Answ
     setDownload({ busy: true });
     try {
       const res = await fetch(pdfUrl, { method: "POST", body: data });
-      if (!res.ok) throw new Error(res.status === 401 ? "Your session has ended. Please sign in again." : "The PDF couldn't be created.");
+      if (!res.ok) throw new Error(res.status === 401 ? (isClient ? "This link has expired. Please ask your broker for a new one." : "Your session has ended. Please sign in again.") : "The PDF couldn't be created.");
       const blob = await res.blob();
       const name = /filename="([^"]+)"/.exec(res.headers.get("content-disposition") ?? "")?.[1] ?? "application.pdf";
       const url = URL.createObjectURL(blob);
@@ -82,10 +95,12 @@ export function ApplicationForm({ defaults, pdfUrl, formsUrl }: { defaults: Answ
         <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-site-teal text-site-teal">
           <Icon name="check" className="h-8 w-8" />
         </span>
-        <h2 className="mt-6 text-[26px] tracking-[-0.01em]">Application sent</h2>
+        <h2 className="mt-6 text-[26px] tracking-[-0.01em]">{isClient ? "Thank you, your application is in" : "Application sent"}</h2>
         <p className="mt-3 text-[15px] leading-relaxed text-body">
-          Thanks. Your reference is <strong className="font-semibold text-charcoal">{state.reference}</strong>. The completed form
-          has gone to {buildingApplication.sendTo} as a PDF, and they will be in touch by reply to your email.
+          Your reference is <strong className="font-semibold text-charcoal">{state.reference}</strong>.{" "}
+          {isClient
+            ? `It has gone to ${brokerageName ?? "your broker"} and the Otta team. Your broker will be in touch about the next steps.`
+            : `The completed form has gone to ${buildingApplication.sendTo} as a PDF, and it is saved in your Applications.`}
         </p>
         {!state.emailed && (
           <p className="mt-4 border-l-4 border-site-purple bg-[#f8f1fa] px-4 py-3 text-left text-[13px] text-site-purple">
@@ -103,9 +118,16 @@ export function ApplicationForm({ defaults, pdfUrl, formsUrl }: { defaults: Answ
             <Icon name="download" className="h-4 w-4" />
             {download.busy ? "Preparing PDF" : "Download a copy (PDF)"}
           </button>
-          <a href={formsUrl} className={buttonClass("primary")}>
-            Back to forms
-          </a>
+          {links?.applicationsBase && state.id && (
+            <a href={`${links.applicationsBase}/${state.id}`} className={buttonClass("secondary")}>
+              View application
+            </a>
+          )}
+          {links && (
+            <a href={links.back.href} className={buttonClass("primary")}>
+              {links.back.label}
+            </a>
+          )}
         </div>
         {download.error && <p className="mt-4 text-[13px] text-site-purple">{download.error}</p>}
       </Card>
@@ -195,8 +217,9 @@ export function ApplicationForm({ defaults, pdfUrl, formsUrl }: { defaults: Answ
                       className="mt-1 h-4 w-4 shrink-0 accent-[#61b9ad]"
                     />
                     <span>
-                      I confirm the applicant has read the declaration, duty of disclosure and non-disclosure wording above, and
-                      agrees to it.
+                      {isClient
+                        ? "I have read the declaration, duty of disclosure and non-disclosure wording above, and agree to it."
+                        : "I confirm the applicant has read the declaration, duty of disclosure and non-disclosure wording above, and agrees to it."}
                     </span>
                   </label>
                   <FieldError name={CONFIRM_FIELD} error={errors[CONFIRM_FIELD]} />
@@ -207,7 +230,7 @@ export function ApplicationForm({ defaults, pdfUrl, formsUrl }: { defaults: Answ
         </div>
 
         {/* Actions stay in reach while scrolling the long form. */}
-        <div className="sticky bottom-0 z-10 mt-10 -mx-5 flex flex-col gap-3 border-t border-[#eaeaea] bg-white/95 px-5 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between md:mx-0 md:border md:px-6">
+        <div data-sticky-actions className="sticky bottom-0 z-10 mt-10 -mx-5 flex flex-col gap-3 border-t border-[#eaeaea] bg-white/95 px-5 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between md:mx-0 md:border md:px-6">
           <div className="text-[13px] text-body">
             {download.error ? (
               <span className="text-site-purple">{download.error}</span>
