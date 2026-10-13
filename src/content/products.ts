@@ -10,7 +10,8 @@ export type Product = {
   summary: string;
   /** Card text on the Our Solutions page. */
   overview: string;
-  intro: string[];
+  /** Paragraphs; an array of strings renders as a bullet list. */
+  intro: (string | string[])[];
   atAGlance: { label: string; value: string }[];
   statements: [string, string, string];
   /** Supporting text under each statement (draft, drawn from the product copy). */
@@ -151,7 +152,7 @@ export const products: Product[] = [
       "Policies and claims are handled by a team who understand tenancy issues, making the process smoother and more empathetic for landlords.",
       "Your cover is placed with Certain Underwriters at Lloyd's of London, with Beazley 2623 as lead syndicate.",
     ],
-    coverageTagline: "Protect your investment and your rental income.",
+    coverageTagline: "Keep your investment property in tune with Otta risk protection",
     coverage: [
       {
         title: "What's covered?",
@@ -182,6 +183,11 @@ export const products: Product[] = [
           "Policies and claims are handled by a team who understand tenancy issues, making the process smoother and more empathetic for landlords",
         ],
       },
+      { title: "Key exclusions", items: [
+      "Holiday or short-term rentals",
+      "Coverage is only available for properties that are professionally managed by an Approved Property Management Company.",
+      "Owner occupied properties",
+    ] },
     ],
     keyExclusions: [
       "Holiday or short-term rentals",
@@ -228,7 +234,7 @@ export const products: Product[] = [
       "Intentional damage and methamphetamine or hazardous substance damage are each covered to $100,000.",
       "Your cover is placed with Certain Underwriters at Lloyd's of London, with Beazley 2623 as lead syndicate.",
     ],
-    coverageTagline: "Cover built for the realities of renting.",
+    coverageTagline: "Safeguard your rental property with Otta risk protection",
     coverage: [
       {
         title: "What's covered?",
@@ -266,6 +272,7 @@ export const products: Product[] = [
         title: "Package with",
         items: ["Landlord Classic or Premiere to cover additional tenant related risks"],
       },
+      { title: "Key exclusions", items: ["Short-term tenancies", "AirBnB and similar", "Owner occupied properties"] },
     ],
     keyExclusions: ["Short-term tenancies", "AirBnB and similar", "Owner occupied properties"],
     claim: standardClaim,
@@ -308,7 +315,7 @@ export const products: Product[] = [
       "Intentional damage and methamphetamine or hazardous substance damage are each covered to $100,000, with loss of rent included.",
       "Your cover is placed with Certain Underwriters at Lloyd's of London, with Beazley 2623 as lead syndicate.",
     ],
-    coverageTagline: "Protecting the homes that hold communities together.",
+    coverageTagline: "Otta specialises in tailoring solutions for complex multi-party tenancies",
     coverage: [
       {
         title: "What's covered?",
@@ -344,6 +351,7 @@ export const products: Product[] = [
           "Keep written records of each inspection and any issues identified.",
         ],
       },
+      { title: "Key exclusions", items: ["Short-term tenancies", "AirBnB and similar", "Owner occupied properties"] },
     ],
     keyExclusions: ["Short-term tenancies", "AirBnB and similar", "Owner occupied properties"],
     claim: standardClaim,
@@ -359,7 +367,13 @@ export const products: Product[] = [
       "Personal Accident insurance provides financial protection in the event of accidental injury, disability, or death. It is designed to offer individuals and their families peace of mind by providing financial support during challenging times.",
     intro: [
       "Personal Accident insurance provides financial protection in the event of accidental injury, disability, or death. It is designed to offer individuals and their families peace of mind by providing financial support during challenging times. This insurance policy typically covers a wide range of accidents, including those that occur at home, work, or during leisure activities.",
-      "About a third of medical issues that prevent people from working are accident related, with the remainder due to illness. This policy goes beyond the cover that ACC provides as it often includes cover for serious illness, provides cover if ACC does not respond, and tops up ACC payments from 80% to 100% of pre-accident income.",
+      "About a third of medical issues that prevent people from working are accident related, with the remainder due to illness.",
+      "This policy goes beyond the cover that ACC provides as it often:",
+      [
+        "includes cover for serious illness",
+        "cover if ACC does not respond",
+        "tops up ACC payments from 80% to 100% of pre-accident income",
+      ],
       "Accidents or illness can happen to anyone, regardless of age or occupation, and the financial consequences can be significant. Otta's agreed value Personal Accident and Illness insurance solutions provide a safety net, ensuring that individuals and their loved ones are protected financially in the event of an accident or illness, allowing them to focus on recovery and rebuilding their lives.",
       "Otta has appetite for unusual or difficult to place risks and occupations. Recent examples include pilots, professional athletes and sports teams, and forestry contractors.",
     ],
@@ -382,7 +396,7 @@ export const products: Product[] = [
       "About a third of medical issues that prevent people from working are accident related \u2013 the rest are illness, which ACC does not cover.",
       "Agreed value cover with a broad appetite for all occupations, including pilots, forestry workers, miners and athletes.",
     ],
-    coverageTagline: "Focus on recovery, not financial stress.",
+    coverageTagline: "Don't leave home without Otta onboard.",
     coverage: [
       {
         title: "What's covered?",
@@ -415,6 +429,10 @@ export const products: Product[] = [
           "Up to $250,000 lump sum benefits",
         ],
       },
+      { title: "Key exclusions", items: [
+      "Pre-existing medical conditions",
+      "Other insuring clause so if ACC is paying then this cover tops up rather than pays in addition to ACC",
+    ] },
     ],
     keyExclusions: [
       "Pre-existing medical conditions",
@@ -460,7 +478,7 @@ export const products: Product[] = [
       "Defence costs are provided in addition to the policy limit, and a costs exclusive excess means legal costs are covered from the first dollar.",
       "A comprehensive policy wording with few exclusions and a broad appetite for most professions.",
     ],
-    coverageTagline: "Concentrate on growth, not risk.",
+    coverageTagline: "Give your organisation the security of added protection.",
     coverage: [
       {
         title: "What's covered?",
@@ -484,6 +502,9 @@ export const products: Product[] = [
           "Public Liability, Statutory Liability and Employers Liability policies are available to round out the liability protection",
         ],
       },
+      { title: "Key exclusions", items: [
+      "The policy has very few exclusions, some may be added during the underwriting process",
+    ] },
     ],
     keyExclusions: [
       "The policy has very few exclusions, some may be added during the underwriting process",

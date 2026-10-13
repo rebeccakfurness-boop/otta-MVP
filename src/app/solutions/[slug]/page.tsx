@@ -43,9 +43,17 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
               {product.name}
             </h1>
             <div className="mt-10 text-[16px] leading-[1.75] text-body">
-              {product.intro.map((para) => (
-                <p key={para.slice(0, 32)}>{para}</p>
-              ))}
+              {product.intro.map((para) =>
+                Array.isArray(para) ? (
+                  <ul key={para[0]} className="list-disc pl-5">
+                    {para.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p key={para.slice(0, 32)}>{para}</p>
+                ),
+              )}
             </div>
             <div className="mt-10 flex flex-wrap gap-[18px]">
               <Link href={`/contact?product=${product.slug}`} className={`${smallButton} bg-site-teal hover:bg-[#4fa99c]`}>
