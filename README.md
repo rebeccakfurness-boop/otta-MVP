@@ -27,6 +27,7 @@ Before pushing: `npm run check` (lint + typecheck). CI runs lint, typecheck and 
 | Compliance / important information text | `src/content/legal.ts` |
 | Page templates | `src/app/**/page.tsx` |
 | Shared UI (header, footer, buttons…) | `src/components/` |
+| Steve the otter chatbot (persona, knowledge, popup, API route) | `src/content/steve.ts`, `src/content/steve-ui.ts`, `src/components/SteveChat.tsx`, `src/app/api/steve/route.ts` |
 | Contact form (Zod schema, server action, email) | `src/lib/schemas.ts`, `src/app/contact/`, `src/lib/email.ts` |
 
 To change copy, edit the files in `src/content/` and every page that uses it updates.
@@ -47,6 +48,7 @@ To change copy, edit the files in `src/content/` and every page that uses it upd
 Import the GitHub repo into Vercel (framework preset: Next.js, no build settings needed).
 Every push to a branch gets a preview URL; merging to `main` deploys production.
 Add the environment variables from `.env.example` in Vercel project settings.
+Steve the otter answers with Claude when `ANTHROPIC_API_KEY` is set; without it he uses simple built-in answers.
 
 ## Open items
 

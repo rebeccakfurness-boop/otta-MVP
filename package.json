@@ -11,6 +11,7 @@
     "check": "npm run lint && npm run typecheck"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",

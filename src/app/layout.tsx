@@ -3,6 +3,7 @@ import { Poppins, Raleway } from "next/font/google";
 import { Header } from "@/components/Header";
 import { BackToTop } from "@/components/BackToTop";
 import { Footer } from "@/components/Footer";
+import { SteveChat } from "@/components/SteveChat";
 import { site } from "@/content/site";
 import "./globals.css";
 
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="flex-1">{children}</main>
         <Footer />
         <BackToTop />
+        <SteveChat />
       </body>
     </html>
   );
