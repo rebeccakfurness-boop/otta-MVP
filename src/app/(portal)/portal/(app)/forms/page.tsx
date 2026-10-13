@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Link from "next/link";
+import { Icon } from "@/components/portal/Icon";
 import { LoadingBlocks, PageHeader } from "@/components/portal/ui";
+import { buildingApplication } from "@/content/building-application";
+import { portalPath } from "@/lib/portal/config";
 import { products } from "@/content/products";
 import { requireBroker } from "@/lib/portal/auth";
 import { listForms } from "@/lib/portal/data";
@@ -25,6 +29,20 @@ async function Forms() {
         title="Forms"
         description="Every Otta form in one place. Filter by what you need to do or by product, then download."
       />
+      <h2 className="mb-3 text-[12px] font-medium tracking-[0.14em] text-body uppercase">Apply online</h2>
+      <Link
+        href={portalPath("/forms/building-application")}
+        className="group mb-10 flex items-center gap-5 rounded-sm bg-site-teal p-5 text-white transition-colors hover:bg-[#4fa99c] sm:p-6"
+      >
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/70">
+          <Icon name="forms" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-heading text-[18px] font-bold">{buildingApplication.title}</span>
+          <span className="mt-0.5 block text-[14px] text-white/90">{buildingApplication.summary}</span>
+        </span>
+        <Icon name="arrow" className="hidden h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1 sm:block" />
+      </Link>
       <FormsBrowser forms={forms} products={products.map((p) => ({ slug: p.slug, name: p.name }))} />
     </>
   );

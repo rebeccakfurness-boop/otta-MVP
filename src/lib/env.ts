@@ -5,5 +5,7 @@ import "server-only";
 export const env = {
   brevoApiKey: process.env.BREVO_API_KEY,
   enquiryToEmail: process.env.ENQUIRY_TO_EMAIL ?? "hello@ottainsurance.co.nz",
+  // Where online building insurance applications from the broker portal go.
+  applicationToEmail: process.env.APPLICATION_TO_EMAIL ?? "rebecca@tai.co.nz",
   enquiryFromEmail: process.env.ENQUIRY_FROM_EMAIL ?? "no-reply@ottainsurance.co.nz",
 };

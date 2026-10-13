@@ -40,6 +40,9 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Replace the demo brokerage, quotes and policies with Neon Postgres; upload forms and documents (Vercel Blob).
 - Decide how brokers request quotes online (currently via proposal forms).
 
+- Building insurance application: add `BREVO_API_KEY` in Vercel and verify `no-reply@ottainsurance.co.nz` (or the `ENQUIRY_FROM_EMAIL` address) as a sender in Brevo, or emails will be rejected. Change `APPLICATION_TO_EMAIL` if applications should go somewhere other than rebecca@tai.co.nz.
+- Have the declaration and duty of disclosure wording on the application form reviewed for Otta (it is carried over from the TAI form).
+
 ## Admin portal
 - Set `NEXT_PUBLIC_ADMIN_HOST` in Vercel and add the `admin.ottainsurance.co.nz` domain (see `docs/admin-portal.md`).
 - Register staff SSO (Microsoft 365 tenant or Google Workspace) and set the `ADMIN_*` keys.

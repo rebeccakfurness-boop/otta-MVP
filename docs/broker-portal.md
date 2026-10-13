@@ -19,6 +19,21 @@ subdomain, **portal.ottainsurance.co.nz**. The website's only link to it is the
 Brokers only ever see their own brokerage's records: every query in
 `src/lib/portal/data.ts` is scoped to the signed-in brokerage.
 
+## Online building insurance application
+
+`/forms/building-application` is the Building Insurance Application Form as an
+online form, in Otta branding.
+
+- Questions live in `src/content/building-application.ts`. The web form, the
+  validation, the email and the PDF are all built from that one file.
+- Follow-up questions appear only when they apply (mortgagee name, the pre-1940
+  section, multi unit, social housing and mortgagee sale questions).
+- **Submit** emails the application to `APPLICATION_TO_EMAIL` (default
+  rebecca@tai.co.nz) through Brevo, with the completed form attached as a PDF.
+  Replies go to the broker who sent it.
+- **Download PDF** works at any point: a blank form prints for filling by hand,
+  a partly filled one prints as is.
+
 ## How it is wired
 
 - `src/proxy.ts` maps the portal subdomain onto the `/portal` routes
