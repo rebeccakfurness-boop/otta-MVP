@@ -38,6 +38,17 @@ online form, in Otta branding.
   `src/lib/address.ts`: Addressfinder if `ADDRESSFINDER_KEY` is set, Google
   Places if `GOOGLE_PLACES_API_KEY` is set, otherwise free OpenStreetMap data.
   Free typing (for example a PO Box) always works.
+- The email to Otta also attaches the **underwriting worksheet** (UW Notes,
+  V13) as Excel, pre-filled from the application: risk type, broker, insured,
+  inception date, interested party, location 1 address and region, sum
+  insured, units, landlords chattels and the remaining answers in the Notes
+  boxes. Built by `src/lib/uw/worksheet.ts` in Otta branding with the same
+  cell positions as the original; levies and totals are formulas using the
+  editable Rates sheet. Brokers never receive it; staff can download it from
+  the application in the admin portal.
+- The email lists **flood mapping** links for the property: the national flood
+  hazard viewer and the regional council's flood map for the region worked out
+  from the address (`src/content/flood-maps.ts`, `src/lib/nz-region.ts`).
 - Every application is saved under **Applications** in the portal (and in the
   admin portal), with its answers and a PDF download.
 

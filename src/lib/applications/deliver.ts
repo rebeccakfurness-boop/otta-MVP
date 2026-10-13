@@ -4,6 +4,7 @@ import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { buildApplicationPdf } from "@/lib/forms/building-application-pdf";
 import { summaryText, type Answers } from "@/lib/forms/building-application";
+import { buildWorksheet, propertyLocation } from "@/lib/uw/worksheet";
 import { getLink, newId, newReference, saveApplication, saveLink, type ApplicationSource } from "./store";
 
 type Delivery = {
@@ -59,6 +60,24 @@ export async function deliverApplication(d: Delivery) {
     submittedBy: viaClient ? `Completed by ${d.submittedBy} for ${d.brokerName}` : `${d.brokerName} (${d.brokerEmail})`,
   });
   const attachment = { name: `${buildingApplication.fileName}-${reference}.pdf`, content: pdf };
+  // Only the Otta team gets the pre-filled underwriting worksheet.
+  const worksheet = await buildWorksheet(d.answers, {
+    reference,
+    brokerageName: d.brokerageName,
+    brokerName: d.brokerName,
+    createdAt,
+  }).catch((error) => {
+    console.error("[uw-worksheet] could not build", error);
+    return null;
+  });
+  const location = propertyLocation(d.answers);
+  const floodLines = [
+    `FLOOD MAPPING`,
+    `  Property: ${d.answers.propertyAddress}${location.region ? ` (${location.region})` : ""}`,
+    `  Complete flood map (national): ${location.flood.national.url}`,
+    `  ${location.region || "Regional"} flood map: ${location.flood.regional.name}`,
+    `  ${location.flood.regional.url}`,
+  ];
   const subject = `Building insurance application: ${d.answers.insuredName}, ${d.answers.propertyAddress} (${reference})`;
 
   const emailed = await sendEmail({
@@ -76,13 +95,17 @@ export async function deliverApplication(d: Delivery) {
       `Broker: ${d.brokerName} (${d.brokerEmail})`,
       viaClient ? `Completed by: ${d.submittedBy} (${d.submittedByEmail})` : ``,
       ``,
-      `The completed form is attached as a PDF. Reply to this email to contact the broker.`,
+      worksheet
+        ? `The completed form is attached as a PDF, with the underwriting worksheet pre-filled (Excel). Reply to this email to contact the broker.`
+        : `The completed form is attached as a PDF. Reply to this email to contact the broker.`,
+      ``,
+      ...floodLines,
       ``,
       summaryText(d.answers),
     ]
       .filter((l, i, all) => !(l === "" && all[i - 1] === ""))
       .join("\n"),
-    attachments: [attachment],
+    attachments: worksheet ? [attachment, worksheet] : [attachment],
   });
 
   if (viaClient) {

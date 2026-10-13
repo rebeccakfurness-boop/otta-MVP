@@ -1,5 +1,6 @@
 import "server-only";
 import { sealData, unsealData } from "iron-session";
+import { connection } from "next/server";
 import { sessionSecret } from "@/lib/portal/session";
 
 // A client link carries everything needed to accept the client's answers in a
@@ -26,6 +27,8 @@ export async function sealLink(data: Omit<LinkToken, "kind">) {
 }
 
 export async function openLink(token: string): Promise<LinkToken | null> {
+  // Expiry is checked against the current time, so this is request-time only.
+  await connection();
   const password = sessionSecret();
   if (!password || !token || token.length > 4000) return null;
   try {

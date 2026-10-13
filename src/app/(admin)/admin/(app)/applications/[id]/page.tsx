@@ -8,6 +8,7 @@ import { adminPath } from "@/lib/admin/config";
 import { brokerageNames } from "@/lib/admin/data";
 import { getApplication } from "@/lib/applications/store";
 import { formatDate } from "@/lib/portal/status";
+import { propertyLocation } from "@/lib/uw/worksheet";
 
 export const metadata: Metadata = { title: "Application" };
 
@@ -31,9 +32,14 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
         title={app.insuredName}
         description={app.propertyAddress}
         actions={
-          <ButtonLink href={adminPath(`/applications/${app.id}/pdf`)} icon="download" external>
-            Download PDF
-          </ButtonLink>
+          <>
+            <ButtonLink href={adminPath(`/applications/${app.id}/worksheet`)} variant="secondary" icon="download" external>
+              UW worksheet (Excel)
+            </ButtonLink>
+            <ButtonLink href={adminPath(`/applications/${app.id}/pdf`)} icon="download" external>
+              Download PDF
+            </ButtonLink>
+          </>
         }
       />
       <Card className="mb-8">
@@ -48,7 +54,39 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
           ]}
         />
       </Card>
+      <FloodMaps address={app.propertyAddress} location={propertyLocation(app.answers)} />
       <ApplicationSummary answers={app.answers} />
     </>
+  );
+}
+
+function FloodMaps({ address, location }: { address: string; location: ReturnType<typeof propertyLocation> }) {
+  const links = [
+    { label: "Complete flood map (national)", map: location.flood.national },
+    { label: `${location.region || "Regional"} flood map`, map: location.flood.regional },
+  ];
+  return (
+    <Card className="mb-8">
+      <div className="border-b border-[#eaeaea] px-6 py-4">
+        <h2 className="font-heading text-[18px] font-semibold tracking-normal text-charcoal">Flood mapping</h2>
+        <p className="mt-1 text-[13px] text-body">
+          {address}
+          {location.region ? `, ${location.region} region` : ""}
+        </p>
+      </div>
+      <ul className="divide-y divide-[#f0f0f0]">
+        {links.map((l) => (
+          <li key={l.label} className="flex flex-wrap items-center justify-between gap-3 px-6 py-3">
+            <span>
+              <span className="block text-[11px] font-semibold tracking-[0.1em] text-body uppercase">{l.label}</span>
+              <span className="text-[14px] text-charcoal">{l.map.name}</span>
+            </span>
+            <a href={l.map.url} target="_blank" rel="noreferrer" className="text-[12px] font-medium tracking-[0.1em] text-[#2e7d74] uppercase hover:underline">
+              Open map
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Card>
   );
 }

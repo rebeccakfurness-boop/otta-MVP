@@ -44,6 +44,8 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Demo emails**: while `PORTAL_DEMO_LOGIN` is on, every email goes to rebecca@tai.co.nz with a "[Demo for ...]" subject. Set `EMAIL_DEMO_TO=off` at go-live so client links and broker notices reach their real recipients.
 - **Save applications permanently**: add the Neon integration in Vercel (sets `DATABASE_URL`). Until then, the Applications lists reset when the server restarts.
 - **Address suggestions**: currently free OpenStreetMap data, which can miss newer addresses. For production, sign up to Addressfinder (addressfinder.nz) and set `ADDRESSFINDER_KEY` and `ADDRESSFINDER_SECRET` in Vercel.
+- **Underwriting worksheet**: confirm the levy rates and caps on the Rates sheet (FSL 0.1074 per $100 was taken from the V13 sheet; NHI 0.16 per $100 capped at $300,000; FSL cap $100,000) and the binder number and dates. Premium per unit is left for the underwriter because the V13 rating tables weren't supplied: send the original .xlsx to bring its rating formulas across. Broker street address, city and post code stay blank until brokerage addresses are stored.
+- **Flood map links** (`src/content/flood-maps.ts`): confirm each council link. Regions without their own link (Bay of Plenty, Gisborne, Hawke's Bay, Taranaki, Wellington, Marlborough, West Coast, Southland) currently point to the Natural Hazards Portal council directory; add their direct viewer links.
 - Have the declaration and duty of disclosure wording on the application form reviewed for Otta (it is carried over from the TAI form).
 
 ## Admin portal
