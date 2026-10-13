@@ -1,3 +1,5 @@
+import { portalLoginUrl } from "@/lib/portal/config";
+
 // Site-wide settings and navigation. Change contact details here and they
 // update everywhere (header, footer, contact page, product claim sections).
 
@@ -14,7 +16,8 @@ export const site = {
   // TODO(stage 2): claims phone number is "0800 xxx xxxx" in the source copy.
   claimsPhone: "0800 XXX XXXX",
   address: ["Level 1", "3/527A Rosebank Road", "Avondale, Auckland 1026", "New Zealand"],
-  portalUrl: "/portal/login",
+  // The "Account Login" button: the broker portal on its own subdomain.
+  portalUrl: portalLoginUrl,
 };
 
 export type NavItem = { label: string; href: string; children?: NavItem[] };

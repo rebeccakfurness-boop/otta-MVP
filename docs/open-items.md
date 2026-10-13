@@ -32,7 +32,12 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Have compliance review Steve's instructions in `src/content/steve.ts` (general information only, no advice, no personal details) and the disclaimer under the chat box.
 - The rate limit is per server instance and best effort; add a shared store (for example Vercel KV) if traffic grows.
 
+## Broker portal
+- Set `SESSION_SECRET` and `NEXT_PUBLIC_PORTAL_HOST` in Vercel and add the `portal.ottainsurance.co.nz` domain (see `docs/broker-portal.md`).
+- Register the Microsoft and Google SSO apps.
+- Replace the demo brokerage, quotes and policies with Neon Postgres; upload forms and documents (Vercel Blob).
+- Decide how brokers request quotes online (currently via proposal forms).
+
 ## Later stages
-- Broker portal: authentication (iron-session + bcryptjs), Neon Postgres, Vercel Blob uploads.
 - Compliance review (Privacy Act 2020, FMC Act, Fair Trading Act, CoFI, etc.).
 - Remove `robots: noindex` in `src/app/layout.tsx` at launch.

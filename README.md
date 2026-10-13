@@ -1,10 +1,10 @@
 # Otta website
 
-Public website (and future broker portal) for **Otta: Insurance that works**.
+Public website and broker portal for **Otta: Insurance that works**.
 
 Built on the stack in the Otta technology proposal: Next.js + TypeScript, Tailwind CSS,
 GitHub, Vercel, with Zod for form validation and Brevo for email. Neon Postgres,
-iron-session, bcryptjs and Vercel Blob are planned for the broker portal.
+The broker portal uses iron-session, bcryptjs and arctic (Microsoft and Google SSO); Neon Postgres and Vercel Blob are next.
 
 ## Getting started
 
@@ -40,7 +40,6 @@ To change copy, edit the files in `src/content/` and every page that uses it upd
 - `/resources`: `/product-fact-sheets`, `/policy-wording`, `/proposal-forms`, `/renewal-declarations`, `/claim-forms`
 - `/claims`
 - `/contact` (accepts `?product=<slug>` to pre-fill the form, used by "Apply now")
-- `/portal/login`: Account Login placeholder for the broker portal
 - `/fair-insurance-code`, `/complaints`
 
 ## Deployment
@@ -49,6 +48,11 @@ Import the GitHub repo into Vercel (framework preset: Next.js, no build settings
 Every push to a branch gets a preview URL; merging to `main` deploys production.
 Add the environment variables from `.env.example` in Vercel project settings.
 Steve the otter answers with Claude when `ANTHROPIC_API_KEY` is set; without it he uses simple built-in answers.
+
+## Broker portal
+
+The broker portal runs on its own subdomain from this same codebase. See
+[`docs/broker-portal.md`](docs/broker-portal.md) for how it works and how to go live.
 
 ## Open items
 

@@ -1,7 +1,12 @@
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { Container, LargeButton, PageIntro } from "@/components/Mockup";
 
 export default function NotFound() {
   return (
+    <>
+      <Header />
+      <main className="flex-1">
     <section className="pt-[118px] pb-[150px]">
       <Container>
         <PageIntro title="We couldn't find that page">
@@ -12,5 +17,8 @@ export default function NotFound() {
         </div>
       </Container>
     </section>
+      </main>
+      <Footer />
+    </>
   );
 }
