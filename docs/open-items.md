@@ -14,6 +14,8 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Photography** – all images are placeholders (dark blocks on the home page, gradient blocks elsewhere).
 - **Home page case study** – heading, summary and copy are placeholders.
 - **Documents** – PDFs for fact sheets, policy wordings, proposal forms, renewal declarations and claim forms.
+- **Product page "Why choose Otta" text** – the paragraph under each statement is draft copy drawn from the product summaries (`statementDetails` in `products.ts`).
+- **Product page photos** – each product needs a hero image (left half of the page).
 - **Coverage taglines** – only Corporate Travel had one in the mockup ("Smart organisations don't leave home without Otta onboard."); the others are drafts in `products.ts`.
 
 ## Wording changed from the Hummi mockup

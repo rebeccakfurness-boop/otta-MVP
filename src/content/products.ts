@@ -13,6 +13,8 @@ export type Product = {
   intro: string[];
   atAGlance: { label: string; value: string }[];
   statements: [string, string, string];
+  /** Supporting text under each statement (draft, drawn from the product copy). */
+  statementDetails: [string, string, string];
   coverageTagline: string;
   coverage: { title: string; items: string[] }[];
   keyExclusions: string[];
@@ -58,6 +60,11 @@ export const products: Product[] = [
       "Otta has a broad appetite to cover all risks – whether mainstream or complex",
       "Quick turnaround and access to the underwriter – talk directly to us to help us make the complex simple",
       "Comprehensive coverage backed by global strength and certainty delivered through Lloyd's of London",
+    ],
+    statementDetails: [
+      "Medical, baggage, cancellation and curtailment are covered as standard, and we have appetite for the unusual and high-risk \u2013 including specialist cover for athletes and sportspeople.",
+      "Talk directly to the underwriter who can make the decision. Most risks can be underwritten and included \u2013 if you're not sure, just ask.",
+      "Your cover is placed with Certain Underwriters at Lloyd's of London, with Canopius 4444 as lead syndicate.",
     ],
     coverageTagline: "Smart organisations don't leave home without Otta onboard.",
     coverage: [
@@ -139,6 +146,11 @@ export const products: Product[] = [
       "Gain peace of mind with specialist insurance designed specifically for landlords and their unique needs.",
       "Comprehensive coverage backed by global strength and certainty delivered through Lloyd's of London.",
     ],
+    statementDetails: [
+      "Cover for loss of rental income when tenants default or the property can't be lived in, alongside intentional or accidental damage, pet damage and legal liability.",
+      "Policies and claims are handled by a team who understand tenancy issues, making the process smoother and more empathetic for landlords.",
+      "Your cover is placed with Certain Underwriters at Lloyd's of London, with Beazley 2623 as lead syndicate.",
+    ],
     coverageTagline: "Protect your investment and your rental income.",
     coverage: [
       {
@@ -210,6 +222,11 @@ export const products: Product[] = [
       "Comprehensive cover for landlords to protect their investment",
       "Cover specifically designed to address key risks that not all insurers cover, including intentional damage by tenants and methamphetamine contamination",
       "Comprehensive coverage backed by global strength and certainty delivered through Lloyd's of London",
+    ],
+    statementDetails: [
+      "Full replacement cover, natural hazards and property owner's liability, with appetite for rental properties up to $5,000,000 site sum insured.",
+      "Intentional damage and methamphetamine or hazardous substance damage are each covered to $100,000.",
+      "Your cover is placed with Certain Underwriters at Lloyd's of London, with Beazley 2623 as lead syndicate.",
     ],
     coverageTagline: "Cover built for the realities of renting.",
     coverage: [
@@ -286,6 +303,11 @@ export const products: Product[] = [
       "Tailored cover to address unique sector risks such as intentional damage and methamphetamine contamination",
       "Comprehensive coverage backed by global strength and certainty delivered through Lloyd's of London",
     ],
+    statementDetails: [
+      "Cover designed around the relationship between property owner, community housing provider and tenant.",
+      "Intentional damage and methamphetamine or hazardous substance damage are each covered to $100,000, with loss of rent included.",
+      "Your cover is placed with Certain Underwriters at Lloyd's of London, with Beazley 2623 as lead syndicate.",
+    ],
     coverageTagline: "Protecting the homes that hold communities together.",
     coverage: [
       {
@@ -354,6 +376,11 @@ export const products: Product[] = [
       "Personal accident and illness insurance provides a financial lifeline if injury or illness prevents you from working, ensuring you can keep meeting everyday expenses",
       "ACC in New Zealand covers accidents, but not illness—this insurance fills the gap, protecting your income when health challenges strike",
       "With cover in place, you can focus on recovery, not financial stress",
+    ],
+    statementDetails: [
+      "Weekly benefits of up to 75% of income for up to 2 years if accident or illness stops you working, plus lump sum payments for serious injury or death.",
+      "About a third of medical issues that prevent people from working are accident related \u2013 the rest are illness, which ACC does not cover.",
+      "Agreed value cover with a broad appetite for all occupations, including pilots, forestry workers, miners and athletes.",
     ],
     coverageTagline: "Focus on recovery, not financial stress.",
     coverage: [
@@ -427,6 +454,11 @@ export const products: Product[] = [
       "Professional indemnity insurance protects New Zealand businesses from the financial fallout of claims alleging professional mistakes, negligence, or breaches of duty.",
       "Your reputation is your most valuable asset. Professional indemnity insurance helps safeguard it by covering legal defence costs and settlement expenses.",
       "Professional indemnity insurance provides certainty in an uncertain world—so you can concentrate on growth, not risk.",
+    ],
+    statementDetails: [
+      "Cover for legal liability arising out of professional mistakes, negligence or breach of duty, including investigations by regulators or industry bodies.",
+      "Defence costs are provided in addition to the policy limit, and a costs exclusive excess means legal costs are covered from the first dollar.",
+      "A comprehensive policy wording with few exclusions and a broad appetite for most professions.",
     ],
     coverageTagline: "Concentrate on growth, not risk.",
     coverage: [

@@ -7,7 +7,7 @@ export function Tabs({ tabs }: { tabs: { label: string; content: ReactNode }[] }
   const id = useId();
   return (
     <div>
-      <div role="tablist" className="flex gap-2 border-b border-cloud">
+      <div role="tablist" className="flex flex-wrap justify-center border-b border-[#eaeaea]">
         {tabs.map((t, i) => (
           <button
             key={t.label}
@@ -17,10 +17,10 @@ export function Tabs({ tabs }: { tabs: { label: string; content: ReactNode }[] }
             aria-selected={active === i}
             aria-controls={`${id}-panel-${i}`}
             onClick={() => setActive(i)}
-            className={`-mb-px border-b-2 px-4 py-3 text-sm font-semibold transition-colors ${
+            className={`-mb-px border-b-2 px-[23px] pt-2 pb-5 text-[12px] font-semibold tracking-[0.15em] uppercase transition-colors ${
               active === i
-                ? "border-ocean-700 text-ocean-700"
-                : "border-transparent text-muted hover:text-ink"
+                ? "border-site-teal text-site-teal"
+                : "border-transparent text-charcoal hover:text-site-teal"
             }`}
           >
             {t.label}
@@ -34,7 +34,7 @@ export function Tabs({ tabs }: { tabs: { label: string; content: ReactNode }[] }
           id={`${id}-panel-${i}`}
           aria-labelledby={`${id}-tab-${i}`}
           hidden={active !== i}
-          className="pt-8"
+          className="pt-11"
         >
           {t.content}
         </div>
