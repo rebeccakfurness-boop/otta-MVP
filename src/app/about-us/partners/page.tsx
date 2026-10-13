@@ -1,32 +1,35 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
+import { Container } from "@/components/Mockup";
 
-export const metadata: Metadata = { title: "Partners" };
+export const metadata: Metadata = { title: "Our Insurance Partners" };
 
-const partners = [
-  { name: "Canopius 4444", body: "Lead syndicate for Corporate Travel and Personal Accident insurance." },
-  { name: "Beazley 2623", body: "Lead syndicate for Landlord, Rental Property and Social and Community Housing insurance." },
-  { name: "MS Amlin", body: "Lead syndicate for Liability insurance." },
-];
+// TODO(stage 2): replace the name tiles with partner logos.
+const partners = ["Lloyd's of London", "Canopius 4444", "Beazley 2623", "MS Amlin"];
 
 export default function PartnersPage() {
   return (
-    <>
-      <PageHeader eyebrow="About us" title="Our Partners">
-        Every Otta product is backed by Certain Underwriters at Lloyd&apos;s of London – global
-        strength and certainty for New Zealand businesses.
-      </PageHeader>
-      <Section>
-        <div className="grid gap-6 md:grid-cols-3">
-          {partners.map((p) => (
-            <div key={p.name} className="rounded-2xl border-t-4 border-ocean bg-cloud-50 p-8">
-              <h2 className="text-2xl">{p.name}</h2>
-              <p className="mt-3 text-muted">{p.body}</p>
-            </div>
+    <section className="pt-[118px] pb-[150px]">
+      <Container className="text-center">
+        <h1 className="font-heading text-[30px] font-semibold tracking-normal text-site-teal">
+          Our Insurance Partners
+        </h1>
+        <div className="mx-auto mt-4 h-px w-[226px] bg-[#eaeaea]" />
+        <p className="mx-auto mt-7 max-w-[890px] text-[17px] leading-[1.65] text-body">
+          Every Otta policy is underwritten by Certain Underwriters at Lloyd&apos;s of London,
+          giving New Zealand businesses comprehensive coverage backed by global strength and
+          certainty. Our lead syndicates are Canopius 4444, Beazley 2623 and MS Amlin.
+        </p>
+        <ul className="mx-auto mt-24 grid max-w-[1000px] grid-cols-2 gap-6 md:grid-cols-4">
+          {partners.map((name) => (
+            <li
+              key={name}
+              className="flex h-28 items-center justify-center border border-[#eaeaea] px-4 font-heading text-[18px] font-semibold text-charcoal"
+            >
+              {name}
+            </li>
           ))}
-        </div>
-      </Section>
-    </>
+        </ul>
+      </Container>
+    </section>
   );
 }

@@ -8,6 +8,8 @@ export type Product = {
   shortName: string;
   category: "accident-travel" | "property" | "liability";
   summary: string;
+  /** Card text on the Our Solutions page. */
+  overview: string;
   intro: string[];
   atAGlance: { label: string; value: string }[];
   statements: [string, string, string];
@@ -37,6 +39,8 @@ export const products: Product[] = [
     category: "accident-travel",
     summary:
       "Financial protection and peace of mind for businesses and their people when travelling.",
+    overview:
+      "Travel insurance is a crucial form of coverage that provides financial protection and peace of mind to both businesses and individuals when travelling. Whether it's for business or personal trips, travel insurance safeguards against unexpected events and emergencies that can occur during travel.",
     intro: [
       "Travel insurance is a crucial form of coverage that provides financial protection and peace of mind to both businesses and individuals when travelling. Whether it's for business or personal trips, travel insurance safeguards against unexpected events and emergencies that can occur during travel.",
       "Otta's insurance policies typically cover a range of risks, including trip cancellation or interruption, medical expenses, lost or delayed baggage, and emergency medical evacuation.",
@@ -106,6 +110,8 @@ export const products: Product[] = [
     category: "property",
     summary:
       "Specialist cover protecting landlords from losses associated with the tenancy of their property.",
+    overview:
+      "Owning a rental property comes with significant financial opportunities, but it also carries unique risks. Landlord insurance is designed to protect property investors from the unexpected, offering cover that goes beyond standard home insurance.",
     intro: [
       "Owning a rental property comes with significant financial opportunities, but it also carries unique risks. Landlord insurance is designed to protect property investors from the unexpected, offering cover that goes beyond standard home insurance. From damage caused by tenants to loss of rental income, landlord insurance provides a safety net that ensures your investment continues to generate returns even when unforeseen challenges arise. It's an essential tool for any property owner looking to protect their assets and reduce the stress of managing a rental.",
       "Our comprehensive landlord insurance solutions include cover for accidental or intentional damage, loss of rent due to tenant default or uninhabitable conditions, legal liability, and protection against natural disasters. Our policies also extend to cover landlord-owned contents, fixtures, and, in our Premier solution, issues like methamphetamine contamination.",
@@ -184,6 +190,8 @@ export const products: Product[] = [
     category: "property",
     summary:
       "Comprehensive property cover for residential rental properties, designed for landlords.",
+    overview:
+      "Otta's Rental Property insurance is specifically designed to give landlords peace of mind. It includes the standard covers such as for the building and natural disasters, and adds in additional cover specific to rental properties. These include intentional damage and methamphetamine contamination.",
     intro: [
       "Rental housing plays a prominent role in the New Zealand housing landscape. Approximately one in three Kiwi households—around 33%—are renters, marking a notable increase over recent decades and highlighting the growing importance of effective landlord insurance strategies. Given this substantial portion of the population relies on renting, landlords face unique risks, from natural disasters and tenant-related incidents to potential gaps in coverage that traditional homeowner insurance simply doesn't address.",
       "Otta's Rental Property insurance is specifically designed to give landlords peace of mind. It includes the standard covers such as for the building and natural disasters, and adds in additional cover specific to rental properties. These include intentional damage and methamphetamine contamination.",
@@ -252,6 +260,8 @@ export const products: Product[] = [
     category: "property",
     summary:
       "Tailored property cover for social and community housing providers and the communities they serve.",
+    overview:
+      "Social and community housing is an essential part of New Zealand's housing landscape, providing secure, affordable homes for individuals and families who may otherwise struggle to access the private market.",
     intro: [
       "Social and community housing is an essential part of New Zealand's housing landscape, providing secure, affordable homes for individuals and families who may otherwise struggle to access the private market. These properties, managed by government agencies, iwi organisations, and community housing providers, are more than just buildings - they are a cornerstone of social stability, wellbeing, and inclusion. Yet, the very nature of this sector presents a unique set of risks, from higher tenant support needs to properties located in areas more exposed to natural disasters or social challenges.",
       "While insurance is a vital safeguard for any property owner, standard policies are often ill-equipped to handle the complexities of social and community housing. Otta fills this gap by delivering tailored cover, responsive claims handling, and risk management support designed specifically for the sector's realities. This not only protects the physical assets but also ensures housing providers can continue their mission - maintaining continuity of service and safeguarding vulnerable communities when unforeseen events occur.",
@@ -323,6 +333,8 @@ export const products: Product[] = [
     category: "accident-travel",
     summary:
       "Agreed value accident and illness cover that tops up ACC and fills the gaps it leaves.",
+    overview:
+      "Personal Accident insurance provides financial protection in the event of accidental injury, disability, or death. It is designed to offer individuals and their families peace of mind by providing financial support during challenging times.",
     intro: [
       "Personal Accident insurance provides financial protection in the event of accidental injury, disability, or death. It is designed to offer individuals and their families peace of mind by providing financial support during challenging times. This insurance policy typically covers a wide range of accidents, including those that occur at home, work, or during leisure activities.",
       "About a third of medical issues that prevent people from working are accident related, with the remainder due to illness. This policy goes beyond the cover that ACC provides as it often includes cover for serious illness, provides cover if ACC does not respond, and tops up ACC payments from 80% to 100% of pre-accident income.",
@@ -390,6 +402,8 @@ export const products: Product[] = [
     category: "liability",
     summary:
       "Professional Indemnity, Public, Statutory and Employers Liability cover for New Zealand businesses.",
+    overview:
+      "Liability insurance protects individuals and businesses from financial losses resulting from legal claims or lawsuits. It provides coverage for the costs associated with legal defence, settlements, and judgments that may arise if the insured party is found legally responsible for causing harm or damage to another person or their property.",
     intro: [
       "Liability insurance protects individuals and businesses from financial losses resulting from legal claims or lawsuits. It provides coverage for the costs associated with legal defence, settlements, and judgments that may arise if the insured party is found legally responsible for causing harm or damage to another person or their property.",
       "Liability insurance is crucial for businesses, as it shields them from the financial burden of legal claims that could otherwise jeopardise their operations or assets.",

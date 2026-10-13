@@ -1,47 +1,49 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ClaimsBand } from "@/components/ClaimsBand";
-import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/components/Section";
-import { productCategories, products } from "@/content/products";
+import { Container, SquareButton } from "@/components/Mockup";
+import { products } from "@/content/products";
 
 export const metadata: Metadata = { title: "Our Solutions" };
 
 export default function SolutionsPage() {
   return (
-    <>
-      <PageHeader eyebrow="Our solutions" title="Specialist insurance, backed by Lloyd's of London">
-        Simple insurance solutions for complex problems. If you&apos;re not sure whether we can
-        help, talk directly to the underwriter.
-      </PageHeader>
-      {productCategories.map((cat, i) => (
-        <Section key={cat.key} tone={i % 2 ? "cloud" : "white"}>
-          <div className="grid gap-10 md:grid-cols-12">
-            <div className="md:col-span-4">
-              <h2 className="text-3xl">{cat.title}</h2>
-              <p className="mt-4 text-muted">{cat.blurb}</p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 md:col-span-8">
-              {products
-                .filter((p) => p.category === cat.key)
-                .map((p) => (
-                  <Link
-                    key={p.slug}
-                    href={`/solutions/${p.slug}`}
-                    className="group flex flex-col rounded-2xl border border-cloud bg-white p-7 shadow-sm transition hover:-translate-y-0.5 hover:border-ocean hover:shadow-md"
-                  >
-                    <h3 className="text-xl group-hover:text-ocean-700">{p.name}</h3>
-                    <p className="mt-3 flex-1 text-muted">{p.summary}</p>
-                    <span className="mt-6 font-semibold text-ocean-700">
-                      Learn more <span aria-hidden>→</span>
-                    </span>
-                  </Link>
-                ))}
-            </div>
+    <section className="bg-[#85c6bd] pt-[110px] pb-[110px]">
+      <Container>
+        <h1 className="text-center font-heading text-[30px] font-semibold tracking-normal text-white">
+          Otta Specialised Insurance Solutions
+        </h1>
+        <div className="mx-auto mt-[86px] grid max-w-[1333px] gap-9 md:grid-cols-2 lg:grid-cols-3">
+          {products.map((p) => (
+            <article key={p.slug} className="flex flex-col items-start bg-white p-9">
+              <span className="flex h-[82px] w-[82px] items-center justify-center rounded-full border border-site-teal text-site-teal">
+                <svg aria-hidden viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="m5 12.5 4.5 4.5L19 7.5" />
+                </svg>
+              </span>
+              <h2 className="mt-5 text-[24px] leading-[1.2] font-semibold tracking-normal text-site-teal">
+                <Link href={`/solutions/${p.slug}`} className="hover:text-[#4fa99c]">
+                  {p.name}
+                </Link>
+              </h2>
+              <p className="mt-4 text-[15px] leading-[1.9] text-body">{p.overview}</p>
+              <div className="mt-6">
+                <SquareButton href={`/solutions/${p.slug}`} tone="teal">
+                  Find out more
+                </SquareButton>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="mt-[90px] text-center">
+          <h2 className="mx-auto max-w-[520px] text-[32px] leading-[1.2] font-semibold tracking-normal text-white md:text-[37px]">
+            Discover how Otta keeps Company Name moving
+          </h2>
+          <div className="mt-10">
+            <SquareButton href="/about-us/case-studies">Discover our case studies</SquareButton>
           </div>
-        </Section>
-      ))}
-      <ClaimsBand />
-    </>
+        </div>
+      </Container>
+    </section>
   );
 }

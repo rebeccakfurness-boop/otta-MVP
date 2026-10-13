@@ -7,7 +7,9 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Claims phone number** – source copy says "0800 xxx xxxx" (`src/content/site.ts`).
 - **Domain and email addresses** – assumed `otta.co.nz`, `hello@otta.co.nz`, `claims@otta.co.nz`.
 - **Important information** – Fair Insurance Code, cooling off, dispute resolution, complaints and FSP number wording (`src/content/legal.ts`), plus the Fair Insurance Code and Complaints pages.
-- **About us, Our Team, Case Studies** – copy, team profiles and photos.
+- **About us** – the three values (Forward thinking, Re-invention, Continuous Improvement) are draft copy; "The Otta success story" needs its story.
+- **Partners** – partner names are shown as text tiles until logos are supplied.
+- **Our Team, Case Studies** – copy, team profiles and photos.
 - **Hero video** – licensed lake footage needed at `public/media/hero.mp4`, plus a still at `public/media/hero-poster.jpg`. A teal gradient shows until then.
 - **Photography** – all images are placeholders (dark blocks on the home page, gradient blocks elsewhere).
 - **Home page case study** – heading, summary and copy are placeholders.

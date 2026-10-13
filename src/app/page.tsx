@@ -1,6 +1,6 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { HeroVideo } from "@/components/HeroVideo";
+import { DarkPlaceholder, SquareButton } from "@/components/Mockup";
 import { getProduct } from "@/content/products";
 
 // Home page columns. Landlord has its own column (it is sold through property
@@ -27,27 +27,6 @@ const columns = [
     products: ["landlord-insurance"],
   },
 ];
-
-function SquareButton({ href, children }: { href: string; children: ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex items-center bg-white px-8 py-[15px] text-[12px] font-medium tracking-[0.12em] text-charcoal uppercase transition-colors hover:bg-charcoal hover:text-white"
-    >
-      {children}
-    </Link>
-  );
-}
-
-function DarkPlaceholder({ label, className = "" }: { label: string; className?: string }) {
-  return (
-    <div
-      role="img"
-      aria-label={`${label} (placeholder image)`}
-      className={`bg-placeholder ${className}`}
-    />
-  );
-}
 
 export default function Home() {
   return (

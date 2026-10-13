@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { mainNav, site } from "@/content/site";
 import { Logo } from "./Logo";
 
@@ -24,7 +24,16 @@ export function Header() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   // Close the mobile menu after navigating.
+  const [scrolled, setScrolled] = useState(false);
   const [lastPath, setLastPath] = useState(pathname);
+
+  // Large header at the top of the page, shrinking once the visitor scrolls.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   if (lastPath !== pathname) {
     setLastPath(pathname);
     setOpen(false);
@@ -32,18 +41,27 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-[0_1px_0_rgba(0,0,0,0.06)]">
-      <div className="mx-auto flex h-[50px] max-w-[1366px] items-center gap-6 px-5 md:px-4">
-        <Logo className="h-[22px] w-auto" />
+    <>
+    {/* Reserves the space the fixed header covers. */}
+    <div aria-hidden className="h-16 lg:h-[92px]" />
+    <header className="fixed inset-x-0 top-0 z-50 bg-white shadow-[0_1px_0_rgba(0,0,0,0.06)]">
+      <div
+        className={`mx-auto flex h-16 max-w-[1366px] items-center gap-6 px-5 transition-[height] duration-300 md:px-4 ${
+          scrolled ? "lg:h-[50px]" : "lg:h-[92px]"
+        }`}
+      >
+        <Logo
+          className={`h-[26px] w-auto transition-[height] duration-300 ${scrolled ? "lg:h-[22px]" : "lg:h-[42px]"}`}
+        />
 
         {/* Desktop navigation */}
-        <nav aria-label="Main" className="ml-auto hidden lg:block">
-          <ul className="flex items-center">
+        <nav aria-label="Main" className="ml-auto hidden self-stretch lg:block">
+          <ul className="flex h-full items-center">
             {mainNav.map((item) => (
-              <li key={item.href} className="group relative">
+              <li key={item.href} className="group relative h-full">
                 <Link
                   href={item.href}
-                  className={`flex h-[50px] items-center px-[16px] text-[15px] xl:px-[16.5px] tracking-[0.05em] transition-colors hover:text-[#8a8a8a] ${
+                  className={`flex h-full items-center px-[16px] text-[15px] xl:px-[16.5px] tracking-[0.05em] transition-colors hover:text-[#8a8a8a] ${
                     isActive(pathname, item.href) ? "text-[#8a8a8a]" : "text-charcoal"
                   }`}
                 >
@@ -95,7 +113,7 @@ export function Header() {
 
       {/* Mobile navigation */}
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile" className="max-h-[calc(100vh-50px)] overflow-y-auto border-t border-cloud bg-white lg:hidden">
+        <nav id="mobile-nav" aria-label="Mobile" className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-cloud bg-white lg:hidden">
           <ul className="px-5 py-4">
             {mainNav.map((item) => (
               <li key={item.href} className="border-b border-cloud last:border-0">
@@ -140,5 +158,6 @@ export function Header() {
         </nav>
       )}
     </header>
+    </>
   );
 }
