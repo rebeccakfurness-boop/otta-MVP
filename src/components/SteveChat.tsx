@@ -2,22 +2,33 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { steveGreeting, steveSuggestions } from "@/content/steve-ui";
+import { site } from "@/content/site";
+import { contactTeams, steveGreeting, steveSuggestions } from "@/content/steve-ui";
 import { Otter } from "./Otter";
 
-type Message = { role: "user" | "assistant"; content: string };
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+  /** Part of the built-in contact flow: shown in the chat but not sent to Claude. */
+  local?: boolean;
+  /** Show the contact team choices under this message. */
+  choices?: boolean;
+};
 
-// Turn site paths such as /solutions/landlord-insurance into links.
+// Turn email addresses and site paths (/solutions/landlord-insurance) into links.
 function withLinks(text: string): ReactNode[] {
-  return text.split(/(\/[a-z0-9][a-z0-9\-/]*[a-z0-9])/g).map((part, i) =>
-    i % 2 === 1 ? (
+  return text.split(/([\w.+-]+@[\w-]+(?:\.[\w-]+)+|(?<![\w.])\/[a-z0-9][a-z0-9\-/]*[a-z0-9])/gi).map((part, i) => {
+    if (i % 2 === 0) return part;
+    return part.includes("@") ? (
+      <a key={i} href={`mailto:${part}`} className="font-medium break-all text-site-teal underline">
+        {part}
+      </a>
+    ) : (
       <Link key={i} href={part} className="font-medium text-site-teal underline">
         {part}
       </Link>
-    ) : (
-      part
-    ),
-  );
+    );
+  });
 }
 
 export function SteveChat() {
@@ -39,7 +50,7 @@ export function SteveChat() {
   async function send(text: string) {
     const question = text.trim();
     if (!question || busy) return;
-    const history: Message[] = [...messages, { role: "user", content: question }];
+    const history: Message[] = [...messages.map((m) => ({ ...m, choices: false })), { role: "user", content: question }];
     setMessages([...history, { role: "assistant", content: "" }]);
     setInput("");
     setBusy(true);
@@ -49,7 +60,12 @@ export function SteveChat() {
         method: "POST",
         headers: { "content-type": "application/json" },
         // Keep the last 20 turns so the request stays small.
-        body: JSON.stringify({ messages: history.slice(-19) }),
+        body: JSON.stringify({
+          messages: history
+            .filter((m) => !m.local && m.content)
+            .slice(-19)
+            .map(({ role, content }) => ({ role, content })),
+        }),
       });
       if (!res.body) throw new Error("No response");
       const reader = res.body.getReader();
@@ -71,6 +87,35 @@ export function SteveChat() {
     }
   }
 
+  function startNewChat() {
+    if (busy) return;
+    setMessages([]);
+    setInput("");
+    inputRef.current?.focus();
+  }
+
+  function askContactTopic() {
+    if (busy) return;
+    setMessages((prev) => [
+      ...prev.map((m) => ({ ...m, choices: false })),
+      { role: "user", content: "I'd like to contact an Otta team member", local: true },
+      { role: "assistant", content: "Happy to help you reach the right team. What is your query about?", local: true, choices: true },
+    ]);
+  }
+
+  function pickContactTeam(index: number) {
+    const t = contactTeams[index];
+    setMessages((prev) => [
+      ...prev.map((m) => ({ ...m, choices: false })),
+      { role: "user", content: t.label, local: true },
+      {
+        role: "assistant",
+        content: `Thanks! Please email our ${t.team} at ${t.email} and a team member will get back to you. If it's easier, you can also call us on ${site.phone}.`,
+        local: true,
+      },
+    ]);
+  }
+
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     send(input);
@@ -90,8 +135,21 @@ export function SteveChat() {
             </span>
             <div className="min-w-0 flex-1">
               <p className="font-heading text-[17px] font-bold">Steve</p>
-              <p className="text-[12px] text-white/85">Otta&apos;s friendly otter · Ask me anything</p>
+              <p className="text-[12px] text-white/85">Otta&apos;s friendly otter</p>
             </div>
+            <button
+              type="button"
+              onClick={startNewChat}
+              disabled={busy || messages.length === 0}
+              className="flex items-center gap-1 rounded px-2 py-1.5 text-[12px] font-medium hover:bg-white/15 disabled:opacity-50 disabled:hover:bg-transparent"
+              aria-label="Start new chat"
+            >
+              <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+              <span className="hidden sm:inline">New chat</span>
+            </button>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -121,13 +179,39 @@ export function SteveChat() {
               </div>
             )}
             {messages.map((m, i) => (
-              <Bubble key={i} role={m.role}>
-                {m.content ? withLinks(m.content) : <Typing />}
-              </Bubble>
+              <div key={i} className="space-y-2">
+                <Bubble role={m.role}>{m.content ? withLinks(m.content) : <Typing />}</Bubble>
+                {m.choices && (
+                  <div className="flex flex-wrap gap-2 pl-9">
+                    {contactTeams.map((t, ti) => (
+                      <button
+                        key={t.label}
+                        type="button"
+                        onClick={() => pickContactTeam(ti)}
+                        className="rounded-full border border-site-teal bg-white px-3 py-1.5 text-[13px] text-site-teal transition-colors hover:bg-site-teal hover:text-white"
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 
           <form onSubmit={onSubmit} className="border-t border-[#eaeaea] bg-white p-3">
+            <button
+              type="button"
+              onClick={askContactTopic}
+              disabled={busy}
+              className="mb-2.5 flex w-full items-center justify-center gap-2 border border-site-teal py-2 text-[12px] font-medium tracking-[0.08em] text-site-teal uppercase transition-colors hover:bg-site-teal hover:text-white disabled:opacity-50"
+            >
+              <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+              </svg>
+              Contact an Otta team member
+            </button>
             <div className="flex items-end gap-2">
               <label htmlFor="steve-input" className="sr-only">
                 Ask Steve a question
