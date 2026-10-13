@@ -11,7 +11,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Important information**: Fair Insurance Code, cooling off, dispute resolution, complaints and FSP number wording (`src/content/legal.ts`), plus the Fair Insurance Code and Complaints pages.
 - **About us**: the three values (Forward thinking, Re-invention, Continuous Improvement) are draft copy; "The Otta success story" needs its story.
 - **Partners**: partner names are shown as text tiles until logos are supplied.
-- **Our Team**: all eleven members are listed; photos needed for everyone except Craig (`src/content/team.ts`, `public/team/`).
+- **Our Team**: all twelve members are listed; photos still needed for Rosanna, Shabnam, Michelle, Jemma, Gaby, Carmel and Jen (`src/content/team.ts`, `public/team/`).
 - **Case Studies**: copy and photos.
 - **Hero video**: `public/media/hero.mp4` is a watermarked, low-resolution iStock preview (iStock 1390591506) used as a placeholder. License the full clip (or replace it) and swap both `hero.mp4` and `hero-poster.jpg` before launch.
 - **Photography**: all images are placeholders (soft teal blocks labelled "placeholder image").

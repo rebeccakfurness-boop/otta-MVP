@@ -4,14 +4,15 @@ export type TeamMember = { name: string; role: string; photo?: string };
 
 export const team: TeamMember[] = [
   { name: "Craig Furness", role: "CEO & Director", photo: "/team/craig-furness.jpg" },
-  { name: "Jonathon Gilham", role: "Director" },
-  { name: "Katrina O'Connor", role: "Client Relationships Manager" },
+  { name: "Jonathon Gilham", role: "Director", photo: "/team/jonathon-gilham.jpg" },
+  { name: "Katrina O'Connor", role: "Client Relationships Manager", photo: "/team/katrina-oconnor.jpg" },
   { name: "Rosanna Clements", role: "Broker Market Manager" },
+  { name: "Sam Furness", role: "Underwriter", photo: "/team/sam-furness.jpg" },
   { name: "Shabnam Sarang", role: "Finance and Operations Partner" },
   { name: "Michelle Smith", role: "Operations Manager" },
   { name: "Jemma Lee-Matson", role: "Claims Manager" },
   { name: "Gaby Cook", role: "People & Capability Partner" },
   { name: "Carmel Cross", role: "Finance and Accounting Partner" },
   { name: "Jen Whitcombe", role: "Operations" },
-  { name: "Rebecca Furness", role: "Operations" },
+  { name: "Rebecca Furness", role: "Operations", photo: "/team/rebecca-furness.jpg" },
 ];
