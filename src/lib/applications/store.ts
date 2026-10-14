@@ -1,6 +1,7 @@
 import "server-only";
 import { neon } from "@neondatabase/serverless";
 import { demoMode } from "@/lib/auth/sealed-session";
+import { databaseUrl } from "@/lib/db/records";
 import type { Answers } from "@/lib/forms/application";
 
 // Online applications and the client links brokers send out.
@@ -53,7 +54,7 @@ export type ClientLink = {
   url?: string;
 };
 
-export const storageMode = process.env.DATABASE_URL ? "database" : "memory";
+export const storageMode = databaseUrl ? "database" : "memory";
 
 /** In demo mode the portals start with sample applications (see demo-seed.ts). DEMO_DATA=off turns this off. */
 export const demoDataOn = demoMode && process.env.DEMO_DATA !== "off";
@@ -68,7 +69,7 @@ const memory = ((globalThis as { __ottaApplications?: { apps: Application[]; lin
 // --- Neon ---
 let ready: Promise<void> | null = null;
 function db() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const sql = neon(databaseUrl);
   ready ??= (async () => {
     await sql`create table if not exists applications (
       id text primary key,

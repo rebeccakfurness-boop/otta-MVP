@@ -9,11 +9,13 @@ import { neon } from "@neondatabase/serverless";
 type Row<T> = { id: string; data: T; createdAt: string };
 
 const memory = ((globalThis as { __ottaRecords?: Map<string, Map<string, Row<unknown>>> }).__ottaRecords ??= new Map());
-const useDb = !!process.env.DATABASE_URL;
+/** The Neon connection string. The Vercel Neon integration names it after its prefix, so accept the usual ones. */
+export const databaseUrl = process.env.DATABASE_URL || process.env.STORAGE_URL || process.env.POSTGRES_URL || "";
+const useDb = !!databaseUrl;
 let ready: Promise<unknown> | null = null;
 
 function db() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const sql = neon(databaseUrl);
   ready ??= sql`create table if not exists records (
     collection text not null,
     id text not null,
