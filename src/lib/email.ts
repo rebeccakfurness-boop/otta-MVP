@@ -38,6 +38,10 @@ export async function sendEmail({ to, subject, text, replyTo, senderName = "Otta
       attachment: attachments?.map((a) => ({ name: a.name, content: Buffer.from(a.content).toString("base64") })),
     }),
   });
-  if (!res.ok) throw new Error(`Brevo responded ${res.status}`);
+  if (!res.ok) {
+    // Brevo says why (most often an unverified sender address); keep it in the logs.
+    const reason = (await res.text().catch(() => "")).slice(0, 300);
+    throw new Error(`Brevo responded ${res.status} sending "${subject}" from ${env.enquiryFromEmail}: ${reason}`);
+  }
   return true;
 }

@@ -35,7 +35,7 @@ export async function submitClientApplication(token: string, _prev: SubmitState,
       portalUrl: (id) => `${base}/${id}`,
     });
     // The client doesn't get a portal link.
-    return { status: "sent", reference: sent.reference, emailed: sent.emailed };
+    return { status: "sent", reference: sent.reference, emailed: sent.emailed, emailFailed: sent.emailFailed };
   } catch (error) {
     console.error("[client-application] send failed", error);
     return { status: "error", message: "We couldn't send your application just now. Please try again in a moment." };

@@ -123,7 +123,9 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
         </p>
         {!state.emailed && (
           <p className="mt-4 border-l-4 border-site-purple bg-[#f8f1fa] px-4 py-3 text-left text-[13px] text-site-purple">
-            Demo mode: email sending is not switched on yet, so nothing was actually emailed. Download the PDF to see what would be sent.
+            {state.emailFailed
+              ? `It is saved and the Otta team can see it in the admin portal, but the email to the team didn't send this time. There's no need to send it again.`
+              : "Demo mode: email sending is not switched on yet, so nothing was actually emailed. Download the PDF to see what would be sent."}
           </p>
         )}
         <div className="mt-8 flex flex-wrap justify-center gap-3">

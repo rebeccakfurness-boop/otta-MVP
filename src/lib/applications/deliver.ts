@@ -111,6 +111,8 @@ export async function deliverApplication(d: Delivery) {
 
   const direct = d.source === "public";
   const contact = direct ? "the applicant" : "the broker";
+  // A failed email never loses the application: it is saved above and shows in the admin portal.
+  let emailFailed = false;
   const emailed = await sendEmail({
     to: env.applicationToEmail || form.teamEmail,
     replyTo: d.brokerEmail,
@@ -139,6 +141,10 @@ export async function deliverApplication(d: Delivery) {
       .filter((l, i, all) => !(l === "" && all[i - 1] === ""))
       .join("\n"),
     attachments: worksheet ? [attachment, worksheet] : [attachment],
+  }).catch((error) => {
+    console.error("[application] email to the Otta team failed", reference, error);
+    emailFailed = true;
+    return false;
   });
 
   if (viaClient) {
@@ -159,8 +165,8 @@ export async function deliverApplication(d: Delivery) {
         `The Otta team`,
       ].join("\n"),
       attachments: [attachment],
-    });
+    }).catch((error) => console.error("[application] email to the broker failed", reference, error));
   }
 
-  return { id, reference, emailed };
+  return { id, reference, emailed, emailFailed };
 }

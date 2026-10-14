@@ -10,7 +10,7 @@ export type SubmitState =
   | { status: "idle" }
   | { status: "invalid"; errors: Errors }
   | { status: "error"; message: string }
-  | { status: "sent"; reference: string; emailed: boolean; id?: string };
+  | { status: "sent"; reference: string; emailed: boolean; id?: string; /** Email sending is on but this one failed. */ emailFailed?: boolean };
 export type UnitsField = Extract<Field, { kind: "units" }>;
 export type GridField = Extract<Field, { kind: "grid" }>;
 
