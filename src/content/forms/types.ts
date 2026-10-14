@@ -21,6 +21,8 @@ type Base = {
   placeholder?: string;
   /** Suggest NZ addresses as the person types (and fill in a post code field). */
   address?: { postcodeField?: string };
+  /** The only acceptable answer, e.g. "no" to "Is this a holiday home?", with the message shown otherwise. */
+  mustEqual?: { value: string; message: string };
 };
 
 export type Field =
@@ -28,13 +30,26 @@ export type Field =
   | (Base & { kind: "yesno" })
   | (Base & { kind: "choice"; options: string[] })
   /** A table the person adds rows to (e.g. units in a block). */
-  | (Base & { kind: "units"; columns: { key: string; label: string; kind: "text" | "money" | "number"; placeholder: string }[] })
+  | (Base & {
+      kind: "units";
+      columns: { key: string; label: string; kind: "text" | "money" | "number"; placeholder: string }[];
+      /** Button text for adding a row, e.g. "Add a unit". */
+      addLabel?: string;
+    })
   /** A fixed table of numbers (rows by columns) with a totals row, e.g. travel days by region. */
   | (Base & { kind: "grid"; rows: { key: string; label: string }[]; columns: { key: string; label: string }[];
       /** Add a totals row: true for every column, or the keys of the columns to total. */
       total?: boolean | string[] });
 
-export type TextBlock = { heading?: string; paragraphs?: string[]; bullets?: string[] };
+export type TextBlock = {
+  heading?: string;
+  paragraphs?: string[];
+  bullets?: string[];
+  /** Numbered points, shown after the paragraphs. */
+  numbered?: string[];
+  /** A simple comparison table (first column is the row label). */
+  table?: { head: string[]; rows: string[][] };
+};
 
 export type Section = {
   id: string;
@@ -74,10 +89,13 @@ export type FormDefinition = {
   summary: string;
   fileName: string;
   sendTo: string;
-  /** Products this form is the proposal form for (Resources > Proposal Forms). */
+  /** Products this form belongs to, and the Resources page it is listed on. */
   productSlugs: string[];
-  /** The fields that name the application in lists and email subjects. */
-  keyFields: { name: string; detail: string };
+  resource?: "proposal-forms" | "renewal-declarations";
+  /** The fields that name the application in lists and email subjects (several name fields are joined). */
+  keyFields: { name: string | string[]; detail: string };
+  /** Wording of the confirmation tick box above the submit button. */
+  confirm?: { broker: string; client: string };
   /** Building only: attach the underwriting worksheet and flood map links. */
   underwriting?: boolean;
   invite: { subject: (brokerage: string) => string; body: (o: InviteDetails) => string };

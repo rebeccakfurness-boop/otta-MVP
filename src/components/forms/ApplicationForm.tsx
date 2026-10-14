@@ -202,12 +202,51 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
                             {p}
                           </p>
                         ))}
+                        {block.numbered && (
+                          <ol className="mt-2 list-decimal space-y-1 pl-5">
+                            {block.numbered.map((n) => (
+                              <li key={n}>{n}</li>
+                            ))}
+                          </ol>
+                        )}
                         {block.bullets && (
                           <ul className="mt-2 list-disc space-y-1 pl-5">
                             {block.bullets.map((b) => (
                               <li key={b}>{b}</li>
                             ))}
                           </ul>
+                        )}
+                        {block.table && (
+                          <div className="mt-3 overflow-x-auto">
+                            <table className="w-full min-w-[560px] border-collapse text-[13px]">
+                              <thead>
+                                <tr className="bg-site-blue text-left text-white">
+                                  {block.table.head.map((h, i) => (
+                                    <th key={i} scope="col" className="px-3 py-2.5 font-medium">
+                                      {h}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {block.table.rows.map((row) => (
+                                  <tr key={row[0]} className="border-b border-[#eaeaea]">
+                                    {row.map((cell, i) =>
+                                      i === 0 ? (
+                                        <th key={i} scope="row" className="px-3 py-2.5 text-left font-semibold text-charcoal">
+                                          {cell}
+                                        </th>
+                                      ) : (
+                                        <td key={i} className="px-3 py-2.5 text-charcoal">
+                                          {cell}
+                                        </td>
+                                      ),
+                                    )}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
                         )}
                       </div>
                     ))}
@@ -234,8 +273,9 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
                     />
                     <span>
                       {isClient
-                        ? "I have read the declaration, duty of disclosure and non-disclosure wording above, and agree to it."
-                        : "I confirm the applicant has read the declaration, duty of disclosure and non-disclosure wording above, and agrees to it."}
+                        ? (form.confirm?.client ?? "I have read the declaration, duty of disclosure and non-disclosure wording above, and agree to it.")
+                        : (form.confirm?.broker ??
+                          "I confirm the applicant has read the declaration, duty of disclosure and non-disclosure wording above, and agrees to it.")}
                     </span>
                   </label>
                   <FieldError name={CONFIRM_FIELD} error={errors[CONFIRM_FIELD]} />
@@ -297,6 +337,11 @@ function SectionCard({ section, answers, errors, defaults }: { section: Section;
                 <GridInput field={field} answers={answers} errors={errors} />
               ) : (
                 <FieldInput field={field} error={errors[field.name]} defaultValue={defaults[field.name]} />
+              )}
+              {field.mustEqual && answers[field.name] && answers[field.name] !== field.mustEqual.value && !errors[field.name] && (
+                <p role="alert" className="mt-3 border-l-4 border-site-purple bg-[#f8f1fa] px-4 py-3 text-[14px] font-medium text-site-purple">
+                  {field.mustEqual.message}
+                </p>
               )}
             </div>
           ))}
@@ -525,9 +570,9 @@ function UnitsTable({ field, errors }: { field: UnitsField; errors: Errors }) {
         disabled={rows.length >= MAX_UNIT_ROWS}
         className="mt-3 inline-flex items-center gap-2 text-[12px] font-medium tracking-[0.12em] text-[#2e7d74] uppercase hover:text-site-teal"
       >
-        <Icon name="plus" className="h-4 w-4" /> Add a unit
+        <Icon name="plus" className="h-4 w-4" /> {field.addLabel ?? "Add a unit"}
       </button>
-      <FieldError name={field.name} error={errors[field.name] ?? (Object.keys(errors).some((k) => k.startsWith(`${field.name}.`)) ? "Complete every column for each unit" : undefined)} />
+      <FieldError name={field.name} error={errors[field.name] ?? (Object.keys(errors).some((k) => k.startsWith(`${field.name}.`)) ? "Complete every column for each row" : undefined)} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import "server-only";
 import type { FormDefinition } from "@/content/forms";
-import type { Answers } from "./application";
+import { keyName, type Answers } from "./application";
 import { buildApplicationPdf } from "./application-pdf";
 
 type Meta = Parameters<typeof buildApplicationPdf>[2];
@@ -14,7 +14,7 @@ export async function formPdfResponse(form: FormDefinition, answers: Answers, me
   const { reference: _ignored, ...rest } = answers;
   void _ignored;
   const pdf = await buildApplicationPdf(form, rest, { ...meta, reference: meta.reference ?? fromAnswers });
-  const name = (meta.reference ?? fromAnswers) || rest[form.keyFields.name];
+  const name = (meta.reference ?? fromAnswers) || keyName(form, rest);
   const safe = name
     ?.normalize("NFD")
     .replace(/[̀-ͯ]/g, "")

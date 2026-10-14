@@ -120,7 +120,7 @@ export function validate(form: FormDefinition, answers: Answers): Errors {
     }
     if (field.kind === "units") {
       const rows = unitRows(field, answers);
-      if (rows.length === 0) errors[field.name] = "Add at least one unit";
+      if (rows.length === 0) errors[field.name] = field.addLabel ? `${field.addLabel} (at least one)` : "Add at least one unit";
       rows.forEach((row, i) => {
         for (const col of field.columns) {
           const key = `${field.name}.${i}.${col.key}`;
@@ -136,6 +136,7 @@ export function validate(form: FormDefinition, answers: Answers): Errors {
       continue;
     }
     if (field.kind === "choice" && !field.options.includes(value)) errors[field.name] = "Choose an option";
+    if (field.mustEqual && value !== field.mustEqual.value) errors[field.name] = field.mustEqual.message;
     const check = checks[field.kind];
     if (check) {
       const result = check.safeParse(value);
@@ -200,4 +201,18 @@ export function summaryText(form: FormDefinition, answers: Answers) {
   }
   lines.push(`  Declaration confirmed: ${answers[CONFIRM_FIELD] === "on" ? "Yes" : "No"}`);
   return lines.join("\n").trim();
+}
+
+/** The name that identifies an application (e.g. the insured), from the form's key fields. */
+export function keyName(form: FormDefinition, answers: Answers) {
+  const fields = Array.isArray(form.keyFields.name) ? form.keyFields.name : [form.keyFields.name];
+  return fields.map((f) => answers[f] ?? "").filter(Boolean).join(" ");
+}
+
+/** Prefill the key name fields from a full name (first word, then the rest). */
+export function keyNameDefaults(form: FormDefinition, fullName: string): Answers {
+  const fields = Array.isArray(form.keyFields.name) ? form.keyFields.name : [form.keyFields.name];
+  if (fields.length === 1) return { [fields[0]]: fullName };
+  const [first, ...rest] = fullName.trim().split(/\s+/);
+  return { [fields[0]]: first ?? "", [fields[1]]: rest.join(" ") };
 }

@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { Container, LargeButton } from "@/components/Mockup";
 import { getForm } from "@/content/forms";
+import { keyNameDefaults } from "@/lib/forms/application";
 import { site } from "@/content/site";
 import { openLink } from "@/lib/applications/client-link";
 import { getLink } from "@/lib/applications/store";
@@ -60,7 +61,7 @@ async function ClientApplication({ params }: { params: PageProps<"/apply/[form]/
         action={submitClientApplication.bind(null, token)}
         defaults={{
           broker: link.brokerageName,
-          [form.keyFields.name]: link.clientName,
+          ...keyNameDefaults(form, link.clientName),
           email: link.clientEmail ?? "",
           signatoryName: link.clientName,
           signedDate: today,

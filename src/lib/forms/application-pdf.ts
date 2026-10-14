@@ -78,7 +78,9 @@ export async function buildApplicationPdf(
       w.gap(6);
       for (const block of part.text) {
         if (block.heading) w.section(block.heading);
+        if (block.table) w.textTable(block.table.head, block.table.rows);
         for (const p of block.paragraphs ?? []) w.paragraph(p);
+        (block.numbered ?? []).forEach((n, i) => w.paragraph(`${i + 1}.  ${n}`));
         for (const b of block.bullets ?? []) w.paragraph(b, { bullet: true });
         w.endSection();
       }
@@ -360,6 +362,44 @@ class Writer {
     };
     for (const row of rows) drawRow(row.label, field.columns.map((c) => (blank ? "" : row.values[c.key])));
     if (field.total) drawRow("Total", field.columns.map((c) => (blank || totals[c.key] === null ? "" : String(totals[c.key]))), true);
+    this.y -= 10;
+  }
+
+  /** A comparison table with wrapped cells; the first column is the row label. */
+  textTable(head: string[], rows: string[][]) {
+    const firstW = CONTENT * 0.24;
+    const colW = (CONTENT - firstW) / (head.length - 1);
+    const widths = head.map((_, i) => (i === 0 ? firstW : colW));
+    const xs = widths.map((_, i) => M + widths.slice(0, i).reduce((a, b) => a + b, 0));
+    const draw = (cells: string[], header: boolean) => {
+      const font = header ? this.f.semibold : this.f.regular;
+      const lines = cells.map((c, i) => this.wrap(c, i === 0 && !header ? this.f.semibold : font, 8.5, widths[i] - 10));
+      const h = Math.max(...lines.map((l) => l.length)) * 11 + 9;
+      this.need(h);
+      cells.forEach((_, i) => {
+        this.page.drawRectangle({
+          x: xs[i],
+          y: this.y - h,
+          width: widths[i],
+          height: h,
+          color: header ? colour.blue : i === 0 ? colour.shade : colour.white,
+          borderColor: colour.boxLine,
+          borderWidth: 0.6,
+        });
+        lines[i].forEach((l, j) =>
+          this.page.drawText(l, {
+            x: xs[i] + 5,
+            y: this.y - 13 - j * 11,
+            size: 8.5,
+            font: header || i === 0 ? this.f.semibold : this.f.regular,
+            color: header ? colour.white : colour.charcoal,
+          }),
+        );
+      });
+      this.y -= h;
+    };
+    draw(head, true);
+    for (const row of rows) draw(row, false);
     this.y -= 10;
   }
 

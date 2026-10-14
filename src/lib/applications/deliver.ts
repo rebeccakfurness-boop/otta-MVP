@@ -2,7 +2,7 @@ import "server-only";
 import type { FormDefinition } from "@/content/forms";
 import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
-import { summaryText, type Answers } from "@/lib/forms/application";
+import { keyName, summaryText, type Answers } from "@/lib/forms/application";
 import { buildApplicationPdf } from "@/lib/forms/application-pdf";
 import { buildWorksheet, propertyLocation } from "@/lib/uw/worksheet";
 import { getLink, newId, newReference, saveApplication, saveLink, type ApplicationSource } from "./store";
@@ -31,8 +31,8 @@ type Delivery = {
 export async function deliverApplication(d: Delivery) {
   const { form } = d;
   const id = newId("app");
-  const reference = newReference(form.id === "building" ? "BA" : form.id === "corporate-travel" ? "CT" : "AP");
-  const name = d.answers[form.keyFields.name] ?? "";
+  const reference = newReference({ building: "BA", "corporate-travel": "CT", "landlord-protect": "LP", "no-claims-declaration": "ND" }[form.id] ?? "AP");
+  const name = keyName(form, d.answers);
   const detail = d.answers[form.keyFields.detail] ?? "";
   const noun = form.shortTitle.toLowerCase();
   const createdAt = new Date().toISOString();
