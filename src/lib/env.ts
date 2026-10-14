@@ -12,7 +12,7 @@ export const env = {
   // While the site runs as a demo, every email (enquiries, client links, broker
   // notices) goes to this one address instead. Set EMAIL_DEMO_TO=off to stop.
   emailDemoTo:
-    process.env.EMAIL_DEMO_TO === "off" ? "" : (process.env.EMAIL_DEMO_TO ?? (demoMode ? "rebecca@tai.co.nz" : "")),
+    process.env.EMAIL_DEMO_TO === "off" ? "" : (process.env.EMAIL_DEMO_TO ?? (demoMode ? "rebeccaf@tai.co.nz" : "")),
   // Broker portal access requests are emailed here.
   brokerAccessEmail: process.env.BROKER_ACCESS_EMAIL ?? "hello@ottainsurance.co.nz",
   enquiryFromEmail: process.env.ENQUIRY_FROM_EMAIL ?? "no-reply@ottainsurance.co.nz",

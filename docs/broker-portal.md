@@ -83,7 +83,7 @@ online form, in Otta branding.
 - Follow-up questions appear only when they apply (mortgagee name, the pre-1940
   section, multi unit, social housing and mortgagee sale questions).
 - **Submit** emails the application to `APPLICATION_TO_EMAIL` (default
-  rebecca@tai.co.nz) through Brevo, with the completed form attached as a PDF.
+  rebeccaf@tai.co.nz) through Brevo, with the completed form attached as a PDF.
   Replies go to the broker who sent it.
 - **Download PDF** works at any point: a blank form prints for filling by hand,
   a partly filled one prints as is.
