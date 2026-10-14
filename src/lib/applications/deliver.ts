@@ -34,7 +34,7 @@ type Delivery = {
 export async function deliverApplication(d: Delivery) {
   const { form } = d;
   const id = newId("app");
-  const reference = newReference({ building: "BA", "corporate-travel": "CT", "landlord-protect": "LP", "no-claims-declaration": "ND", "professional-indemnity": "PI" }[form.id] ?? "AP");
+  const reference = newReference({ building: "BA", "corporate-travel": "CT", "landlord-protect": "LP", "no-claims-declaration": "ND", "professional-indemnity": "PI", "pa-group": "PA", "pa-claim": "CL" }[form.id] ?? "AP");
   const name = keyName(form, d.answers);
   const detail = d.answers[form.keyFields.detail] ?? "";
   const noun = form.shortTitle.toLowerCase();

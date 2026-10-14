@@ -19,6 +19,18 @@ the broker portal, so what staff see is exactly what brokers see.
 - **Data sources**: which records came from InsuredHQ and which were entered
   manually.
 
+## Demo data
+
+While the portals are in demo mode (`PORTAL_DEMO_LOGIN` not `false`), the first
+read of the applications loads sample data (`src/lib/applications/demo-seed.ts`):
+ten applications across every online form (four building applications that show
+the underwriting assistant's accept, refer and mortgagee sale outcomes, a client
+completed social housing application, Landlord Protect, Corporate Travel, Group
+PA, Professional Indemnity, a No Claims declaration and a PA claim), client links
+and two brokers waiting for portal access. Everything in it is fictional. Set
+`DEMO_DATA=off` to start empty. Without `DATABASE_URL` the sample data reloads
+whenever the server restarts; with Neon it loads once.
+
 ## Underwriting assistant
 
 Every building insurance application gets an AI brief, written in the

@@ -2,14 +2,24 @@ import { buildingApplication } from "./building";
 import { corporateTravelProposal } from "./corporate-travel";
 import { landlordProtectApplication } from "./landlord-protect";
 import { noClaimsDeclaration } from "./no-claims-declaration";
+import { paClaimForm } from "./pa-claim";
+import { paGroupProposal } from "./pa-group-proposal";
 import { professionalIndemnityProposal } from "./professional-indemnity";
 import type { FormDefinition } from "./types";
 
 export type { Condition, Field, FormDefinition, Part, Section, TextBlock } from "./types";
-export { buildingApplication, corporateTravelProposal, landlordProtectApplication, noClaimsDeclaration, professionalIndemnityProposal };
+export { buildingApplication, corporateTravelProposal, landlordProtectApplication, noClaimsDeclaration, paClaimForm, paGroupProposal, professionalIndemnityProposal };
 
 /** Every form brokers (and their clients) can fill in online. Add new forms here. */
-export const onlineForms: FormDefinition[] = [buildingApplication, landlordProtectApplication, corporateTravelProposal, professionalIndemnityProposal, noClaimsDeclaration];
+export const onlineForms: FormDefinition[] = [
+  buildingApplication,
+  landlordProtectApplication,
+  corporateTravelProposal,
+  paGroupProposal,
+  professionalIndemnityProposal,
+  noClaimsDeclaration,
+  paClaimForm,
+];
 
 export const getForm = (id: string | undefined) => onlineForms.find((f) => f.id === (id || "building"));
 /** The proposal form for a product, used by "Apply now" on the product page. */

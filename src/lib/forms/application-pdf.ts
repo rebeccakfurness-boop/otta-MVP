@@ -296,14 +296,20 @@ class Writer {
     const rows = blank ? Array.from({ length: 6 }, () => ({}) as Record<string, string>) : unitRows(field, answers);
     const colW = CONTENT / field.columns.length;
     const rowH = 20;
-    this.need(rowH * 2 + 6);
+    // Narrow columns wrap their headings and use a smaller size.
+    const size = colW < 80 ? 8 : 9.5;
+    const headerLines = field.columns.map((c) => this.wrap(c.label, this.f.semibold, size, colW - 6));
+    const headH = Math.max(rowH, Math.max(...headerLines.map((l) => l.length)) * (size + 2) + 10);
+    this.need(headH + rowH + 6);
     const header = () => {
-      this.page.drawRectangle({ x: M, y: this.y - rowH, width: CONTENT, height: rowH, color: colour.shade, borderColor: colour.blue, borderWidth: 1 });
-      field.columns.forEach((c, i) => {
-        const tw = this.f.semibold.widthOfTextAtSize(c.label, 9.5);
-        this.page.drawText(c.label, { x: M + i * colW + (colW - tw) / 2, y: this.y - 14, size: 9.5, font: this.f.semibold, color: colour.blue });
-      });
-      this.y -= rowH;
+      this.page.drawRectangle({ x: M, y: this.y - headH, width: CONTENT, height: headH, color: colour.shade, borderColor: colour.blue, borderWidth: 1 });
+      headerLines.forEach((lines, i) =>
+        lines.forEach((l, j) => {
+          const tw = this.f.semibold.widthOfTextAtSize(l, size);
+          this.page.drawText(l, { x: M + i * colW + (colW - tw) / 2, y: this.y - 13 - j * (size + 2), size, font: this.f.semibold, color: colour.blue });
+        }),
+      );
+      this.y -= headH;
     };
     header();
     for (const row of rows) {
@@ -315,8 +321,9 @@ class Writer {
         this.page.drawRectangle({ x: M + i * colW, y: this.y - rowH, width: colW, height: rowH, color: colour.white, borderColor: colour.boxLine, borderWidth: 0.6 });
         const raw = row[c.key] ?? "";
         const text = c.kind === "money" && raw ? moneyText(raw) : raw;
-        const tw = this.f.regular.widthOfTextAtSize(text, 9);
-        this.page.drawText(text, { x: M + i * colW + (colW - tw) / 2, y: this.y - 13.5, size: 9, font: this.f.regular, color: colour.charcoal });
+        const cellSize = Math.min(9, size + 0.5);
+        const tw = this.f.regular.widthOfTextAtSize(text, cellSize);
+        this.page.drawText(text, { x: M + i * colW + Math.max(3, (colW - tw) / 2), y: this.y - 13.5, size: cellSize, font: this.f.regular, color: colour.charcoal });
       });
       this.y -= rowH;
     }

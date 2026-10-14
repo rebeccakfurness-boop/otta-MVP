@@ -1,5 +1,6 @@
 import "server-only";
 import { neon } from "@neondatabase/serverless";
+import { demoMode } from "@/lib/auth/sealed-session";
 import type { Answers } from "@/lib/forms/application";
 
 // Online applications and the client links brokers send out.
@@ -54,6 +55,10 @@ export type ClientLink = {
 
 export const storageMode = process.env.DATABASE_URL ? "database" : "memory";
 
+/** In demo mode the portals start with sample applications (see demo-seed.ts). DEMO_DATA=off turns this off. */
+export const demoDataOn = demoMode && process.env.DEMO_DATA !== "off";
+export const demoReady = () => (demoDataOn ? import("./demo-seed").then((m) => m.ensureDemoData()) : Promise.resolve());
+
 // --- In-memory fallback (kept on globalThis so dev reloads don't wipe it) ---
 const memory = ((globalThis as { __ottaApplications?: { apps: Application[]; links: ClientLink[] } }).__ottaApplications ??= {
   apps: [],
@@ -93,6 +98,7 @@ export async function saveApplication(app: Application) {
 }
 
 export async function listApplications(brokerageId?: string): Promise<Application[]> {
+  await demoReady();
   if (storageMode === "memory") return memory.apps.filter((a) => !brokerageId || a.brokerageId === brokerageId);
   const { sql, ready } = db();
   await ready;
@@ -103,6 +109,7 @@ export async function listApplications(brokerageId?: string): Promise<Applicatio
 }
 
 export async function getApplication(id: string, brokerageId?: string) {
+  await demoReady();
   if (storageMode === "memory") return memory.apps.find((a) => a.id === id && (!brokerageId || a.brokerageId === brokerageId)) ?? null;
   const { sql, ready } = db();
   await ready;
@@ -126,6 +133,7 @@ export async function saveLink(link: ClientLink) {
 }
 
 export async function listLinks(brokerageId: string): Promise<ClientLink[]> {
+  await demoReady();
   if (storageMode === "memory") return memory.links.filter((l) => l.brokerageId === brokerageId);
   const { sql, ready } = db();
   await ready;
@@ -134,6 +142,7 @@ export async function listLinks(brokerageId: string): Promise<ClientLink[]> {
 }
 
 export async function getLink(id: string) {
+  await demoReady();
   if (storageMode === "memory") return memory.links.find((l) => l.id === id) ?? null;
   const { sql, ready } = db();
   await ready;

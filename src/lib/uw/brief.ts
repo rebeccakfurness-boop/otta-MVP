@@ -110,7 +110,6 @@ export function riskFacts(a: Answers) {
   const loc = propertyLocation(a);
   const multi = a.isMultiUnit === "yes";
   const sumInsured = num(multi && a.unitsSumInsured ? a.unitsSumInsured : a.sumInsured);
-  const sqm = num(a.internalSqm);
   const year = num(a.yearBuilt);
   return {
     address: a.propertyAddress ?? "",
@@ -118,7 +117,6 @@ export function riskFacts(a: Answers) {
     ratingRegion: loc.rating.region || "not found",
     ratingRegionBasis: loc.rating.basis,
     sumInsured,
-    sumInsuredPerSqm: sumInsured && sqm ? Math.round(sumInsured / sqm) : null,
     units: Number(multi ? a.unitsTotal : a.selfContainedUnits) || 1,
     yearBuilt: year,
     insuredAgeYears: a.dateOfBirth ? ageOn(a.dateOfBirth, isoToday()) : null,
@@ -250,8 +248,6 @@ export function riskChecks(a: Answers): RiskCheck[] {
   }
 
   // Other points from the form
-  if (f.sumInsuredPerSqm !== null && f.sumInsuredPerSqm < 2500)
-    add({ severity: "medium", title: "Possible underinsurance", detail: `${nzd(f.sumInsuredPerSqm)} per square metre is below the usual $3,000 to $5,000 rebuild cost (a rule of thumb, not from the guide).`, guideSection: "", ask: "How the sum insured was worked out (a registered valuation is ideal)." });
   if (no("inspections")) add({ severity: "medium", title: "No 6 monthly inspections", detail: "Inspections at least every 6 months and at each change of tenancy are a requirement for parts of the cover.", guideSection: "" });
   else if (no("inspectionRecords")) add({ severity: "low", title: "No written inspection records", detail: "Written records of inspections are expected.", guideSection: "" });
   if (yes("retainingWalls")) add({ severity: "low", title: "Retaining walls over $25,000", detail: "Check the walls are within cover and in good condition.", guideSection: "" });
@@ -309,10 +305,12 @@ export function rulesBrief(app: Application, checks: RiskCheck[]): UwBrief {
       ? sentence(decline.map((c) => c.title))
       : refer.length
         ? sentence(refer.map((c) => c.title))
-        : checks.some((c) => c.severity !== "low")
+        : checks.some((c) => c.severity === "high")
+          ? sentence(checks.filter((c) => c.severity === "high").map((c) => c.title))
+          : checks.some((c) => c.severity !== "low")
           ? "No referral triggers; a few points to check before quoting."
           : "Within binder authority on the answers given.",
-    summary: `${a.propertyType || "Property"} at ${f.address || "an unknown address"}${f.ratingRegion !== "not found" ? ` (${f.ratingRegion})` : ""}, built ${a.yearBuilt || "in an unknown year"}, sum insured ${f.sumInsured ? nzd(f.sumInsured) : "not given"}${f.sumInsuredPerSqm ? ` (${nzd(f.sumInsuredPerSqm)} per square metre)` : ""}, ${f.units} ${f.units === 1 ? "unit" : "units"}.`,
+    summary: `${a.propertyType || "Property"} at ${f.address || "an unknown address"}${f.ratingRegion !== "not found" ? ` (${f.ratingRegion})` : ""}, built ${a.yearBuilt || "in an unknown year"}, sum insured ${f.sumInsured ? nzd(f.sumInsured) : "not given"}${a.internalSqm ? `, ${a.internalSqm} square metres` : ""}, ${f.units} ${f.units === 1 ? "unit" : "units"}.`,
     redFlags: checks.map(({ severity, title, detail, guideSection }) => ({ severity, title, detail, guideSection })),
     terms,
     positives: [

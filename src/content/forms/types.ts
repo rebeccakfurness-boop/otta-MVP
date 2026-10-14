@@ -96,7 +96,7 @@ export type FormDefinition = {
   teamEmail: string;
   /** Products this form belongs to, and the Resources page it is listed on. */
   productSlugs: string[];
-  resource?: "proposal-forms" | "renewal-declarations";
+  resource?: "proposal-forms" | "renewal-declarations" | "claim-forms";
   /** The fields that name the application in lists and email subjects (several name fields are joined). */
   keyFields: { name: string | string[]; detail: string };
   /** Wording of the confirmation tick box above the submit button. */

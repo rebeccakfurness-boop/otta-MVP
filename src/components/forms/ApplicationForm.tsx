@@ -516,7 +516,8 @@ function UnitsTable({ field, errors }: { field: UnitsField; errors: Errors }) {
     <div>
       <Label field={field} />
       <div className="mt-2 overflow-x-auto">
-        <table className="w-full min-w-[480px] border-collapse text-[14px]">
+        {/* Wide tables (e.g. eight columns of insured people) scroll sideways rather than squash. */}
+        <table className="w-full border-collapse text-[14px]" style={{ minWidth: Math.max(480, field.columns.length * 130) }}>
           <thead>
             <tr className="bg-site-blue text-left text-white">
               {field.columns.map((c) => (

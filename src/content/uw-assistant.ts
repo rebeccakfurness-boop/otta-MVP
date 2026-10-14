@@ -29,7 +29,7 @@ Appendix 3, Spec homes: built for sale, price like a low-risk mortgagee sale, NZ
 Appendix 4, Connected units: one or two connecting walls are fine without referral if built to code, with fire walls between units and clear of natural hazards; suggested loading 10% for one connected wall, 20% for two. Ask whether walls (including roof cavity divisions) meet the 2004 building compliance standard. Three connecting walls or stacked units: decline unless insuring the entire building.
 Appendix 6, Consumer or business purpose: a property owner whose intended use is owner occupied is a consumer risk and is declined; rental intended use is accepted; unknown intended use needs clarification. Banks or lenders are always accepted.
 Appendix 7, Body corporates: units in a body corporate can be covered with the Body Corporate / Unit Title Excess Cover Endorsement (excess cover over the body corporate policy, no natural disaster cover), with the usual rate discounted 30%.
-Rules of thumb not in the guide (say so when you use them): New Zealand residential rebuild costs in 2026 are roughly NZD 3,000 to 5,000 per square metre including GST, so much lower suggests underinsurance.
+Don't judge whether the sum insured is adequate from the floor area: the guide has no rebuild cost rule.
 
 Recommendation:
 - "accept": within the coverholder's binder authority on the information given.

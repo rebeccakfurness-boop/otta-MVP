@@ -78,7 +78,7 @@ export default async function ResourceTypePage({ params }: PageProps<"/resources
 
 /** The downloadable documents of a resource type for a product. */
 function documentsFor(type: string, productSlug: string) {
-  if (type === "proposal-forms" || type === "renewal-declarations") {
+  if (type === "proposal-forms" || type === "renewal-declarations" || type === "claim-forms") {
     return onlineForms
       .filter((f) => (f.resource ?? "proposal-forms") === type && f.productSlugs.includes(productSlug))
       .map((f) => ({ title: f.title, edition: undefined, href: `/downloads/${f.slug}.pdf` }));

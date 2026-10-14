@@ -33,8 +33,10 @@ Applications page):
 | Building Insurance Application | `/forms/building-application` | `/apply/building/...` | `/downloads/building-application.pdf` |
 | Landlord Protect Application | `/forms/landlord-protect-application` | `/apply/landlord-protect/...` | `/downloads/landlord-protect-application.pdf` |
 | Corporate Travel Proposal | `/forms/corporate-travel-proposal` | `/apply/corporate-travel/...` | `/downloads/corporate-travel-proposal.pdf` |
+| Group Personal Accident and Illness Proposal | `/forms/group-personal-accident-proposal` | `/apply/pa-group/...` | `/downloads/group-personal-accident-proposal.pdf` |
 | Professional Indemnity Proposal | `/forms/professional-indemnity-proposal` | `/apply/professional-indemnity/...` | `/downloads/professional-indemnity-proposal.pdf` |
 | No Claims / Material Changes Declaration | `/forms/no-claims-declaration` | `/apply/no-claims-declaration/...` | `/downloads/no-claims-declaration.pdf` |
+| Personal Accident and Illness Claim Form | `/forms/personal-accident-claim` | `/apply/pa-claim/...` | `/downloads/personal-accident-claim.pdf` (Claim Forms page) |
 
 Every form works the same way: validation, the branded PDF (blank or filled),
 the email to Otta with the PDF attached, client links and the Applications

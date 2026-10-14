@@ -1,4 +1,5 @@
 import "server-only";
+import { demoReady } from "@/lib/applications/store";
 import { getRecord, listRecords, putRecord } from "@/lib/db/records";
 import { brokerages as demoBrokerages, users as demoUsers } from "./demo-data";
 import type { Brokerage, PortalUser } from "./types";
@@ -60,6 +61,8 @@ export async function saveAccessRequest(request: AccessRequest) {
 }
 
 export async function listAccessRequests() {
+  // Demo mode: the sample requests are loaded with the sample applications.
+  await demoReady();
   const requests = await listRecords<AccessRequest>("access-requests");
   return requests.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
