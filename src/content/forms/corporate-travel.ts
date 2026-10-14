@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Corporate Travel Proposal Form (04/2026 edition), as structured data (see building.ts).
 
@@ -28,7 +28,6 @@ export const corporateTravelProposal: FormDefinition = {
   teamEmail: "travel@ottainsurance.co.nz",
   productSlugs: ["corporate-travel-insurance"],
   keyFields: { name: "namedInsured", detail: "address" },
-  invite: inviteFor("corporate travel proposal"),
   parts: [
     {
       id: "proposal",

@@ -64,7 +64,7 @@ export const onboarding = {
         ``,
         `1. Set your password. Use the link above. Next time, sign in with your email and password, your Microsoft or Google work account, or an emailed sign-in link.`,
         `2. Find your way around. Your dashboard shows your open quote requests, active policies and renewals due in the next 60 days.`,
-        `3. Complete or send a form. Under Forms, fill in a proposal online and submit it straight to Otta, or select Send to a client and we'll email them a secure link (it works for 30 days).`,
+        `3. Complete or send a form. Under Forms, fill in a proposal online and submit it straight to Otta, or select Send to a client to create a secure link that you send to your client yourself (it works for 30 days). Otta never contacts your clients directly.`,
         `4. Track it. Applications shows everything you and your clients have sent us. When a client accepts a quote, open it under Quote requests and instruct Otta to bind.`,
         `5. Ask us anything. Help & contact lists each underwriting team's email, or call us on ${o.phone}.`,
         ``,

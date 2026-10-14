@@ -26,7 +26,7 @@ async function Send({ searchParams }: { searchParams: PageProps<"/portal/applica
       <PageHeader
         back={{ href: portalPath("/applications"), label: "Applications" }}
         title="Send a form to a client"
-        description={`Your client gets a secure link to the form on the Otta website. When they submit it, it goes straight to Otta and appears in your Applications, and we let you know. Links work for ${LINK_DAYS} days.`}
+        description={`Create a secure link to the form on the Otta website, then send it to your client yourself. When they submit it, it goes straight to Otta and appears in your Applications, and we let you know. Links work for ${LINK_DAYS} days.`}
       />
       <SendLinkForm
         applicationsUrl={portalPath("/applications")}

@@ -109,15 +109,15 @@ online form, in Otta branding.
 ### Sending the form to a client
 
 From Applications (or the Forms page) a broker chooses **Send to a client**,
-enters the client's name and, optionally, their email and a note.
+enters the client's name. Otta never emails or contacts clients: only brokers
+communicate with their clients.
 
 1. Otta creates a secure link to the form on the website
    (`/apply/building/<token>`), valid for 30 days. The token is sealed with
    `SESSION_SECRET`, so it can't be altered or pointed at another brokerage.
-2. The link is emailed to the client from Otta (replies go to the broker), or
-   the broker copies it and sends it themselves.
-3. The client fills in the form on the website with their name, email and the
-   brokerage already filled in, and can download a PDF copy.
+2. The broker copies the link and sends it to their client themselves.
+3. The client fills in the form on the website with their name and the brokerage
+   already filled in, and can download a PDF copy.
 4. On submit, the application goes straight to Otta (the same email and PDF
    as a broker submission), appears in the broker's Applications marked
    "Completed by client", and the broker gets an email. The link then shows

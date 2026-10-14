@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Professional Indemnity Renewal Declaration (06/2024 edition), as
 // structured data (see building.ts).
@@ -17,7 +17,6 @@ export const piRenewalDeclaration: FormDefinition = {
   productSlugs: ["liability-insurance"],
   resource: "renewal-declarations",
   keyFields: { name: "namedInsured", detail: "policyNumber" },
-  invite: inviteFor("professional indemnity renewal declaration"),
   parts: [
     {
       id: "renewal",

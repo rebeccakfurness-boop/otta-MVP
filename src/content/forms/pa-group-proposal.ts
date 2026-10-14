@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Group Personal Accident and Illness Proposal (10/2022 edition), as
 // structured data (see building.ts).
@@ -16,7 +16,6 @@ export const paGroupProposal: FormDefinition = {
   teamEmail: "travel@ottainsurance.co.nz",
   productSlugs: ["personal-accident-insurance"],
   keyFields: { name: "policyOwner", detail: "address" },
-  invite: inviteFor("group personal accident and illness proposal"),
   parts: [
     {
       id: "introduction",

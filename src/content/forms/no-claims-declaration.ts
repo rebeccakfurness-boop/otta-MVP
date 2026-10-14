@@ -1,5 +1,5 @@
 import { products } from "../products";
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The No Claims / Material Changes Declaration, completed by the insured
 // before a policy is bound or renewed (see building.ts for how forms work).
@@ -24,7 +24,6 @@ export const noClaimsDeclaration: FormDefinition = {
     client:
       "I / We declare that, after enquiry, the information given in the proposal form has not materially altered and that there have been no known or reported losses or circumstances which might give rise to a claim.",
   },
-  invite: inviteFor("no claims declaration"),
   parts: [
     {
       id: "declaration",

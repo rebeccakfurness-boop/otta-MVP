@@ -26,15 +26,7 @@ export function SendLinkForm({ applicationsUrl, forms, selected }: { application
           <div className="min-w-0 flex-1">
             <h2 className="text-[22px] tracking-[-0.01em]">Link ready for {state.clientName}</h2>
             <p className="text-[13px] font-medium text-[#2e7d74]">{state.formTitle}</p>
-            <p className="mt-1 text-[14px] text-body">
-              {state.emailed
-                ? `We've emailed it to ${state.clientEmail}. You can also copy it below.`
-                : state.emailError
-                  ? "We couldn't email it just now, so copy the link below and send it yourself."
-                  : state.emailRequested
-                    ? "Email sending isn't switched on yet in this demo, so copy the link below and send it yourself."
-                    : "Copy the link and send it to your client however suits you."}
-            </p>
+            <p className="mt-1 text-[14px] text-body">Copy the link and send it to your client yourself. Otta never contacts your clients.</p>
           </div>
         </div>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -72,7 +64,7 @@ export function SendLinkForm({ applicationsUrl, forms, selected }: { application
             ))}
           </div>
         </fieldset>
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="max-w-md">
           <div>
             <label htmlFor="clientName" className="text-[14px] font-medium text-charcoal">
               Client name
@@ -80,30 +72,13 @@ export function SendLinkForm({ applicationsUrl, forms, selected }: { application
             <input id="clientName" name="clientName" defaultValue={values.clientName} aria-invalid={!!errors.clientName} className={`${inputClass} ${errors.clientName ? "border-site-purple" : "border-[#d9d9d9]"}`} />
             {errors.clientName && <p className="mt-1.5 text-[13px] text-site-purple">{errors.clientName}</p>}
           </div>
-          <div>
-            <label htmlFor="clientEmail" className="text-[14px] font-medium text-charcoal">
-              Client email <span className="font-normal text-body">(optional)</span>
-            </label>
-            <input id="clientEmail" name="clientEmail" type="email" defaultValue={values.clientEmail} aria-invalid={!!errors.clientEmail} className={`${inputClass} ${errors.clientEmail ? "border-site-purple" : "border-[#d9d9d9]"}`} />
-            {errors.clientEmail && <p className="mt-1.5 text-[13px] text-site-purple">{errors.clientEmail}</p>}
-          </div>
         </div>
-        <div>
-          <label htmlFor="note" className="text-[14px] font-medium text-charcoal">
-            Personal note <span className="font-normal text-body">(optional, added to the email)</span>
-          </label>
-          <textarea id="note" name="note" rows={3} defaultValue={values.note} className={`${inputClass} border-[#d9d9d9]`} />
-        </div>
-        <label className="flex cursor-pointer items-center gap-3 text-[14px] text-charcoal">
-          <input type="checkbox" name="sendEmail" defaultChecked={values.sendEmail !== ""} className="h-4 w-4 accent-[#61b9ad]" />
-          Email the link to my client from Otta, if an email is given (replies come to you)
-        </label>
         <div className="flex flex-wrap items-center gap-4 pt-2">
           <button type="submit" disabled={pending} className={`${button} bg-site-teal text-white hover:bg-[#4fa99c]`}>
             <Icon name="send" className="h-4 w-4" />
             {pending ? "Creating link" : "Create link"}
           </button>
-          <span className="text-[13px] text-body">Leave the email blank to just copy the link and send it yourself.</span>
+          <span className="text-[13px] text-body">You send the link to your client yourself. Otta never contacts your clients.</span>
         </div>
       </form>
     </Card>

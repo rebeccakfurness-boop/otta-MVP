@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Accountants Supplementary Questionnaire (06/2024 edition), completed by
 // accounting practices with the Professional Indemnity proposal.
@@ -35,7 +35,6 @@ export const accountantsQuestionnaire: FormDefinition = {
   teamEmail: "liability@ottainsurance.co.nz",
   productSlugs: ["liability-insurance"],
   keyFields: { name: "practiceName", detail: "practiceName" },
-  invite: inviteFor("accountants supplementary questionnaire"),
   parts: [
     {
       id: "questionnaire",

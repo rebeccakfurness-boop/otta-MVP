@@ -87,8 +87,6 @@ export type Part = {
   signOff?: Field[];
 };
 
-export type InviteDetails = { clientName: string; brokerName: string; brokerage: string; url: string; days: number; note?: string };
-
 export type FormDefinition = {
   /** Stable id, stored with each application and used in client links (/apply/<id>/...). */
   id: string;
@@ -112,27 +110,5 @@ export type FormDefinition = {
   confirm?: { broker: string; client: string };
   /** Building only: attach the underwriting worksheet and flood map links. */
   underwriting?: boolean;
-  invite: { subject: (brokerage: string) => string; body: (o: InviteDetails) => string };
   parts: Part[];
 };
-
-/** The email a broker sends their client with a link to a form. */
-export function inviteFor(noun: string) {
-  return {
-    subject: (brokerage: string) => `Your ${noun} from ${brokerage}`,
-    body: (o: InviteDetails) =>
-      [
-        `Kia ora ${o.clientName.split(" ")[0]},`,
-        ``,
-        `${o.brokerName} at ${o.brokerage} has asked you to complete a ${noun} with Otta.`,
-        ...(o.note ? [``, o.note] : []),
-        ``,
-        `Fill it in online here (it takes about 10 minutes):`,
-        o.url,
-        ``,
-        `The link works for ${o.days} days. When you submit, it goes straight to ${o.brokerage} and the Otta team. If you have questions, reply to this email to reach ${o.brokerName}.`,
-        ``,
-        `Otta, insurance that works`,
-      ].join("\n"),
-  };
-}

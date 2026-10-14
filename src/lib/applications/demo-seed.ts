@@ -423,7 +423,6 @@ async function seed() {
         form: form.id,
         ...broker,
         clientName: d.client.name,
-        clientEmail: d.client.email,
         createdAt: ago(d.hoursAgo + 50).toISOString(),
         expiresAt: new Date(ago(d.hoursAgo + 50).getTime() + 14 * 86_400_000).toISOString(),
         completedAt: created.toISOString(),
@@ -481,7 +480,6 @@ async function seed() {
     form: "building",
     ...brokers.alex,
     clientName: "Aroha Williams",
-    clientEmail: "aroha.williams@example.co.nz",
     createdAt: ago(28).toISOString(),
     expiresAt: new Date(ago(28).getTime() + 14 * 86_400_000).toISOString(),
   });

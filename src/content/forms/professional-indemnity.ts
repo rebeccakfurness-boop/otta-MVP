@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Professional Indemnity Insurance Proposal, as structured data (see building.ts).
 
@@ -17,7 +17,6 @@ export const professionalIndemnityProposal: FormDefinition = {
   teamEmail: "liability@ottainsurance.co.nz",
   productSlugs: ["liability-insurance"],
   keyFields: { name: "namedInsured", detail: "principalAddress" },
-  invite: inviteFor("professional indemnity proposal"),
   parts: [
     {
       id: "notice",

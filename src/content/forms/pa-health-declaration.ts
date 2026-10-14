@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Declaration of Health for weekly accident and illness and lump sum
 // accident cover (06/2024 edition), as structured data (see building.ts).
@@ -16,7 +16,6 @@ export const paHealthDeclaration: FormDefinition = {
   teamEmail: "travel@ottainsurance.co.nz",
   productSlugs: ["personal-accident-insurance"],
   keyFields: { name: "name", detail: "company" },
-  invite: inviteFor("declaration of health"),
   parts: [
     {
       id: "declaration",

@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Personal Accident and Illness Claim Form (09/2022 edition), as
 // structured data (see building.ts). The doctor's statement is completed by
@@ -25,7 +25,6 @@ export const paClaimForm: FormDefinition = {
     broker: "I confirm the claimant has seen this claim form and the information in it is true and correct.",
     client: "I declare that all information in this claim form is true and correct.",
   },
-  invite: inviteFor("personal accident and illness claim form"),
   parts: [
     {
       id: "claimant",

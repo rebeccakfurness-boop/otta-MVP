@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Building Insurance Application Form, as structured data. The broker
 // portal form, its validation, the emailed summary and the PDF are all built
@@ -18,7 +18,6 @@ export const buildingApplication: FormDefinition = {
   productSlugs: ["rental-property-insurance", "social-and-community-housing-insurance"],
   keyFields: { name: "insuredName", detail: "propertyAddress" },
   underwriting: true,
-  invite: inviteFor("building insurance application"),
   parts: [
     {
       id: "application",

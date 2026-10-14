@@ -1,4 +1,4 @@
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Travel and Accident Insurance Claim Form (07/2020 edition), as
 // structured data (see building.ts). The claimant says what they are claiming
@@ -27,7 +27,6 @@ export const travelClaimForm: FormDefinition = {
     broker: "I confirm the claimant has read the privacy consent and declaration, and the information in this claim form is true and correct.",
     client: "I have read the privacy consent and declaration, and the information in this claim form is true and correct.",
   },
-  invite: inviteFor("travel and accident claim form"),
   parts: [
     {
       id: "claim",

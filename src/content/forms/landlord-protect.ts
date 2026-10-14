@@ -1,5 +1,5 @@
 import { site } from "../site";
-import { inviteFor, type FormDefinition } from "./types";
+import type { FormDefinition } from "./types";
 
 // The Landlord Protect Policy Application Form, as structured data (see building.ts).
 
@@ -22,7 +22,6 @@ export const landlordProtectApplication: FormDefinition = {
     broker: "I confirm the applicant has read the Important Notice above, and that the answers given are true and complete.",
     client: "I have read the Important Notice above, and the answers I have given are true and complete.",
   },
-  invite: inviteFor("Landlord Protect application"),
   parts: [
     {
       id: "application",
