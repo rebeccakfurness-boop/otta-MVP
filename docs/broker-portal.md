@@ -9,6 +9,10 @@ subdomain, **portal.ottainsurance.co.nz**. The website's only link to it is the
 | Page | Path on the subdomain | What it shows |
 | --- | --- | --- |
 | Sign in | `/login` | Microsoft or Google single sign-on, or email and password |
+| Email me a sign-in link | `/login/link` | Forgotten password: emails a one-time link (20 minutes) |
+| Request access | `/join` | New brokers ask for an account (see Joining the portal) |
+| Welcome | `/welcome?token=…` | A newly approved broker sets their password (link valid 7 days) |
+| Your account | `/account` | Their details; change or reset their password |
 | Dashboard | `/` | Open quotes, active policies, renewals due, quick links to forms |
 | Forms | `/forms` | Every proposal form, renewal declaration, claim form and general form; filter by type and product, search, download |
 | Quote requests | `/quotes`, `/quotes/<ref>` | All quote requests with status, details and progress |
@@ -39,12 +43,12 @@ map links.
 
 **Apply now on the website:** each product page's Apply now button opens
 `/solutions/<product>/apply`, which offers "I'm a broker" (the broker portal,
-straight to that product's form after signing in) or "Apply directly" (the same
-form on the website at `/solutions/<product>/apply/online`, with the
-applicant's contact details first). Direct applications are saved with source
-`public`, appear in the admin portal (Overview and Applications) as "Direct
-(website)", and are emailed to the form's team inbox. Products without an
-online form offer the broker portal or the contact page.
+straight to that product's form after signing in) or "Download the proposal
+form" (the blank PDF from `/downloads/<form>.pdf`). Only brokers submit
+applications, through the portal (or a client link they send). Products
+without a proposal form offer the broker portal or the contact page.
+(Applications with source `public`, from the earlier direct website form,
+still display in the admin portal as "Direct (website)".)
 
 Completed forms go to each form's `teamEmail` (property@, real@ for Landlord
 Protect, travel@, liability@, hello@ for declarations), unless
@@ -125,6 +129,36 @@ the emails still always go out.
 - After sign-in and sign-out the browser does a full page load
   (`window.location`), because a server-side redirect would skip the subdomain
   mapping.
+
+## Joining the portal
+
+1. A broker fills in **Request access** (`/join`): name, work email, phone,
+   role, brokerage, FSP number. If the email already has an account they are
+   pointed to sign in or a sign-in link instead.
+2. If the email domain matches a brokerage already on the portal (free email
+   providers such as gmail are never matched), the request is flagged with
+   that brokerage.
+3. The Otta team gets an email (`BROKER_ACCESS_EMAIL`, default
+   hello@ottainsurance.co.nz) and the request appears in the admin portal under
+   **Access requests**, with a banner on the Overview. The broker gets a
+   "we've received your request" email.
+4. Staff approve it (choosing the matched brokerage, another one, or a new
+   brokerage) or decline it (the broker is emailed). Approving creates the
+   account and emails a welcome link. Staff can also **Invite a broker**
+   directly, and resend a welcome email.
+5. The broker opens the welcome link, sets a password (10+ characters) and is
+   signed in.
+
+**Sign-in links (forgotten password):** "Email me a sign-in link" on the sign-in
+page emails a one-time link valid for 20 minutes (the response is the same
+whether or not the email has an account; 3 requests per email and IP per 15
+minutes). Opening it signs the broker in and takes them to Your account to set
+a new password. Links are sealed with `SESSION_SECRET` and recorded when used,
+so each works once.
+
+New brokerages, brokers, passwords, access requests and used links are stored
+in the `records` table in Neon when `DATABASE_URL` is set (created
+automatically); without it they are kept in memory and reset on restart.
 
 ## Security
 

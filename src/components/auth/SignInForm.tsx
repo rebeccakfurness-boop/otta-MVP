@@ -9,7 +9,8 @@ export type SignInState = { error?: string; email?: string; ok?: boolean };
 const ssoErrors: Record<string, string> = {
   sso_unavailable: "Single sign-on isn't switched on yet. Please sign in with your email and password.",
   sso_failed: "We couldn't complete single sign-on. Please try again.",
-  sso_not_registered: "Your account isn't set up for this portal yet. Contact us to get access.",
+  sso_not_registered: "Your account isn't set up for this portal yet. Request access below, or contact us.",
+  link_expired: "That sign-in link has expired or has already been used. Email yourself a new one below.",
 };
 
 const inputClass =
@@ -23,10 +24,13 @@ export function SignInForm({
   action: signIn,
   homeHref,
   ssoHref,
+  forgotHref,
 }: {
   action: (prev: SignInState, formData: FormData) => Promise<SignInState>;
   homeHref: string;
   ssoHref: (provider: "microsoft" | "google") => string;
+  /** "Forgot password?" goes here (e.g. the email-me-a-link page); otherwise it emails Otta. */
+  forgotHref?: string;
 }) {
   const params = useSearchParams();
   const [state, action, pending] = useActionState<SignInState, FormData>(signIn, {});
@@ -87,7 +91,7 @@ export function SignInForm({
               Password
             </label>
             <a
-              href={`mailto:${site.email}?subject=${encodeURIComponent("Broker portal password reset")}`}
+              href={forgotHref ?? `mailto:${site.email}?subject=${encodeURIComponent("Portal password reset")}`}
               className="text-[13px] text-site-teal hover:underline"
             >
               Forgot password?

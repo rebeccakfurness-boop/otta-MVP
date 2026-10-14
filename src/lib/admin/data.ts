@@ -3,7 +3,8 @@ import "server-only";
 // span every brokerage, so only call them after requireAdmin(). Both portals
 // read the same store (demo data now; Neon Postgres fed by manual entry and
 // InsuredHQ later), so they always agree.
-import { brokerages, forms, policies, quotes, staff, users } from "@/lib/portal/demo-data";
+import { allBrokerages, allUsers } from "@/lib/portal/accounts";
+import { forms, policies, quotes, staff } from "@/lib/portal/demo-data";
 
 export async function findStaffByEmail(email: string) {
   return staff.find((s) => s.email.toLowerCase() === email.toLowerCase()) ?? null;
@@ -26,6 +27,7 @@ export async function findQuote(ref: string) {
 }
 
 export async function listBrokerages() {
+  const [brokerages, users] = await Promise.all([allBrokerages(), allUsers()]);
   return brokerages.map((b) => ({
     ...b,
     users: users.filter((u) => u.brokerageId === b.id),
@@ -35,12 +37,13 @@ export async function listBrokerages() {
 }
 
 export async function findBrokerageWithUsers(id: string) {
+  const [brokerages, users] = await Promise.all([allBrokerages(), allUsers()]);
   const b = brokerages.find((x) => x.id === id);
   return b ? { ...b, users: users.filter((u) => u.brokerageId === id) } : null;
 }
 
 export async function brokerageNames() {
-  return Object.fromEntries(brokerages.map((b) => [b.id, b.name]));
+  return Object.fromEntries((await allBrokerages()).map((b) => [b.id, b.name]));
 }
 
 export async function listAllForms() {

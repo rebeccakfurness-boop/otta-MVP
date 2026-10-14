@@ -224,9 +224,6 @@ export function keyNameDefaults(form: FormDefinition, fullName: string): Answers
   return { [fields[0]]: first ?? "", [fields[1]]: rest.join(" ") };
 }
 
-/** Hidden field that only bots fill in, on the public website forms. */
-export const HONEYPOT_FIELD = "website_url";
-
 /**
  * A form as it is shown to someone applying directly on the website: the same
  * questions, plus their contact details first (there is no broker to contact).

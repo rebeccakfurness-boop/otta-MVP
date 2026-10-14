@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps<"/solutions/[slug]/
   return { title: product ? applyCopy.title(product.name) : "Apply" };
 }
 
-// "Apply now": brokers go to the portal, everyone else can apply on the website.
+// "Apply now": brokers apply through the portal; anyone can download the blank form.
 export default async function ApplyPage({ params }: PageProps<"/solutions/[slug]/apply">) {
   const product = getProduct((await params).slug);
   if (!product) notFound();
@@ -40,10 +40,11 @@ export default async function ApplyPage({ params }: PageProps<"/solutions/[slug]
           />
           {form ? (
             <Choice
-              heading={applyCopy.direct.heading}
-              body={applyCopy.direct.body(form.title)}
-              button={applyCopy.direct.button}
-              href={`/solutions/${product.slug}/apply/online`}
+              heading={applyCopy.download.heading}
+              body={applyCopy.download.body(form.title)}
+              button={applyCopy.download.button}
+              href={`/downloads/${form.slug}.pdf`}
+              external
               tone="teal"
             />
           ) : (
@@ -77,7 +78,7 @@ function Choice(props: { heading: string; body: string; button: string; href: st
       </span>
     </>
   );
-  // The portal can be on its own subdomain, so it is a plain link.
+  // The portal can be on its own subdomain, and the PDF is a file, so both are plain links.
   return props.external ? (
     <a href={props.href} className={className}>
       {content}

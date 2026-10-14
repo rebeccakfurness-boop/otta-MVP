@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { CentredHeading, Container, ImagePlaceholder, LargeButton } from "@/components/Mockup";
+import Image from "next/image";
+import { CentredHeading, Container, LargeButton } from "@/components/Mockup";
 
 export const metadata: Metadata = { title: "About us" };
 
@@ -7,14 +8,17 @@ export const metadata: Metadata = { title: "About us" };
 const values = [
   {
     title: "Forward thinking",
+    image: { src: "/images/about-sky-tower.jpg", alt: "Looking up at the Sky Tower in Auckland" },
     body: "We have an appetite for the unusual and the high-risk. Rather than saying no to what doesn't fit a standard mould, we look at every risk on its merits with genuine underwriting based on the data and facts.",
   },
   {
     title: "Re-invention",
+    image: { src: "/images/about-floor-plans.jpg", alt: "Building floor plans laid out on a desk" },
     body: "Otta brings specialist insurance and landlord insurance together under one brand, with one connected suite for brokers, property managers and the clients they look after.",
   },
   {
     title: "Continuous Improvement",
+    image: { src: "/images/about-team-meeting.jpg", alt: "A team meeting around a table" },
     body: "We listen to the brokers, property managers and clients we work with, and keep refining our products, policy wordings and claims process so insurance keeps working for them.",
   },
 ];
@@ -52,7 +56,7 @@ export default function AboutPage() {
           <div className="grid gap-x-9 gap-y-16 md:grid-cols-3">
             {values.map((v) => (
               <article key={v.title}>
-                <ImagePlaceholder label={v.title} className="aspect-[3/2]" />
+                <Image src={v.image.src} alt={v.image.alt} width={606} height={532} sizes="(min-width: 768px) 33vw, 100vw" className="aspect-[3/2] w-full object-cover" />
                 <h2 className="mt-11 text-[25px] leading-[1.15] font-semibold tracking-normal text-charcoal">
                   {v.title}
                 </h2>

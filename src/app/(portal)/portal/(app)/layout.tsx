@@ -19,6 +19,7 @@ export default function PortalAppLayout({ children }: { children: React.ReactNod
         { label: "Policies", href: portalPath("/policies"), icon: "policies" },
         { label: "Documents", href: portalPath("/documents"), icon: "documents" },
         { label: "Help & contact", href: portalPath("/help"), icon: "help" },
+        { label: "Your account", href: portalPath("/account"), icon: "users" },
       ]}
       websiteUrl={PORTAL_HOST ? site.url : "/"}
       user={

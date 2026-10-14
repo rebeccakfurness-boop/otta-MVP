@@ -23,7 +23,13 @@ export const portalLoginUrl = PORTAL_HOST ? `https://${PORTAL_HOST}/login` : "/p
 
 /** Portal pages that don't need a signed-in user. */
 export function isPublicPortalPath(internalPath: string) {
-  return internalPath === "/portal/login" || internalPath.startsWith("/portal/auth/");
+  return (
+    internalPath === "/portal/login" ||
+    internalPath.startsWith("/portal/login/") ||
+    internalPath.startsWith("/portal/auth/") ||
+    internalPath === "/portal/join" ||
+    internalPath === "/portal/welcome"
+  );
 }
 
 /** The origin the browser used (honours proxies and the portal subdomain). */

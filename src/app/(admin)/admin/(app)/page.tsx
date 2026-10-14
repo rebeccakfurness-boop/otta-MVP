@@ -10,6 +10,7 @@ import { brokerageNames, listAllPolicies, listAllQuotes, listBrokerages } from "
 import { getForm } from "@/content/forms";
 import { applicationChannel, applicationStatus } from "@/lib/applications/labels";
 import { listApplications } from "@/lib/applications/store";
+import { listAccessRequests } from "@/lib/portal/accounts";
 import { productName } from "@/lib/portal/products";
 import { daysUntil, formatDate, formatMoney, policyStatus } from "@/lib/portal/status";
 
@@ -33,13 +34,15 @@ const pipeline = [
 
 async function Overview() {
   const admin = await requireAdmin();
-  const [policies, quotes, brokers, names, applications] = await Promise.all([
+  const [policies, quotes, brokers, names, applications, accessRequests] = await Promise.all([
     listAllPolicies(),
     listAllQuotes(),
     listBrokerages(),
     brokerageNames(),
     listApplications(),
+    listAccessRequests(),
   ]);
+  const waiting = accessRequests.filter((r) => r.status === "pending").length;
   const now = new Date();
   const statusOf = new Map(policies.map((p) => [p.id, policyStatus(p, now)]));
   const live = policies.filter((p) => statusOf.get(p.id) !== "Expired");
@@ -79,6 +82,20 @@ async function Overview() {
           Kia ora {admin.name.split(" ")[0]}. The whole book across {brokers.length} brokerages, as at {formatDate(now.toISOString())}.
         </p>
       </div>
+
+      {waiting > 0 && (
+        <Link
+          href={adminPath("/access-requests")}
+          className="mb-8 flex items-center justify-between gap-4 border-l-4 border-site-teal bg-[#f1f8f7] px-5 py-4 text-[14px] text-charcoal hover:bg-[#e6f4f2]"
+        >
+          <span>
+            <strong className="font-semibold">{waiting === 1 ? "1 broker is" : `${waiting} brokers are`}</strong> waiting for portal access.
+          </span>
+          <span className="inline-flex items-center gap-1 text-[12px] font-medium tracking-[0.1em] text-[#2e7d74] uppercase">
+            Review <Icon name="arrow" className="h-3.5 w-3.5" />
+          </span>
+        </Link>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
         {tiles.map((t) => (

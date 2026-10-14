@@ -1,13 +1,15 @@
 import { inviteFor, type FormDefinition } from "./types";
 
-// The Corporate Travel Proposal Form, as structured data (see building.ts).
+// The Corporate Travel Proposal Form (04/2026 edition), as structured data (see building.ts).
 
 const regions = [
-  { key: "internal", label: "Internal" },
-  { key: "australiaPacificUk", label: "Australia / Pacific / UK" },
+  { key: "internal", label: "Internal / Domestic Travel" },
+  { key: "australiaPacific", label: "Australia / Pacific Islands" },
+  { key: "uk", label: "UK" },
   { key: "europe", label: "Europe" },
+  { key: "asia", label: "Asia" },
+  { key: "usaCanada", label: "USA / Canada" },
   { key: "restOfWorld", label: "Rest of World" },
-  { key: "usaCanada", label: "USA & Canada" },
 ];
 
 const dangerousWork = ["underground", "heights", "toxic", "machinery", "security"];
@@ -36,9 +38,10 @@ export const corporateTravelProposal: FormDefinition = {
           id: "applicant",
           title: "Applicant Details",
           fields: [
-            { kind: "text", name: "namedInsured", label: "Named insured", span: 4 },
+            { kind: "text", name: "namedInsured", label: "Name/s insured", span: 4 },
             { kind: "date", name: "inceptionDate", label: "Inception date", span: 2 },
             { kind: "text", name: "address", label: "Address", placeholder: "Start typing an address", address: {} },
+            { kind: "text", name: "businessName", label: "Business name" },
           ],
         },
         {
@@ -48,7 +51,7 @@ export const corporateTravelProposal: FormDefinition = {
             {
               kind: "textarea",
               name: "businessActivities",
-              label: "Please provide a detailed description of your business activities",
+              label: "Please provide a detailed description of your business travel related activities",
               hint: "Include anything travelling with your people, such as equipment and its value.",
             },
           ],
@@ -60,14 +63,24 @@ export const corporateTravelProposal: FormDefinition = {
             {
               kind: "grid",
               name: "travelDays",
-              label: "Please provide travel days by region",
-              hint: "Enter the total number of days a year. Leave a region blank if no one travels there.",
+              label: "Please provide travel days by region for the next 12 months",
+              hint: "Enter the total number of days for each region, for last year and the year ahead. Leave a region blank if no one travels there.",
               rows: regions,
               columns: [
-                { key: "business", label: "Business & Associated Leisure Days" },
-                { key: "leisure", label: "Pure Leisure Days" },
+                { key: "businessLastYear", label: "Business & Associated Leisure Days: Actual Last Year" },
+                { key: "businessForecast", label: "Business & Associated Leisure Days: Forecast Next Year" },
+                { key: "leisureLastYear", label: "Pure Leisure Days: Actual Last Year" },
+                { key: "leisureForecast", label: "Pure Leisure Days: Forecast Next Year" },
               ],
               total: true,
+            },
+            { kind: "yesno", name: "over75", label: "Are any travellers over 75 years of age?" },
+            {
+              kind: "number",
+              name: "over75Days",
+              label: "If yes, approximately how many travel days will they be travelling?",
+              showIf: { field: "over75", equals: "yes" },
+              span: 3,
             },
           ],
         },
@@ -79,9 +92,9 @@ export const corporateTravelProposal: FormDefinition = {
               kind: "yesno",
               name: "highRiskActivities",
               label:
-                "Will the Insured be involved in any high risk activity such as SCUBA diving, sky diving, motorcycle riding, motorsport, professional sport, mountaineering, snow sports etc?",
+                "Will any of the Insured be involved in any high risk activity such as, but not limited to, SCUBA diving, sky diving, motorcycle riding, motorsport, professional sport, mountaineering and snow sports?",
             },
-            { kind: "yesno", name: "nonScheduledFlights", label: "Will the Insured travel on a non-scheduled flight (fixed wing or helicopter)?" },
+            { kind: "yesno", name: "nonScheduledFlights", label: "Will any of the Insured travel on a non-scheduled flight (fixed wing or helicopter)?" },
             {
               kind: "grid",
               name: "aircraft",
@@ -109,28 +122,28 @@ export const corporateTravelProposal: FormDefinition = {
               kind: "yesno",
               name: "doNotTravel",
               label:
-                "Will the Insured travel into or within a location listed under a \"Do not travel\" advisory on the New Zealand Ministry of Foreign Affairs and Trade (MFAT) website at www.safetravel.govt.nz?",
+                "Will any of the Insured travel into or within a location listed under a \"Do not travel\" advisory on the New Zealand Ministry of Foreign Affairs and Trade (MFAT) website at www.safetravel.govt.nz?",
             },
             {
               kind: "yesno",
               name: "largeGroups",
               label:
-                "Will there be any large groups of more than ten insured persons travelling together (for instance on a bus, plane or boat, attending the same conference or staying at the same accommodation)?",
+                "Will there be any large groups of more than ten insured persons travelling together (for instance on a bus, plane, boat, attending the same conference or staying at the same accommodation)?",
             },
           ],
         },
         {
           id: "dangerousWork",
           title: "Dangerous Work Activities",
-          intro: "Is the Insured involved in any dangerous work activities, including but not limited to work:",
+          intro: "Are any of the Insured involved in any dangerous work activities, including but not limited to work:",
           note: "You do not need to disclose light manual work carried out at ground level.",
           fields: [
-            { kind: "yesno", name: "underground", label: "Underground or underwater, involving mining or scuba diving?" },
+            { kind: "yesno", name: "underground", label: "Underground or underwater, including mining or scuba diving?" },
             {
               kind: "yesno",
               name: "heights",
               label:
-                "At elevations above 10m, such as roofing or window cleaning, installation or maintenance outdoors, building and construction?",
+                "At heights above 10m, such as roofing or window cleaning, installation or maintenance outdoors, building and construction?",
             },
             { kind: "yesno", name: "toxic", label: "Involving the use of toxic substances or explosives?" },
             { kind: "yesno", name: "machinery", label: "Involving heavy machinery or work aboard a marine vessel or structure?" },
@@ -138,7 +151,7 @@ export const corporateTravelProposal: FormDefinition = {
               kind: "yesno",
               name: "security",
               label:
-                "To provide security services, humanitarian aid or peacekeeping, as part of military or police forces, or in response to civil defence emergencies?",
+                "To provide security services, humanitarian aid, peacekeeping, or as part of military or police forces, or in response to civil defence emergencies?",
             },
             {
               kind: "textarea",
@@ -156,7 +169,7 @@ export const corporateTravelProposal: FormDefinition = {
               kind: "yesno",
               name: "claims",
               label:
-                "Has the policyholder (or to the best of your knowledge any insured persons) had any claims in relation to travel insurance in the last three years?",
+                "Has the applicant (or to the best of your knowledge any insured persons) had any claims in relation to insurance in the last three years?",
             },
             {
               kind: "textarea",
@@ -176,8 +189,8 @@ export const corporateTravelProposal: FormDefinition = {
         {
           heading: "Declaration",
           paragraphs: [
-            "I / We declare that all information provided in this declaration form is true and correct, and that no material facts have been misstated or omitted after enquiry with all applicants. The information provided will form the basis of any insurance contract and the contract may be avoided if any statement in this proposal is substantially incorrect or material to the contract.",
-            "I / We agree that if any of the information provided in this declaration form changes between the date of this form and the inception date of the insurance policy then I / We will give notice thereof.",
+            "I / We declare that all information provided in this declaration form is true and correct, and that no material facts have been misstated or omitted after enquiry with all applicants. The information provided will form the basis of any insurance contract and the contract may be avoided if any statement in this declaration is substantially incorrect or material to the contract.",
+            "I / We agree that if any of the information provided in this declaration form changes between the date of this completed form and the inception date of the insurance policy then I / We will give notice thereof.",
           ],
         },
       ],

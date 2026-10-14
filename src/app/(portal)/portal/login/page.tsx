@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { SignInPage } from "@/components/auth/SignInPage";
 import { site } from "@/content/site";
-import { PORTAL_HOST } from "@/lib/portal/config";
+import { PORTAL_HOST, portalPath } from "@/lib/portal/config";
 import { demoMode } from "@/lib/portal/session";
 import { LoginForm } from "./LoginForm";
 
@@ -21,9 +21,17 @@ export default function LoginPage() {
       ]}
       access={
         <>
-          Need access for your brokerage? Email{" "}
-          <a href={`mailto:${site.email}`} className="text-white underline">
-            {site.email}
+          Need access for your brokerage?{" "}
+          <a href={portalPath("/join")} className="text-white underline">
+            Request access
+          </a>
+        </>
+      }
+      footer={
+        <>
+          New to the Otta Broker Portal?{" "}
+          <a href={portalPath("/join")} className="font-medium text-[#2e7d74] hover:underline">
+            Request access
           </a>
         </>
       }

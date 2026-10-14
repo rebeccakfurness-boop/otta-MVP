@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Container, ImagePlaceholder, PageIntro, SquareButton } from "@/components/Mockup";
+import Image from "next/image";
+import { Container, PageIntro, SquareButton } from "@/components/Mockup";
 
 export const metadata: Metadata = { title: "Case Studies" };
 
-// TODO(stage 2): real case studies.
+// TODO(stage 2): real case studies and their own photos.
+const photos = ["/images/about-team-meeting.jpg", "/images/about-floor-plans.jpg", "/images/about-sky-tower.jpg"];
 export default function CaseStudiesPage() {
   return (
     <>
@@ -16,9 +18,9 @@ export default function CaseStudiesPage() {
             </p>
           </PageIntro>
           <div className="mt-[72px] grid gap-x-9 gap-y-16 md:grid-cols-3">
-            {[1, 2, 3].map((n) => (
-              <article key={n}>
-                <ImagePlaceholder label={`Case study ${n}`} className="aspect-[3/2]" />
+            {photos.map((src) => (
+              <article key={src}>
+                <Image src={src} alt="" width={606} height={532} sizes="(min-width: 768px) 33vw, 100vw" className="aspect-[3/2] w-full object-cover" />
                 <h2 className="mt-11 text-[25px] leading-[1.15] font-semibold tracking-normal text-charcoal">
                   Client heading placeholder case study
                 </h2>

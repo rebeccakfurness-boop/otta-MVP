@@ -7,7 +7,7 @@ export type PortalSession = {
   name: string;
   email: string;
   brokerageId: string;
-  method: "password" | "microsoft" | "google";
+  method: "password" | "microsoft" | "google" | "link";
 };
 
 const store = createSessionStore<PortalSession>({

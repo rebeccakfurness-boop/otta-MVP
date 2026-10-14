@@ -3,6 +3,7 @@ import { Icon } from "@/components/portal/Icon";
 import { Card, CardHeader, PageHeader } from "@/components/portal/ui";
 import { site } from "@/content/site";
 import { contactTeams } from "@/content/steve-ui";
+import { portalPath } from "@/lib/portal/config";
 
 export const metadata: Metadata = { title: "Help & contact" };
 
@@ -39,7 +40,15 @@ export default function HelpPage() {
           <Card>
             <CardHeader title="Portal access" />
             <p className="px-6 py-5 text-[14px] leading-relaxed text-body">
-              To add a colleague, set up single sign-on for your brokerage or reset a password, email{" "}
+              Colleagues can ask for their own account from the{" "}
+              <a href={portalPath("/join")} className="text-site-teal hover:underline">
+                Request access
+              </a>{" "}
+              page. Change your password in{" "}
+              <a href={portalPath("/account")} className="text-site-teal hover:underline">
+                Your account
+              </a>
+              , or use &ldquo;Email me a sign-in link&rdquo; on the sign-in page if you&apos;ve forgotten it. To set up single sign-on for your brokerage, email{" "}
               <a href={`mailto:${site.email}?subject=${encodeURIComponent("Broker portal access")}`} className="text-site-teal hover:underline">
                 {site.email}
               </a>

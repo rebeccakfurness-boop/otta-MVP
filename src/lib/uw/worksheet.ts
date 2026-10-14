@@ -6,7 +6,8 @@ import { floodMapsFor } from "@/content/flood-maps";
 import { buildingApplication } from "@/content/forms";
 import { displayValue, unitRows, visibleSections, type Answers } from "@/lib/forms/application";
 import { nzRegion } from "@/lib/nz-region";
-import { brokerages, users } from "@/lib/portal/demo-data";
+import { allBrokerages, allUsers } from "@/lib/portal/accounts";
+import type { Brokerage, PortalUser } from "@/lib/portal/types";
 
 // The property underwriting worksheet (UW Notes, V13, 1 July 2026), pre-filled
 // from an online building insurance application for the email to Otta.
@@ -132,7 +133,8 @@ export async function buildWorksheet(answers: Answers, meta: WorksheetMeta) {
     const ws = wb.worksheets[0];
     for (const [cell, value] of Object.entries(values)) if (value !== null && value !== "") ws.getCell(cell).value = value;
   } else {
-    await buildOttaWorksheet(wb, values, answers, meta);
+    const [brokerages, users] = await Promise.all([allBrokerages(), allUsers()]);
+    await buildOttaWorksheet(wb, values, answers, meta, { brokerages, users });
   }
   wb.calcProperties.fullCalcOnLoad = true;
   return { name: `Otta-UW-Worksheet-${meta.reference}.xlsx`, content: new Uint8Array(await wb.xlsx.writeBuffer()) };
@@ -156,7 +158,13 @@ const NZD = '"$"#,##0';
 const NZD2 = '"$"#,##0.00';
 const DATE = "d mmmm yyyy";
 
-async function buildOttaWorksheet(wb: ExcelJS.Workbook, v: Record<string, CellValue>, answers: Answers, meta: WorksheetMeta) {
+async function buildOttaWorksheet(
+  wb: ExcelJS.Workbook,
+  v: Record<string, CellValue>,
+  answers: Answers,
+  meta: WorksheetMeta,
+  { brokerages, users }: { brokerages: Brokerage[]; users: PortalUser[] },
+) {
   wb.creator = "Otta";
   wb.title = `UW Notes ${meta.reference}`;
   const ws = wb.addWorksheet("UW Notes", {

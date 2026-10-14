@@ -40,6 +40,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Register the Microsoft and Google SSO apps.
 - Replace the demo brokerage, quotes and policies with Neon Postgres; upload forms and documents (Vercel Blob).
 - Decide how brokers request quotes online (currently via proposal forms).
+- **Broker onboarding**: add the Neon integration (`DATABASE_URL`) before approving real brokers, or new accounts and passwords reset on each deploy. Set `BROKER_ACCESS_EMAIL` if access requests should go somewhere other than hello@ottainsurance.co.nz.
 
 - Building insurance application: add `BREVO_API_KEY` in Vercel and verify `no-reply@ottainsurance.co.nz` (or the `ENQUIRY_FROM_EMAIL` address) as a sender in Brevo, or emails will be rejected. Change `APPLICATION_TO_EMAIL` if applications should go somewhere other than rebecca@tai.co.nz.
 - **Demo emails**: while `PORTAL_DEMO_LOGIN` is on, every email goes to rebecca@tai.co.nz with a "[Demo for ...]" subject. Set `EMAIL_DEMO_TO=off` at go-live so client links and broker notices reach their real recipients.

@@ -13,7 +13,13 @@ export function SignInPage({
   demo,
   websiteUrl,
   form,
+  title = "Sign in",
+  footer,
 }: {
+  /** Heading above the form. */
+  title?: string;
+  /** Shown under the form on every screen size, e.g. "New to Otta? Request access". */
+  footer?: ReactNode;
   label: string;
   headline: string;
   intro: string;
@@ -64,9 +70,10 @@ export function SignInPage({
         </div>
         <div className="mx-auto my-auto w-full max-w-[420px] py-12">
           <p className="text-[12px] font-semibold tracking-[0.2em] text-site-teal uppercase lg:hidden">Broker Portal</p>
-          <h2 className="mt-2 text-[32px] font-bold tracking-[-0.02em] text-charcoal">Sign in</h2>
+          <h2 className="mt-2 text-[32px] font-bold tracking-[-0.02em] text-charcoal">{title}</h2>
           <p className="mt-2 text-[15px] text-body">{intro}</p>
           <Suspense>{form}</Suspense>
+          {footer && <div className="mt-8 border-t border-[#eaeaea] pt-6 text-[14px] text-body">{footer}</div>}
           {demo && (
             <div className="mt-8 border-l-4 border-site-teal bg-footer px-5 py-4 text-[13px] leading-relaxed text-body">
               <p className="font-semibold text-charcoal">Prototype demo account</p>
