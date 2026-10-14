@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container, PageIntro } from "@/components/Mockup";
-import { wordingsFor } from "@/content/documents";
+import { factSheetFor, wordingsFor } from "@/content/documents";
 import { onlineForms } from "@/content/forms";
 import { products } from "@/content/products";
 import { resourcesNav } from "@/content/site";
@@ -82,6 +82,10 @@ function documentsFor(type: string, productSlug: string) {
     return onlineForms
       .filter((f) => (f.resource ?? "proposal-forms") === type && f.productSlugs.includes(productSlug))
       .map((f) => ({ title: f.title, edition: undefined, href: `/downloads/${f.slug}.pdf` }));
+  }
+  if (type === "product-fact-sheets") {
+    const sheet = factSheetFor(productSlug);
+    return sheet ? [{ title: sheet.title, edition: sheet.edition, href: sheet.file }] : [];
   }
   if (type === "policy-wording") {
     return wordingsFor(productSlug).map((d) => ({ title: d.title, edition: d.edition, href: d.file }));

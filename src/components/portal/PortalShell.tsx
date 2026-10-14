@@ -82,7 +82,7 @@ export function PortalShell({ label, labelClassName = "text-site-teal", homeHref
       </nav>
       <div className="border-t border-[#eaeaea] px-6 py-5">
         {user}
-        <a href={websiteUrl} className="mt-4 inline-flex items-center gap-1.5 text-[12px] text-body hover:text-site-teal">
+        <a href={websiteUrl} target="_blank" rel="noopener" className="mt-4 inline-flex items-center gap-1.5 text-[12px] text-body hover:text-site-teal">
           <Icon name="external" className="h-3.5 w-3.5" />
           ottainsurance.co.nz
         </a>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container, SquareButton } from "@/components/Mockup";
 import { Tabs } from "@/components/Tabs";
+import { factSheetFor, wordingsFor } from "@/content/documents";
 import { importantInformation } from "@/content/legal";
 import { getProduct, products } from "@/content/products";
 import { site } from "@/content/site";
@@ -31,7 +32,10 @@ function Check({ className = "" }: { className?: string }) {
 export default async function ProductPage({ params }: PageProps<"/solutions/[slug]">) {
   const product = getProduct((await params).slug);
   if (!product) notFound();
-  const policyWording = `/resources/policy-wording#${product.slug}`;
+  // A single wording opens straight away; products with several list them on the Resources page.
+  const wordings = wordingsFor(product.slug);
+  const policyWording = wordings.length === 1 ? wordings[0].file : `/resources/policy-wording#${product.slug}`;
+  const factSheet = factSheetFor(product.slug);
 
   return (
     <>
@@ -70,12 +74,12 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
               <Link href={`/solutions/${product.slug}/apply`} className={`${smallButton} bg-site-teal hover:bg-[#4fa99c]`}>
                 Apply now
               </Link>
-              <Link href={policyWording} className={`${smallButton} bg-[#777] hover:bg-charcoal`}>
+              <a href={policyWording} target="_blank" rel="noopener" className={`${smallButton} bg-[#777] hover:bg-charcoal`}>
                 View policy documents
-              </Link>
-              <Link href={`/resources/product-fact-sheets#${product.slug}`} className={`${smallButton} bg-[#777] hover:bg-charcoal`}>
+              </a>
+              <a href={factSheet?.file ?? `/resources/product-fact-sheets#${product.slug}`} target="_blank" rel="noopener" className={`${smallButton} bg-[#777] hover:bg-charcoal`}>
                 Download fact sheet
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -100,9 +104,9 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
                       <>
                         {" "}
                         (
-                        <Link href={policyWording} className="hover:text-site-teal">
+                        <a href={policyWording} target="_blank" rel="noopener" className="hover:text-site-teal">
                           click here for Policy Wording
-                        </Link>
+                        </a>
                         )
                       </>
                     )}

@@ -746,6 +746,7 @@ function OptionHelp({ option, text, link }: { option: string; text: string; link
           {link && (
             <a
               href={link.href}
+              {...(link.href.startsWith("#") ? {} : { target: "_blank", rel: "noopener" })}
               onClick={() => setOpen(false)}
               className="mt-2 inline-block text-[12px] font-medium tracking-[0.08em] text-[#2e7d74] uppercase hover:underline"
             >

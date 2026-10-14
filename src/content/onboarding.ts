@@ -25,6 +25,13 @@ export const onboarding = {
     sso: "Prefer to sign in with your brokerage's Microsoft or Google account? You can do that from the sign-in page once your account is set up.",
     expired: "This welcome link has expired or has already been used. Email yourself a sign-in link instead, or ask the Otta team to resend your invite.",
   },
+  /** Website links under the sign-in form. They open in a new tab. */
+  websiteLinks: [
+    { label: "Our products", path: "/solutions" },
+    { label: "Policy wordings", path: "/resources/policy-wording" },
+    { label: "Claims", path: "/claims" },
+    { label: "Contact us", path: "/contact" },
+  ],
   /** The broker guide, sent with the welcome email and linked from Help & contact. */
   guide: {
     href: "/documents/guides/otta-broker-portal-guide.pdf",

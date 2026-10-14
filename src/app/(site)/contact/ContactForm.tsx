@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { enquiryTypes } from "@/lib/schemas";
 import { products } from "@/content/products";
 import { submitContact, type ContactState } from "./actions";
@@ -11,7 +11,13 @@ const initial: ContactState = { status: "idle" };
 const inputClass =
   "mt-2 block w-full border border-[#e0e0e0] bg-white px-4 py-3 text-[15px] text-charcoal outline-none transition focus:border-site-teal aria-[invalid=true]:border-red-500";
 
+/** The form remounts (with a fresh state) when the visitor chooses to send another enquiry. */
 export function ContactForm() {
+  const [round, setRound] = useState(0);
+  return <EnquiryForm key={round} onAnother={() => setRound((n) => n + 1)} />;
+}
+
+function EnquiryForm({ onAnother }: { onAnother: () => void }) {
   const params = useSearchParams();
   const productSlug = params.get("product");
   const preselected = products.find((p) => p.slug === productSlug)?.name ?? "";
@@ -22,6 +28,13 @@ export function ContactForm() {
       <div role="status" className="rounded-sm bg-footer p-9">
         <h2 className="text-[20px] font-semibold tracking-normal text-site-teal">Message sent</h2>
         <p className="mt-3 text-[15px] text-body">{state.message}</p>
+        <button
+          type="button"
+          onClick={onAnother}
+          className="mt-6 bg-site-teal px-6 py-[13px] text-[12px] font-medium tracking-[0.12em] text-white uppercase transition-colors hover:bg-[#4fa99c]"
+        >
+          Submit another enquiry
+        </button>
       </div>
     );
   }

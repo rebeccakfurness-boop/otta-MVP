@@ -59,3 +59,16 @@ export const policyWordings: ProductDocument[] = [
 ];
 
 export const wordingsFor = (productSlug: string) => policyWordings.filter((d) => d.productSlugs.includes(productSlug));
+
+const factSheet = (name: string) => `/documents/fact-sheets/${name}`;
+
+/** One-page product summaries. Products without one show "Coming soon". */
+export const factSheets: ProductDocument[] = [
+  {
+    title: "Social and Community Housing Insurance Fact Sheet",
+    file: factSheet("Otta-Social-and-Community-Housing-Fact-Sheet.pdf"),
+    productSlugs: ["social-and-community-housing-insurance"],
+  },
+];
+
+export const factSheetFor = (productSlug: string) => factSheets.find((d) => d.productSlugs.includes(productSlug));

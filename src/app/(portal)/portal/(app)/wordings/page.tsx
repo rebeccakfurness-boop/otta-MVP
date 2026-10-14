@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Icon } from "@/components/portal/Icon";
 import { Card, PageHeader } from "@/components/portal/ui";
-import { policyWordings } from "@/content/documents";
+import { factSheetFor, policyWordings } from "@/content/documents";
 import { portalWordings as copy } from "@/content/portal-pages";
 import { products } from "@/content/products";
 import { productName } from "@/lib/portal/products";
@@ -14,7 +14,8 @@ export default function WordingsPage() {
       <PageHeader title={copy.title} description={copy.intro} />
       <div className="space-y-8">
         {products.map((p) => {
-          const docs = policyWordings.filter((d) => d.productSlugs.includes(p.slug));
+          const sheet = factSheetFor(p.slug);
+          const docs = [...policyWordings.filter((d) => d.productSlugs.includes(p.slug)), ...(sheet ? [sheet] : [])];
           return (
             <section key={p.slug}>
               <h2 className="mb-3 bg-site-blue px-5 py-3 font-heading text-[16px] font-semibold tracking-normal text-white">{productName(p.slug)}</h2>
@@ -40,7 +41,7 @@ export default function WordingsPage() {
                         className="inline-flex items-center gap-1.5 self-start border border-[#d6d6d6] bg-white px-3 py-2 text-[11px] font-medium tracking-[0.1em] whitespace-nowrap text-charcoal uppercase hover:border-site-teal hover:text-site-teal sm:self-auto"
                       >
                         <Icon name="documents" className="h-3.5 w-3.5" />
-                        {copy.view}
+                        {d === sheet ? copy.viewSheet : copy.view}
                       </a>
                     </li>
                   ))}

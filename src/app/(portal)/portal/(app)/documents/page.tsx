@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Card, CardHeader, DownloadButton, LoadingBlocks, PageHeader } from "@/components/portal/ui";
-import { wordingsFor } from "@/content/documents";
+import { factSheetFor, wordingsFor } from "@/content/documents";
 import { products } from "@/content/products";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
@@ -66,7 +66,7 @@ async function Documents() {
                 {wordingsFor(p.slug).map((d) => (
                   <DownloadButton key={d.file} file={d.file} label={wordingsFor(p.slug).length > 1 ? d.title.replace(/ Insurance Policy| Policy/, "") : "Policy wording"} />
                 ))}
-                <DownloadButton label="Fact sheet" />
+                <DownloadButton file={factSheetFor(p.slug)?.file} label="Fact sheet" />
               </div>
             </li>
           ))}

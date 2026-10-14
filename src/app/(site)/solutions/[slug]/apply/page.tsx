@@ -48,6 +48,8 @@ export default async function ApplyPage({ params }: PageProps<"/solutions/[slug]
                   <li key={f.id}>
                     <a
                       href={`/downloads/${f.slug}.pdf`}
+                      target="_blank"
+                      rel="noopener"
                       className="group flex items-center justify-between gap-3 bg-white px-5 py-3 text-[14px] font-medium text-charcoal transition-colors hover:bg-[#f1f8f7]"
                     >
                       {f.title}
@@ -64,6 +66,7 @@ export default async function ApplyPage({ params }: PageProps<"/solutions/[slug]
               button={applyCopy.download.button}
               href={`/downloads/${form.slug}.pdf`}
               external
+              newTab
               tone="teal"
             />
           ) : (
@@ -81,7 +84,7 @@ export default async function ApplyPage({ params }: PageProps<"/solutions/[slug]
   );
 }
 
-function Choice(props: { heading: string; body: string; button: string; href: string; external?: boolean; tone: "teal" | "blue" }) {
+function Choice(props: { heading: string; body: string; button: string; href: string; external?: boolean; newTab?: boolean; tone: "teal" | "blue" }) {
   const className = `group flex h-full flex-col p-9 text-white transition-colors ${
     props.tone === "teal" ? "bg-site-teal hover:bg-[#4fa99c]" : "bg-site-blue hover:bg-[#013a50]"
   }`;
@@ -99,7 +102,7 @@ function Choice(props: { heading: string; body: string; button: string; href: st
   );
   // The portal can be on its own subdomain, and the PDF is a file, so both are plain links.
   return props.external ? (
-    <a href={props.href} className={className}>
+    <a href={props.href} className={className} {...(props.newTab ? { target: "_blank", rel: "noopener" } : {})}>
       {content}
     </a>
   ) : (

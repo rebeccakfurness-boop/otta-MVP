@@ -151,6 +151,8 @@ export function DownloadButton({ file, label = "Download" }: { file?: string; la
   return (
     <a
       href={file}
+      target="_blank"
+      rel="noopener"
       className="inline-flex items-center gap-1.5 border border-[#d6d6d6] bg-white px-3 py-2 text-[11px] font-medium tracking-[0.1em] whitespace-nowrap text-charcoal uppercase hover:border-site-teal hover:text-site-teal"
     >
       <Icon name="download" className="h-3.5 w-3.5" />

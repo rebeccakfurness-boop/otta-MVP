@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Suspense, type ReactNode } from "react";
 import { Icon } from "@/components/portal/Icon";
+import { onboarding } from "@/content/onboarding";
 import { site } from "@/content/site";
 
 /** Split-screen sign-in page shared by the broker and admin portals. */
@@ -63,9 +64,9 @@ export function SignInPage({
       <main className="flex flex-col bg-white px-5 py-10 sm:px-10">
         <div className="flex items-center justify-between">
           <Image src="/brand/otta-logo.png" alt="Otta" width={513} height={191} className="h-8 w-auto lg:invisible" />
-          <a href={websiteUrl} className="inline-flex items-center gap-1.5 text-[13px] text-body hover:text-site-teal">
-            <Icon name="back" className="h-4 w-4" />
-            Back to website
+          <a href={websiteUrl} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-[13px] text-body hover:text-site-teal">
+            Visit the Otta website
+            <Icon name="external" className="h-4 w-4" />
           </a>
         </div>
         <div className="mx-auto my-auto w-full max-w-[420px] py-12">
@@ -85,6 +86,13 @@ export function SignInPage({
             </div>
           )}
         </div>
+        <nav aria-label="Otta website" className="mb-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[13px]">
+          {onboarding.websiteLinks.map((l) => (
+            <a key={l.path} href={`${websiteUrl.replace(/\/$/, "")}${l.path}`} target="_blank" rel="noopener" className="text-site-teal hover:underline">
+              {l.label}
+            </a>
+          ))}
+        </nav>
         <p className="text-center text-[12px] text-body">
           <Icon name="lock" className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
           Secure, encrypted sign in. © Otta. Need help? Call {site.phone}.

@@ -38,10 +38,11 @@ export const portalClaims = {
 
 export const portalWordings = {
   title: "Policy wordings",
-  intro: "The current policy wording for every Otta product. Check the wording before you recommend cover, and share it with your clients.",
+  intro: "The current policy wording for every Otta product, and fact sheets where we have them. Check the wording before you recommend cover, and share it with your clients. Each one opens in a new tab.",
   appliesTo: "Applies to",
   view: "View wording",
-  factSheets: "Fact sheets for each product are coming soon.",
+  viewSheet: "View fact sheet",
+  factSheets: "Fact sheets for the other products are coming soon.",
 };
 
 export const portalTraining = {
