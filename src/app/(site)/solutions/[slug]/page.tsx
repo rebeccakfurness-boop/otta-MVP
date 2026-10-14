@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Container, ImagePlaceholder, SquareButton } from "@/components/Mockup";
+import { Container, SquareButton } from "@/components/Mockup";
 import { Tabs } from "@/components/Tabs";
 import { importantInformation } from "@/content/legal";
 import { getProduct, products } from "@/content/products";
@@ -36,7 +37,17 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
     <>
       {/* Split hero: image left, introduction right */}
       <section className="grid lg:min-h-[710px] lg:grid-cols-[46%_1fr]">
-        <ImagePlaceholder label={product.name} className="min-h-[320px] lg:min-h-full" />
+        <div className="relative min-h-[320px] lg:min-h-full">
+          <Image
+            src={product.image.src}
+            alt={product.image.alt}
+            fill
+            priority
+            sizes="(min-width: 1024px) 46vw, 100vw"
+            className="object-cover"
+            style={{ objectPosition: product.image.position }}
+          />
+        </div>
         <div className="flex items-center px-5 py-16 lg:pr-[46px] lg:pl-[145px]">
           <div>
             <h1 className="text-[32px] leading-[1.2] font-bold tracking-normal text-charcoal md:text-[38px]">

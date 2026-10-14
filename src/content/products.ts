@@ -7,6 +7,8 @@ export type Product = {
   /** Short name used in "Why choose Otta for …" and cards. */
   shortName: string;
   category: "accident-travel" | "property" | "liability";
+  /** Hero photo on the product page (left half). `position` is the CSS object-position. */
+  image: { src: string; alt: string; position?: string };
   summary: string;
   /** Card text on the Our Solutions page. */
   overview: string;
@@ -40,6 +42,7 @@ export const products: Product[] = [
     name: "Corporate Travel Insurance",
     shortName: "Corporate Travel Insurance",
     category: "accident-travel",
+    image: { src: "/images/travel-airport.jpg", alt: "A traveller with a suitcase in an airport terminal", position: "30% center" },
     summary:
       "Financial protection and peace of mind for businesses and their people when travelling.",
     overview:
@@ -116,6 +119,7 @@ export const products: Product[] = [
     name: "Landlord Insurance",
     shortName: "Landlord Insurance",
     category: "property",
+    image: { src: "/images/property-houses-close.jpg", alt: "Hands sheltering small wooden houses", position: "center" },
     summary:
       "Specialist cover protecting landlords from losses associated with the tenancy of their property.",
     overview:
@@ -206,6 +210,7 @@ export const products: Product[] = [
     name: "Rental Property Insurance",
     shortName: "Rental Property Insurance",
     category: "property",
+    image: { src: "/images/property-houses.jpg", alt: "Hands sheltering three small wooden houses", position: "60% center" },
     summary:
       "Comprehensive property cover for residential rental properties, designed for landlords.",
     overview:
@@ -282,6 +287,7 @@ export const products: Product[] = [
     name: "Social and Community Housing Insurance",
     shortName: "Social and Community Housing",
     category: "property",
+    image: { src: "/images/property-houses.jpg", alt: "Hands sheltering three small wooden houses", position: "45% center" },
     summary:
       "Tailored property cover for social and community housing providers and the communities they serve.",
     overview:
@@ -361,6 +367,7 @@ export const products: Product[] = [
     name: "Personal Accident Insurance",
     shortName: "Personal Accident Insurance",
     category: "accident-travel",
+    image: { src: "/images/personal-accident-care.jpg", alt: "A carer pushing a smiling man in a wheelchair outdoors", position: "35% center" },
     summary:
       "Agreed value accident and illness cover that tops up ACC and fills the gaps it leaves.",
     overview:
@@ -445,6 +452,7 @@ export const products: Product[] = [
     name: "Liability Insurance",
     shortName: "Liability Insurance",
     category: "liability",
+    image: { src: "/images/liability-contract.jpg", alt: "A professional reviewing and signing a contract at a desk", position: "40% center" },
     summary:
       "Professional Indemnity, Public, Statutory and Employers Liability cover for New Zealand businesses.",
     overview:

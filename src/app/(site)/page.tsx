@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { HeroVideo } from "@/components/HeroVideo";
 import { ImagePlaceholder, SquareButton } from "@/components/Mockup";
@@ -8,21 +9,25 @@ import { getProduct } from "@/content/products";
 const columns = [
   {
     title: "Accident and Personal Insurance",
+    image: { src: "/images/travel-airport.jpg", alt: "A traveller with a suitcase in an airport terminal", position: "35% center" },
     body: "Protection for your people at home, at work and on the road. We have appetite for the unusual and high-risk, including pilots, professional athletes and forestry contractors.",
     products: ["corporate-travel-insurance", "personal-accident-insurance"],
   },
   {
     title: "Property Insurance",
+    image: { src: "/images/property-houses.jpg", alt: "Hands sheltering three small wooden houses", position: "center" },
     body: "Comprehensive cover for residential rental properties and social and community housing, including intentional damage and methamphetamine contamination.",
     products: ["rental-property-insurance", "social-and-community-housing-insurance"],
   },
   {
     title: "Liability Insurance",
+    image: { src: "/images/liability-contract.jpg", alt: "A professional reviewing and signing a contract", position: "45% center" },
     body: "Professional Indemnity, Public, Statutory and Employers Liability. Your reputation is your most valuable asset, and we help safeguard it.",
     products: ["liability-insurance"],
   },
   {
     title: "Landlord Insurance",
+    image: { src: "/images/property-houses-close.jpg", alt: "Hands sheltering small wooden houses", position: "center" },
     body: "Protect your rental income with cover for loss of rent if tenants default or your property becomes uninhabitable, plus tenant damage and legal liability.",
     products: ["landlord-insurance"],
   },
@@ -88,7 +93,16 @@ export default function Home() {
           <div className="mt-[110px] grid gap-x-9 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
             {columns.map((col) => (
               <article key={col.title}>
-                <ImagePlaceholder label={col.title} className="aspect-[3/2]" />
+                <div className="relative aspect-[3/2] overflow-hidden">
+                  <Image
+                    src={col.image.src}
+                    alt={col.image.alt}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                    style={{ objectPosition: col.image.position }}
+                  />
+                </div>
                 <h3 className="mt-11 text-[25px] leading-[1.15] font-semibold tracking-normal text-charcoal">
                   {col.title}
                 </h3>
@@ -118,11 +132,17 @@ export default function Home() {
       </section>
 
       {/* Property banner */}
-      <section className="relative flex min-h-[420px] items-center justify-center bg-placeholder px-5 md:h-[676px]">
-        <span className="absolute right-6 bottom-5 text-[14px] font-light text-white/90 italic">
-          placeholder image
-        </span>
-        <h2 className="text-center text-[28px] font-semibold tracking-normal text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.12)]">
+      <section className="relative flex min-h-[420px] items-center justify-center overflow-hidden px-5 md:h-[676px]">
+        <Image
+          src="/images/property-houses.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          style={{ objectPosition: "center 65%" }}
+        />
+        <div aria-hidden className="absolute inset-0 bg-charcoal/45" />
+        <h2 className="relative max-w-[900px] text-center text-[28px] font-semibold tracking-normal text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.25)] md:text-[34px]">
           Comprehensive cover for landlords to protect their investment
         </h2>
       </section>
@@ -149,6 +169,25 @@ export default function Home() {
             </div>
             <ImagePlaceholder label="Case study" className="aspect-[3/2]" />
           </div>
+        </div>
+      </section>
+
+      {/* About us banner */}
+      <section className="relative flex min-h-[380px] items-center justify-center overflow-hidden px-5 py-20 md:min-h-[460px]">
+        <Image src="/images/liability-contract.jpg" alt="" fill sizes="100vw" className="object-cover" style={{ objectPosition: "center 60%" }} />
+        <div aria-hidden className="absolute inset-0 bg-charcoal/60" />
+        <div className="relative max-w-[1000px] text-center">
+          <h2 className="text-[34px] font-bold tracking-[-0.02em] text-white md:text-[44px]">About Us</h2>
+          <p className="mx-auto mt-5 max-w-[860px] text-[17px] leading-[1.7] text-white/95 md:text-[19px]">
+            Otta is a New Zealand insurer providing specialist insurance products from Lloyd&apos;s of London, with quick
+            turnaround and direct access to the underwriter.
+          </p>
+          <Link
+            href="/about-us"
+            className="mt-9 inline-flex items-center bg-site-teal px-10 py-[17px] text-[16px] font-medium text-white transition-colors hover:bg-[#4fa99c]"
+          >
+            Learn more
+          </Link>
         </div>
       </section>
     </>
