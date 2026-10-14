@@ -27,7 +27,7 @@ const columns = [
   },
   {
     title: "Landlord Insurance",
-    image: { src: "/images/property-houses-close.jpg", alt: "Hands sheltering small wooden houses", position: "center" },
+    image: { src: "/images/landlord-keys.jpg", alt: "House keys handed over beside a model house", position: "center" },
     body: "Protect your rental income with cover for loss of rent if tenants default or your property becomes uninhabitable, plus tenant damage and legal liability.",
     products: ["landlord-insurance"],
   },
