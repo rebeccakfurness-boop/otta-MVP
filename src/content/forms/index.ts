@@ -1,3 +1,4 @@
+import { accountantsQuestionnaire } from "./accountants-questionnaire";
 import { buildingApplication } from "./building";
 import { corporateTravelProposal } from "./corporate-travel";
 import { landlordProtectApplication } from "./landlord-protect";
@@ -6,12 +7,14 @@ import { paClaimForm } from "./pa-claim";
 import { paGroupProposal } from "./pa-group-proposal";
 import { paHealthDeclaration } from "./pa-health-declaration";
 import { paIndividualProposal } from "./pa-individual-proposal";
+import { piRenewalDeclaration } from "./pi-renewal-declaration";
 import { travelClaimForm } from "./travel-claim";
 import { professionalIndemnityProposal } from "./professional-indemnity";
 import type { FormDefinition } from "./types";
 
 export type { Condition, Field, FormDefinition, Part, Section, TextBlock } from "./types";
 export {
+  accountantsQuestionnaire,
   buildingApplication,
   corporateTravelProposal,
   landlordProtectApplication,
@@ -20,6 +23,7 @@ export {
   paGroupProposal,
   paHealthDeclaration,
   paIndividualProposal,
+  piRenewalDeclaration,
   professionalIndemnityProposal,
   travelClaimForm,
 };
@@ -33,7 +37,9 @@ export const onlineForms: FormDefinition[] = [
   paGroupProposal,
   paHealthDeclaration,
   professionalIndemnityProposal,
+  accountantsQuestionnaire,
   noClaimsDeclaration,
+  piRenewalDeclaration,
   travelClaimForm,
   paClaimForm,
 ];

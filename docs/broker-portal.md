@@ -37,6 +37,8 @@ Applications page):
 | Declaration of Health | `/forms/declaration-of-health` | `/apply/pa-health/...` | `/downloads/declaration-of-health.pdf` |
 | Group Personal Accident and Illness Proposal | `/forms/group-personal-accident-proposal` | `/apply/pa-group/...` | `/downloads/group-personal-accident-proposal.pdf` |
 | Professional Indemnity Proposal | `/forms/professional-indemnity-proposal` | `/apply/professional-indemnity/...` | `/downloads/professional-indemnity-proposal.pdf` |
+| Accountants Supplementary Questionnaire | `/forms/accountants-supplementary-questionnaire` | `/apply/accountants/...` | `/downloads/accountants-supplementary-questionnaire.pdf` |
+| Professional Indemnity Renewal Declaration | `/forms/professional-indemnity-renewal-declaration` | `/apply/pi-renewal/...` | `/downloads/professional-indemnity-renewal-declaration.pdf` |
 | No Claims / Material Changes Declaration | `/forms/no-claims-declaration` | `/apply/no-claims-declaration/...` | `/downloads/no-claims-declaration.pdf` |
 | Travel and Accident Insurance Claim Form | `/forms/travel-claim` | `/apply/travel-claim/...` | `/downloads/travel-claim.pdf` (Claim Forms page) |
 | Personal Accident and Illness Claim Form | `/forms/personal-accident-claim` | `/apply/pa-claim/...` | `/downloads/personal-accident-claim.pdf` (Claim Forms page) |

@@ -333,7 +333,8 @@ class Writer {
   /** A fixed table of numbers with row labels and an optional totals row. */
   grid(field: GridField, answers: Answers, blank: boolean) {
     const { rows, totals } = gridValues(field, answers);
-    const labelW = CONTENT * 0.34;
+    // A one-column table gives its row labels more room.
+    const labelW = CONTENT * (field.columns.length === 1 ? 0.6 : 0.34);
     const colW = (CONTENT - labelW) / field.columns.length;
     const rowH = 19;
     const headerLines = field.columns.map((c) => this.wrap(c.label, this.f.semibold, 8.5, colW - 8));
