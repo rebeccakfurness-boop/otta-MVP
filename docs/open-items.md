@@ -58,6 +58,11 @@ Placeholders in the prototype that need real content or decisions. Search the co
 ## Website search
 - The search index is built from `src/content/` (products, `search.ts` for other pages). Add new pages to `src/content/search.ts`.
 
+## Coming Soon gate (temporary)
+- Every page, portal and document shows the Coming Soon screen until the team signs in ("Team sign in", bottom right). Sign-in lasts 30 days and covers www, portal and admin on ottainsurance.co.nz.
+- The default password is in `src/lib/gate/config.ts`. Set `SITE_PASSWORD` in Vercel to change it (everyone is signed out when it changes).
+- **At launch**: set `SITE_GATE=off` in Vercel and redeploy.
+
 ## Later stages
 - Compliance review (Privacy Act 2020, FMC Act, Fair Trading Act, CoFI, etc.).
 - Remove `robots: noindex` in `src/app/layout.tsx` at launch.

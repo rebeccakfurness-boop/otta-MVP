@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ADMIN_HOST, ADMIN_SESSION_COOKIE, isPublicAdminPath } from "@/lib/admin/config";
+import { GATE_COOKIE, GATE_ON, GATE_PATH, gateToken } from "@/lib/gate/config";
 import { PORTAL_HOST, isPublicPortalPath } from "@/lib/portal/config";
 import { SESSION_COOKIE } from "@/lib/portal/session-cookie";
 
@@ -17,8 +18,22 @@ const apps = [
 
 const under = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const url = request.nextUrl;
+
+  // Until launch, everything sits behind the Coming Soon screen (src/lib/gate).
+  if (GATE_ON) {
+    if (url.pathname === GATE_PATH || url.pathname.startsWith(`${GATE_PATH}/`)) return NextResponse.next();
+    if (request.cookies.get(GATE_COOKIE)?.value !== (await gateToken())) {
+      if (url.pathname.startsWith("/api/")) return new NextResponse(null, { status: 401 });
+      const gate = url.clone();
+      gate.pathname = GATE_PATH;
+      gate.search = "";
+      const res = NextResponse.rewrite(gate);
+      res.headers.set("cache-control", "no-store");
+      return res;
+    }
+  }
   const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const hostApp = apps.find((a) => a.host !== "" && a.host === host);
 
@@ -64,5 +79,5 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   // Skip Next.js internals and static files.
-  matcher: ["/((?!_next/|favicon.ico|icon.png|apple-icon.png|brand/|media/|team/|images/|downloads/|documents/).*)"],
+  matcher: ["/((?!_next/|favicon.ico|icon.png|apple-icon.png|brand/|media/|team/|images/).*)"],
 };
