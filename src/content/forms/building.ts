@@ -1,81 +1,23 @@
+import { inviteFor, type FormDefinition } from "./types";
+
 // The Building Insurance Application Form, as structured data. The broker
 // portal form, its validation, the emailed summary and the PDF are all built
 // from this one definition, so a question only needs changing here.
 
-export type Condition =
-  | { field: string; equals: string }
-  /** Shown when the field holds a number below the given value. */
-  | { field: string; below: number };
-
-type Base = {
-  name: string;
-  label: string;
-  hint?: string;
-  /** Not every question applies to everyone; these may be left blank. */
-  optional?: boolean;
-  showIf?: Condition;
-  /** Columns out of 6 on wide screens. Defaults to the full row. */
-  span?: 2 | 3 | 4 | 6;
-  placeholder?: string;
-  /** Suggest NZ addresses as the person types (and fill in a post code field). */
-  address?: { postcodeField?: string };
-};
-
-export type Field =
-  | (Base & { kind: "text" | "email" | "tel" | "date" | "money" | "number" | "year" | "textarea" })
-  | (Base & { kind: "yesno" })
-  | (Base & { kind: "choice"; options: string[] })
-  | (Base & { kind: "units"; columns: { key: string; label: string; kind: "text" | "money" | "number"; placeholder: string }[] });
-
-export type TextBlock = { heading?: string; paragraphs?: string[]; bullets?: string[] };
-
-export type Section = {
-  id: string;
-  title: string;
-  intro?: string;
-  note?: string;
-  /** Shaded panel, as the pre-1940 questions are on the paper form. */
-  shaded?: boolean;
-  showIf?: Condition;
-  fields: Field[];
-};
-
-export type Part = {
-  id: string;
-  /** The coloured band at the top of each page of the paper form. */
-  band: string;
-  sections: Section[];
-  /** Read-only wording shown after the questions. */
-  text?: TextBlock[];
-  /** Sign-off fields shown after the wording. */
-  signOff?: Field[];
-};
-
-export const buildingApplication = {
+export const buildingApplication: FormDefinition = {
+  id: "building",
+  slug: "building-application",
   title: "Building Insurance Application Form",
+  pdfTitle: ["Building Insurance", "Application Form"],
   shortTitle: "Building insurance application",
   summary:
     "Apply for building insurance for a rental or investment property. Fill it in online and send it straight to the Otta team, or download it as a PDF.",
   fileName: "Otta-Building-Insurance-Application",
   sendTo: "the Otta property team",
-  /** The email a broker sends their client with a link to the form. */
-  invite: {
-    subject: (brokerage: string) => `Your building insurance application from ${brokerage}`,
-    body: (o: { clientName: string; brokerName: string; brokerage: string; url: string; days: number; note?: string }) =>
-      [
-        `Kia ora ${o.clientName.split(" ")[0]},`,
-        ``,
-        `${o.brokerName} at ${o.brokerage} has asked you to complete a building insurance application with Otta.`,
-        ...(o.note ? [``, o.note] : []),
-        ``,
-        `Fill it in online here (it takes about 10 minutes):`,
-        o.url,
-        ``,
-        `The link works for ${o.days} days. When you submit, it goes straight to ${o.brokerage} and the Otta team. If you have questions, reply to this email to reach ${o.brokerName}.`,
-        ``,
-        `Otta, insurance that works`,
-      ].join("\n"),
-  },
+  productSlugs: ["rental-property-insurance", "social-and-community-housing-insurance"],
+  keyFields: { name: "insuredName", detail: "propertyAddress" },
+  underwriting: true,
+  invite: inviteFor("building insurance application"),
   parts: [
     {
       id: "application",
@@ -154,6 +96,7 @@ export const buildingApplication = {
           title: "If pre-1940, please complete the following section",
           shaded: true,
           showIf: { field: "yearBuilt", below: 1940 },
+          hiddenHint: "This section appears once the year built is before 1940.",
           fields: [
             { kind: "yesno", name: "rewired", label: "Has the building been re-wired?", span: 3 },
             { kind: "yesno", name: "plumbing", label: "Has the plumbing been replaced?", span: 3 },
@@ -427,5 +370,5 @@ export const buildingApplication = {
         },
       ],
     },
-  ] as Part[],
+  ],
 };

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ApplicationSummary } from "@/components/applications/ApplicationSummary";
+import { getForm } from "@/content/forms";
 import { ButtonLink, Card, DetailList, LoadingBlocks, PageHeader, StatusBadge } from "@/components/portal/ui";
 import { getApplication } from "@/lib/applications/store";
 import { requireBroker } from "@/lib/portal/auth";
@@ -22,7 +23,8 @@ async function ApplicationDetail({ params }: { params: PageProps<"/portal/applic
   const { id } = await params;
   const broker = await requireBroker();
   const app = await getApplication(id, broker.brokerageId);
-  if (!app) notFound();
+  const form = getForm(app?.form);
+  if (!app || !form) notFound();
   return (
     <>
       <PageHeader
@@ -38,6 +40,7 @@ async function ApplicationDetail({ params }: { params: PageProps<"/portal/applic
       <Card className="mb-8">
         <DetailList
           items={[
+            { label: "Form", value: form.shortTitle },
             { label: "Reference", value: app.reference },
             { label: "Status", value: <StatusBadge status={app.source === "client" ? "Completed by client" : "Sent to Otta"} /> },
             { label: app.source === "client" ? "Completed by" : "Sent by", value: `${app.submittedBy} (${app.submittedByEmail})` },
@@ -47,7 +50,7 @@ async function ApplicationDetail({ params }: { params: PageProps<"/portal/applic
           ]}
         />
       </Card>
-      <ApplicationSummary answers={app.answers} />
+      <ApplicationSummary form={form} answers={app.answers} />
     </>
   );
 }

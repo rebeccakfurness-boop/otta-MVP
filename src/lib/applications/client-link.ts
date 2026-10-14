@@ -12,6 +12,8 @@ export const LINK_DAYS = 30;
 export type LinkToken = {
   kind: "client-link";
   id: string;
+  /** The online form the link opens (see src/content/forms). */
+  form: string;
   brokerageId: string;
   brokerageName: string;
   brokerName: string;

@@ -1,13 +1,14 @@
 import "server-only";
-import { buildingApplication } from "@/content/building-application";
+import type { FormDefinition } from "@/content/forms";
 import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
-import { buildApplicationPdf } from "@/lib/forms/building-application-pdf";
-import { summaryText, type Answers } from "@/lib/forms/building-application";
+import { summaryText, type Answers } from "@/lib/forms/application";
+import { buildApplicationPdf } from "@/lib/forms/application-pdf";
 import { buildWorksheet, propertyLocation } from "@/lib/uw/worksheet";
 import { getLink, newId, newReference, saveApplication, saveLink, type ApplicationSource } from "./store";
 
 type Delivery = {
+  form: FormDefinition;
   answers: Answers;
   source: ApplicationSource;
   brokerageId: string;
@@ -28,13 +29,18 @@ type Delivery = {
  * completed it.
  */
 export async function deliverApplication(d: Delivery) {
+  const { form } = d;
   const id = newId("app");
-  const reference = newReference();
+  const reference = newReference(form.id === "building" ? "BA" : form.id === "corporate-travel" ? "CT" : "AP");
+  const name = d.answers[form.keyFields.name] ?? "";
+  const detail = d.answers[form.keyFields.detail] ?? "";
+  const noun = form.shortTitle.toLowerCase();
   const createdAt = new Date().toISOString();
   const viaClient = d.source === "client";
 
   await saveApplication({
     id,
+    form: form.id,
     reference,
     brokerageId: d.brokerageId,
     source: d.source,
@@ -42,8 +48,8 @@ export async function deliverApplication(d: Delivery) {
     submittedByEmail: d.submittedByEmail,
     brokerName: d.brokerName,
     brokerEmail: d.brokerEmail,
-    insuredName: d.answers.insuredName ?? "",
-    propertyAddress: d.answers.propertyAddress ?? "",
+    insuredName: name,
+    propertyAddress: detail,
     linkId: d.linkId,
     answers: d.answers,
     createdAt,
@@ -53,32 +59,34 @@ export async function deliverApplication(d: Delivery) {
     if (link) await saveLink({ ...link, completedAt: createdAt, applicationId: id });
   }
 
-  const pdf = await buildApplicationPdf(d.answers, {
+  const pdf = await buildApplicationPdf(form, d.answers, {
     reference,
     brokerage: d.brokerageName,
     completedBy: d.source,
     submittedBy: viaClient ? `Completed by ${d.submittedBy} for ${d.brokerName}` : `${d.brokerName} (${d.brokerEmail})`,
   });
-  const attachment = { name: `${buildingApplication.fileName}-${reference}.pdf`, content: pdf };
-  // Only the Otta team gets the pre-filled underwriting worksheet.
-  const worksheet = await buildWorksheet(d.answers, {
-    reference,
-    brokerageName: d.brokerageName,
-    brokerName: d.brokerName,
-    createdAt,
-  }).catch((error) => {
-    console.error("[uw-worksheet] could not build", error);
-    return null;
-  });
-  const location = propertyLocation(d.answers);
-  const floodLines = [
-    `FLOOD MAPPING`,
-    `  Property: ${d.answers.propertyAddress}${location.region ? ` (${location.region})` : ""}`,
-    `  Complete flood map (national): ${location.flood.national.url}`,
-    `  ${location.region || "Regional"} flood map: ${location.flood.regional.name}`,
-    `  ${location.flood.regional.url}`,
-  ];
-  const subject = `Building insurance application: ${d.answers.insuredName}, ${d.answers.propertyAddress} (${reference})`;
+  const attachment = { name: `${form.fileName}-${reference}.pdf`, content: pdf };
+  // Building applications only: the Otta team also gets the pre-filled
+  // underwriting worksheet and flood map links for the property.
+  const worksheet = form.underwriting
+    ? await buildWorksheet(d.answers, { reference, brokerageName: d.brokerageName, brokerName: d.brokerName, createdAt }).catch((error) => {
+        console.error("[uw-worksheet] could not build", error);
+        return null;
+      })
+    : null;
+  let floodLines: string[] = [];
+  if (form.underwriting) {
+    const location = propertyLocation(d.answers);
+    floodLines = [
+      `FLOOD MAPPING`,
+      `  Property: ${detail}${location.region ? ` (${location.region})` : ""}`,
+      `  Complete flood map (national): ${location.flood.national.url}`,
+      `  ${location.region || "Regional"} flood map: ${location.flood.regional.name}`,
+      `  ${location.flood.regional.url}`,
+      ``,
+    ];
+  }
+  const subject = `${form.shortTitle}: ${name}${detail ? `, ${detail}` : ""} (${reference})`;
 
   const emailed = await sendEmail({
     to: env.applicationToEmail,
@@ -87,8 +95,8 @@ export async function deliverApplication(d: Delivery) {
     subject,
     text: [
       viaClient
-        ? `A building insurance application was completed by ${d.submittedBy} using a link from their broker.`
-        : `A new building insurance application was submitted through the Otta Broker Portal.`,
+        ? `A ${noun} was completed by ${d.submittedBy} using a link from their broker.`
+        : `A new ${noun} was submitted through the Otta Broker Portal.`,
       ``,
       `Reference: ${reference}`,
       `Brokerage: ${d.brokerageName}`,
@@ -100,8 +108,7 @@ export async function deliverApplication(d: Delivery) {
         : `The completed form is attached as a PDF. Reply to this email to contact the broker.`,
       ``,
       ...floodLines,
-      ``,
-      summaryText(d.answers),
+      summaryText(form, d.answers),
     ]
       .filter((l, i, all) => !(l === "" && all[i - 1] === ""))
       .join("\n"),
@@ -112,12 +119,12 @@ export async function deliverApplication(d: Delivery) {
     await sendEmail({
       to: d.brokerEmail,
       senderName: "Otta Broker Portal",
-      subject: `Your client completed their building insurance application (${reference})`,
+      subject: `Your client completed their ${noun} (${reference})`,
       text: [
         `Kia ora ${d.brokerName.split(" ")[0]},`,
         ``,
-        `${d.submittedBy} has completed the building insurance application you sent them, for ${d.answers.propertyAddress}.`,
-        `It has gone straight to the Otta property team and is saved in your broker portal${d.portalUrl ? `: ${d.portalUrl(id)}` : "."}`,
+        `${d.submittedBy} has completed the ${noun} you sent them${detail ? `, for ${detail}` : ""}.`,
+        `It has gone straight to ${form.sendTo} and is saved in your broker portal${d.portalUrl ? `: ${d.portalUrl(id)}` : "."}`,
         ``,
         `Reference: ${reference}`,
         ``,

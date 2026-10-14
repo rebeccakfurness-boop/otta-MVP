@@ -11,7 +11,9 @@ const inputClass =
 const button =
   "inline-flex items-center justify-center gap-2 px-5 py-3 text-[12px] font-medium tracking-[0.12em] uppercase transition-colors disabled:opacity-70";
 
-export function SendLinkForm({ applicationsUrl }: { applicationsUrl: string }) {
+type FormOption = { id: string; title: string; summary: string };
+
+export function SendLinkForm({ applicationsUrl, forms, selected }: { applicationsUrl: string; forms: FormOption[]; selected: string }) {
   const [state, action, pending] = useActionState<LinkState, FormData>(createClientLink, { status: "idle" });
 
   if (state.status === "created") {
@@ -23,6 +25,7 @@ export function SendLinkForm({ applicationsUrl }: { applicationsUrl: string }) {
           </span>
           <div className="min-w-0 flex-1">
             <h2 className="text-[22px] tracking-[-0.01em]">Link ready for {state.clientName}</h2>
+            <p className="text-[13px] font-medium text-[#2e7d74]">{state.formTitle}</p>
             <p className="mt-1 text-[14px] text-body">
               {state.emailed
                 ? `We've emailed it to ${state.clientEmail}. You can also copy it below.`
@@ -55,6 +58,20 @@ export function SendLinkForm({ applicationsUrl }: { applicationsUrl: string }) {
   return (
     <Card className="max-w-3xl px-6 py-8 md:px-8">
       <form action={action} className="space-y-5" noValidate>
+        <fieldset>
+          <legend className="text-[14px] font-medium text-charcoal">Which form?</legend>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            {forms.map((f) => (
+              <label key={f.id} className="cursor-pointer">
+                <input type="radio" name="form" value={f.id} defaultChecked={(values.form || selected) === f.id} className="peer sr-only" />
+                <span className="flex h-full flex-col border border-[#d9d9d9] px-4 py-3 transition-colors peer-checked:border-site-teal peer-checked:bg-[#f1f8f7] peer-focus-visible:ring-2 peer-focus-visible:ring-site-teal/40 hover:border-site-teal">
+                  <span className="text-[14px] font-semibold text-charcoal">{f.title}</span>
+                  <span className="mt-0.5 text-[12px] leading-snug text-body">{f.summary.split(". ")[0]}.</span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <label htmlFor="clientName" className="text-[14px] font-medium text-charcoal">

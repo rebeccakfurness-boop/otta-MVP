@@ -3,11 +3,11 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import fontkit from "@pdf-lib/fontkit";
 import { BlendMode, PDFDocument, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
-import { buildingApplication, type Field } from "@/content/building-application";
+import type { Field, FormDefinition } from "@/content/forms";
 import { site } from "@/content/site";
-import { CONFIRM_FIELD, displayValue, moneyText, unitRows, visibleSections, type Answers } from "./building-application";
+import { CONFIRM_FIELD, displayValue, gridValues, moneyText, unitRows, visibleSections, type Answers, type GridField } from "./application";
 
-// Draws the Building Insurance Application Form as an A4 PDF in Otta branding.
+// Draws an online form (building application, travel proposal, ...) as an A4 PDF in Otta branding.
 // Used for the broker's "Download PDF" button and the copy attached to the
 // email. A form with no answers prints as a blank form for filling by hand.
 
@@ -32,6 +32,7 @@ const FOOTER = 46;
 type Fonts = { regular: PDFFont; semibold: PDFFont; heading: PDFFont };
 
 export async function buildApplicationPdf(
+  form: FormDefinition,
   answers: Answers,
   meta: { reference?: string; brokerage?: string; submittedBy?: string; completedBy?: "broker" | "client" } = {},
 ) {
@@ -53,20 +54,21 @@ export async function buildApplicationPdf(
   const prefilled = new Set(["broker", "signedDate"]);
   const blank = Object.entries(answers).every(([k, v]) => !v || prefilled.has(k));
 
-  doc.setTitle(buildingApplication.title);
+  doc.setTitle(form.title);
   doc.setAuthor(site.name);
-  doc.setSubject(meta.reference ? `Application ${meta.reference}` : buildingApplication.title);
+  doc.setSubject(meta.reference ? `Application ${meta.reference}` : form.title);
 
-  const w = new Writer(doc, fonts, logo);
+  const w = new Writer(doc, fonts, logo, form);
 
-  for (const part of buildingApplication.parts) {
+  for (const part of form.parts) {
     w.newPage(part.band);
-    const sections = visibleSections(answers, blank).filter((s) => s.part === part.id);
+    const sections = visibleSections(form, answers, blank).filter((s) => s.part === part.id);
     for (const section of sections) {
       w.section(section.title, section.shaded);
       if (section.intro) w.paragraph(section.intro, { font: fonts.semibold, colour: colour.tealText, size: 9.5 });
       for (const field of section.fields) {
         if (field.kind === "units") w.units(field, answers, blank);
+        else if (field.kind === "grid") w.grid(field, answers, blank);
         else w.field(field, answers[field.name], blank);
       }
       if (section.note) w.paragraph(`Note: ${section.note}`, { font: fonts.semibold, size: 9 });
@@ -110,6 +112,7 @@ class Writer {
     private doc: PDFDocument,
     private f: Fonts,
     private logo: PDFImage,
+    private form: FormDefinition,
   ) {}
 
   newPage(band: string) {
@@ -126,8 +129,8 @@ class Writer {
       p.drawText(line, { x: A4.w - M - width, y: A4.h - 82 - i * 10.5, size: 8, font, color: colour.charcoal });
     });
     // Title, top left.
-    p.drawText("Building Insurance", { x: M, y: A4.h - 66, size: 21, font: this.f.heading, color: colour.blue });
-    p.drawText("Application Form", { x: M, y: A4.h - 90, size: 21, font: this.f.heading, color: colour.blue });
+    p.drawText(this.form.pdfTitle[0], { x: M, y: A4.h - 66, size: 21, font: this.f.heading, color: colour.blue });
+    p.drawText(this.form.pdfTitle[1], { x: M, y: A4.h - 90, size: 21, font: this.f.heading, color: colour.blue });
     // Teal rule over a blue band carrying the page heading.
     const bandTop = A4.h - 124;
     p.drawRectangle({ x: 0, y: bandTop, width: A4.w, height: 4, color: colour.teal });
@@ -141,7 +144,7 @@ class Writer {
     this.closeShade();
     this.page = this.doc.addPage([A4.w, A4.h]);
     this.page.drawRectangle({ x: 0, y: A4.h - 6, width: A4.w, height: 6, color: colour.teal });
-    this.page.drawText(buildingApplication.title, { x: M, y: A4.h - 32, size: 9, font: this.f.semibold, color: colour.blue });
+    this.page.drawText(this.form.title, { x: M, y: A4.h - 32, size: 9, font: this.f.semibold, color: colour.blue });
     this.y = A4.h - 56;
   }
 
@@ -316,6 +319,48 @@ class Writer {
       this.y -= rowH;
     }
     this.y -= 8;
+  }
+
+  /** A fixed table of numbers with row labels and an optional totals row. */
+  grid(field: GridField, answers: Answers, blank: boolean) {
+    const { rows, totals } = gridValues(field, answers);
+    const labelW = CONTENT * 0.34;
+    const colW = (CONTENT - labelW) / field.columns.length;
+    const rowH = 19;
+    const headerLines = field.columns.map((c) => this.wrap(c.label, this.f.semibold, 8.5, colW - 8));
+    const headH = Math.max(...headerLines.map((l) => l.length)) * 11 + 10;
+    this.need(14 + headH + rowH * 2);
+    this.page.drawText(field.label, { x: M, y: this.y - 10, size: 9, font: this.f.regular, color: colour.charcoal });
+    this.y -= 16;
+    const header = () => {
+      this.page.drawRectangle({ x: M, y: this.y - headH, width: CONTENT, height: headH, color: colour.shade, borderColor: colour.blue, borderWidth: 1 });
+      headerLines.forEach((lines, i) =>
+        lines.forEach((l, j) => {
+          const tw = this.f.semibold.widthOfTextAtSize(l, 8.5);
+          this.page.drawText(l, { x: M + labelW + i * colW + (colW - tw) / 2, y: this.y - 13 - j * 11, size: 8.5, font: this.f.semibold, color: colour.blue });
+        }),
+      );
+      this.y -= headH;
+    };
+    header();
+    const drawRow = (label: string, values: string[], bold = false) => {
+      if (this.y - rowH < FOOTER + 10) {
+        this.continuePage();
+        header();
+      }
+      const font = bold ? this.f.semibold : this.f.regular;
+      this.page.drawRectangle({ x: M, y: this.y - rowH, width: labelW, height: rowH, color: colour.white, borderColor: colour.boxLine, borderWidth: 0.6 });
+      this.page.drawText(label, { x: M + 6, y: this.y - 13, size: 9, font, color: colour.charcoal });
+      values.forEach((v, i) => {
+        this.page.drawRectangle({ x: M + labelW + i * colW, y: this.y - rowH, width: colW, height: rowH, color: bold ? colour.shade : colour.white, borderColor: colour.boxLine, borderWidth: 0.6 });
+        const tw = font.widthOfTextAtSize(v, 9);
+        this.page.drawText(v, { x: M + labelW + i * colW + (colW - tw) / 2, y: this.y - 13, size: 9, font, color: colour.charcoal });
+      });
+      this.y -= rowH;
+    };
+    for (const row of rows) drawRow(row.label, field.columns.map((c) => (blank ? "" : row.values[c.key])));
+    if (field.total) drawRow("Total", field.columns.map((c) => (blank || totals[c.key] === null ? "" : String(totals[c.key]))), true);
+    this.y -= 10;
   }
 
   signOff(fields: Field[], answers: Answers, blank: boolean) {

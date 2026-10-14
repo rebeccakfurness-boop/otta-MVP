@@ -5,6 +5,7 @@ import { Card, EmptyState, LoadingBlocks, PageHeader, StatusBadge } from "@/comp
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminPath } from "@/lib/admin/config";
 import { brokerageNames } from "@/lib/admin/data";
+import { getForm } from "@/content/forms";
 import { listApplications, storageMode } from "@/lib/applications/store";
 import { formatDate } from "@/lib/portal/status";
 
@@ -25,7 +26,7 @@ async function Applications() {
     <>
       <PageHeader
         title="Applications"
-        description="Online building insurance applications from every broker, including those completed by clients from a broker's link."
+        description="Online applications (building insurance and corporate travel) from every broker, including those completed by clients from a broker's link."
       />
       {storageMode === "memory" && (
         <p className="mb-6 border-l-4 border-site-purple bg-[#f8f1fa] px-4 py-3 text-[13px] text-site-purple">
@@ -44,7 +45,7 @@ async function Applications() {
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-charcoal">{a.insuredName}</p>
                     <p className="truncate text-[13px] text-body">
-                      {a.propertyAddress} · {a.reference}
+                      {getForm(a.form)?.shortTitle} · {a.propertyAddress ? `${a.propertyAddress} · ` : ""}{a.reference}
                     </p>
                   </div>
                   <span className="text-[13px] text-body">

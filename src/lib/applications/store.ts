@@ -1,6 +1,6 @@
 import "server-only";
 import { neon } from "@neondatabase/serverless";
-import type { Answers } from "@/lib/forms/building-application";
+import type { Answers } from "@/lib/forms/application";
 
 // Online applications and the client links brokers send out.
 //
@@ -14,6 +14,8 @@ export type ApplicationSource = "broker" | "client";
 
 export type Application = {
   id: string;
+  /** Which online form (see src/content/forms). Missing on early records, which are building applications. */
+  form?: string;
   reference: string;
   brokerageId: string;
   source: ApplicationSource;
@@ -32,6 +34,7 @@ export type Application = {
 
 export type ClientLink = {
   id: string;
+  form?: string;
   brokerageId: string;
   brokerName: string;
   brokerEmail: string;
@@ -138,8 +141,8 @@ export function newId(prefix: string) {
   return `${prefix}_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
 }
 
-export function newReference() {
+export function newReference(code = "BA") {
   const d = new Date();
   const stamp = `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  return `OTT-BA-${stamp}-${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
+  return `OTT-${code}-${stamp}-${crypto.randomUUID().slice(0, 4).toUpperCase()}`;
 }

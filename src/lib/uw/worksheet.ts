@@ -3,7 +3,8 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import ExcelJS from "exceljs";
 import { floodMapsFor } from "@/content/flood-maps";
-import { displayValue, unitRows, visibleSections, type Answers } from "@/lib/forms/building-application";
+import { buildingApplication } from "@/content/forms";
+import { displayValue, unitRows, visibleSections, type Answers } from "@/lib/forms/application";
 import { nzRegion } from "@/lib/nz-region";
 import { brokerages, users } from "@/lib/portal/demo-data";
 
@@ -105,7 +106,7 @@ export function underwritingNotes(a: Answers, meta: WorksheetMeta) {
       .replace(/^Does the property have garden or retaining walls over \$25,000$/i, "Retaining walls over $25k")
       .replace(/^What year was the property built$/i, "Year built");
   const lines = [`Online application ${meta.reference}${a.propertyManager ? `. Property manager: ${a.propertyManager}` : ""}`];
-  for (const section of visibleSections(a)) {
+  for (const section of visibleSections(buildingApplication, a)) {
     const items: string[] = [];
     for (const field of section.fields) {
       if (skip.has(field.name)) continue;

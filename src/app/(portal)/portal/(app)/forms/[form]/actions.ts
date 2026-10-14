@@ -1,17 +1,21 @@
 "use server";
 
+import { getForm } from "@/content/forms";
 import { deliverApplication } from "@/lib/applications/deliver";
-import { answersFromFormData, validate, type SubmitState } from "@/lib/forms/building-application";
+import { answersFromFormData, validate, type SubmitState } from "@/lib/forms/application";
 import { requireBroker } from "@/lib/portal/auth";
 
-export async function submitBuildingApplication(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
+export async function submitApplication(formId: string, _prev: SubmitState, formData: FormData): Promise<SubmitState> {
   const broker = await requireBroker();
+  const form = getForm(formId);
+  if (!form) return { status: "error", message: "This form isn't available." };
   const answers = answersFromFormData(formData);
-  const errors = validate(answers);
+  const errors = validate(form, answers);
   if (Object.keys(errors).length > 0) return { status: "invalid", errors };
 
   try {
     const sent = await deliverApplication({
+      form,
       answers,
       source: "broker",
       brokerageId: broker.brokerageId,
@@ -23,7 +27,7 @@ export async function submitBuildingApplication(_prev: SubmitState, formData: Fo
     });
     return { status: "sent", ...sent };
   } catch (error) {
-    console.error("[building-application] send failed", error);
+    console.error("[application] send failed", error);
     return {
       status: "error",
       message: "We couldn't send the application just now. Please try again, or download the PDF and email it to the Otta team.",

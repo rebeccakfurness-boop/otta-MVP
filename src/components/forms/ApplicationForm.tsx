@@ -4,18 +4,20 @@ import { startTransition, useActionState, useMemo, useRef, useState, type FormEv
 import { Icon } from "@/components/portal/Icon";
 import { Card } from "@/components/portal/ui";
 import { AddressInput, AddressSearchUrl } from "./AddressInput";
-import { buildingApplication, type Field, type Section } from "@/content/building-application";
+import { getForm, type Field, type FormDefinition, type Section } from "@/content/forms";
 import {
   answersFromFormData,
   CONFIRM_FIELD,
+  gridValues,
   isShown,
   MAX_UNIT_ROWS,
   validate,
   type Answers,
   type Errors,
+  type GridField,
   type SubmitState,
   type UnitsField,
-} from "@/lib/forms/building-application";
+} from "@/lib/forms/application";
 
 const inputClass =
   "block w-full border bg-white px-3.5 py-2.5 text-[15px] text-charcoal outline-none transition placeholder:text-[#a6a6a6] focus:border-site-teal focus:ring-2 focus:ring-[#e6f4f2]";
@@ -25,6 +27,8 @@ const fieldId = (name: string) => `f-${name}`;
 const errorId = (name: string) => `f-${name}-error`;
 
 type Props = {
+  /** Which online form (see src/content/forms). */
+  formId: string;
   /** Who is filling it in: a signed-in broker, or a client from a broker's link. */
   audience: "broker" | "client";
   action: (state: SubmitState, data: FormData) => Promise<SubmitState>;
@@ -46,7 +50,8 @@ export function ApplicationForm(props: Props) {
   );
 }
 
-function Form({ audience, action, defaults, pdfUrl, links, brokerageName }: Props) {
+function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName }: Props) {
+  const form = getForm(formId)!;
   const isClient = audience === "client";
   const formRef = useRef<HTMLFormElement>(null);
   const [answers, setAnswers] = useState<Answers>(defaults);
@@ -55,7 +60,7 @@ function Form({ audience, action, defaults, pdfUrl, links, brokerageName }: Prop
   const [download, setDownload] = useState<{ busy: boolean; error?: string }>({ busy: false });
   const [submitted, setSubmitted] = useState<FormData | null>(null);
 
-  const allErrors = useMemo(() => validate(answers), [answers]);
+  const allErrors = useMemo(() => validate(form, answers), [form, answers]);
   const errors: Errors = showErrors ? allErrors : {};
   const errorCount = Object.keys(allErrors).length;
 
@@ -66,7 +71,7 @@ function Form({ audience, action, defaults, pdfUrl, links, brokerageName }: Prop
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = readForm();
-    const found = validate(answersFromFormData(data));
+    const found = validate(form, answersFromFormData(data));
     setShowErrors(true);
     const first = Object.keys(found)[0];
     if (first) {
@@ -111,7 +116,7 @@ function Form({ audience, action, defaults, pdfUrl, links, brokerageName }: Prop
           Your reference is <strong className="font-semibold text-charcoal">{state.reference}</strong>.{" "}
           {isClient
             ? `It has gone to ${brokerageName ?? "your broker"} and the Otta team. Your broker will be in touch about the next steps.`
-            : `The completed form has gone to ${buildingApplication.sendTo} as a PDF, and it is saved in your Applications.`}
+            : `The completed form has gone to ${form.sendTo} as a PDF, and it is saved in your Applications.`}
         </p>
         {!state.emailed && (
           <p className="mt-4 border-l-4 border-site-purple bg-[#f8f1fa] px-4 py-3 text-left text-[13px] text-site-purple">
@@ -147,7 +152,7 @@ function Form({ audience, action, defaults, pdfUrl, links, brokerageName }: Prop
 
   return (
     <div className="grid gap-8 xl:grid-cols-[220px_minmax(0,1fr)]">
-      <Progress answers={answers} errors={allErrors} />
+      <Progress form={form} answers={answers} errors={allErrors} />
 
       <form
         ref={formRef}
@@ -171,11 +176,11 @@ function Form({ audience, action, defaults, pdfUrl, links, brokerageName }: Prop
         </div>
 
         <div className="space-y-12">
-          {buildingApplication.parts.map((part, i) => (
+          {form.parts.map((part, i) => (
             <section key={part.id} aria-labelledby={`part-${part.id}`} className="space-y-6">
               <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t-4 border-site-teal bg-site-blue px-5 py-3.5 text-white">
                 <span className="text-[11px] font-medium tracking-[0.14em] text-white/70 uppercase">
-                  Part {i + 1} of {buildingApplication.parts.length}
+                  Part {i + 1} of {form.parts.length}
                 </span>
                 <h2 id={`part-${part.id}`} className="text-[17px] font-semibold tracking-normal text-white">
                   {part.band}
@@ -277,6 +282,7 @@ function buttonClass(variant: "primary" | "secondary") {
 
 function SectionCard({ section, answers, errors, defaults }: { section: Section; answers: Answers; errors: Errors; defaults: Answers }) {
   const hidden = !isShown(section.showIf, answers);
+  if (hidden && !section.hiddenHint) return null;
   return (
     <Card className={`scroll-mt-24 px-6 py-6 md:px-8 ${section.shaded ? "border-t-4 border-t-site-teal bg-[#f6f8f8]" : ""}`}>
       <div id={`s-${section.id}`} hidden={hidden} className="scroll-mt-24">
@@ -287,6 +293,8 @@ function SectionCard({ section, answers, errors, defaults }: { section: Section;
             <div key={field.name} hidden={!isShown(field.showIf, answers)} className={`col-span-6 ${span[field.span ?? 6]}`}>
               {field.kind === "units" ? (
                 <UnitsTable field={field} errors={errors} />
+              ) : field.kind === "grid" ? (
+                <GridInput field={field} answers={answers} errors={errors} />
               ) : (
                 <FieldInput field={field} error={errors[field.name]} defaultValue={defaults[field.name]} />
               )}
@@ -297,7 +305,7 @@ function SectionCard({ section, answers, errors, defaults }: { section: Section;
       </div>
       {hidden && (
         <p className="text-[14px] text-body">
-          <span className="font-semibold text-charcoal">{section.title}.</span> This section appears once the year built is before 1940.
+          <span className="font-semibold text-charcoal">{section.title}.</span> {section.hiddenHint}
         </p>
       )}
     </Card>
@@ -524,12 +532,77 @@ function UnitsTable({ field, errors }: { field: UnitsField; errors: Errors }) {
   );
 }
 
+/** A fixed table of numbers (e.g. travel days by region) with a live totals row. */
+function GridInput({ field, answers, errors }: { field: GridField; answers: Answers; errors: Errors }) {
+  const { totals } = gridValues(field, answers);
+  const cellError = Object.keys(errors).some((k) => k.startsWith(`${field.name}.`));
+  return (
+    <div>
+      <Label field={field} />
+      <Hint text={field.hint} />
+      <div className="mt-2 overflow-x-auto">
+        <table className="w-full min-w-[520px] border-collapse text-[14px]">
+          <thead>
+            <tr className="bg-site-blue text-left text-white">
+              <th scope="col" className="px-3 py-2.5 text-[12px] font-medium tracking-[0.1em] uppercase">
+                <span className="sr-only">Row</span>
+              </th>
+              {field.columns.map((c) => (
+                <th key={c.key} scope="col" className="px-3 py-2.5 text-[12px] font-medium tracking-[0.06em]">
+                  {c.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {field.rows.map((row, ri) => (
+              <tr key={row.key} className="border-b border-[#eaeaea]">
+                <th scope="row" className="px-3 py-1.5 text-left font-medium text-charcoal">
+                  {row.label}
+                </th>
+                {field.columns.map((c, ci) => {
+                  const name = `${field.name}.${row.key}.${c.key}`;
+                  return (
+                    <td key={c.key} className="px-1.5 py-1.5">
+                      <input
+                        id={ri === 0 && ci === 0 ? fieldId(field.name) : fieldId(name)}
+                        name={name}
+                        inputMode="numeric"
+                        aria-label={`${row.label}, ${c.label}`}
+                        aria-invalid={!!errors[name]}
+                        className={`${inputClass} ${border(errors[name])} py-2`}
+                      />
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+            {field.total && (
+              <tr className="bg-[#f1f8f7] font-semibold text-charcoal">
+                <th scope="row" className="px-3 py-2.5 text-left">
+                  Total
+                </th>
+                {field.columns.map((c) => (
+                  <td key={c.key} className="px-4 py-2.5" aria-live="polite">
+                    {totals[c.key] ?? ""}
+                  </td>
+                ))}
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <FieldError name={field.name} error={errors[field.name] ?? (cellError ? "Use numbers only" : undefined)} />
+    </div>
+  );
+}
+
 /** Section list with a tick once each section is complete. */
-function Progress({ answers, errors }: { answers: Answers; errors: Errors }) {
+function Progress({ form, answers, errors }: { form: FormDefinition; answers: Answers; errors: Errors }) {
   return (
     <nav aria-label="Form sections" className="hidden xl:block">
       <ol className="sticky top-8 space-y-6 text-[13px]">
-        {buildingApplication.parts.map((part, i) => (
+        {form.parts.map((part, i) => (
           <li key={part.id}>
             <p className="text-[11px] font-medium tracking-[0.14em] text-body uppercase">Part {i + 1}</p>
             <ul className="mt-2 space-y-1.5 border-l border-[#e3e3e3]">

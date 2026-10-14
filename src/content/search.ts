@@ -84,7 +84,7 @@ export const searchPages: SearchPage[] = [
     href: "/resources/proposal-forms",
     section: "Resources",
     text: "Forms to apply for cover, completed by you or your broker.",
-    keywords: "application apply quote building",
+    keywords: "application apply quote building corporate travel proposal form",
   },
   {
     title: "Renewal Declarations",

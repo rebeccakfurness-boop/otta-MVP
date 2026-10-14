@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildingApplication, type Condition, type Field, type Section } from "@/content/building-application";
+import type { Condition, Field, FormDefinition, Section } from "@/content/forms";
 
 // Shared by the browser (instant feedback) and the server (the real check).
 
@@ -12,6 +12,7 @@ export type SubmitState =
   | { status: "error"; message: string }
   | { status: "sent"; reference: string; emailed: boolean; id?: string };
 export type UnitsField = Extract<Field, { kind: "units" }>;
+export type GridField = Extract<Field, { kind: "grid" }>;
 
 export const CONFIRM_FIELD = "declarationConfirmed";
 export const MAX_UNIT_ROWS = 40;
@@ -26,6 +27,7 @@ export function answersFromFormData(data: FormData): Answers {
 
 export function isShown(condition: Condition | undefined, answers: Answers) {
   if (!condition) return true;
+  if ("anyOf" in condition) return condition.anyOf.some((f) => answers[f] === condition.equals);
   const value = answers[condition.field] ?? "";
   if ("equals" in condition) return value === condition.equals;
   const n = Number(value);
@@ -33,8 +35,8 @@ export function isShown(condition: Condition | undefined, answers: Answers) {
 }
 
 /** Every section with the fields that currently apply, in form order. */
-export function visibleSections(answers: Answers, showAll = false) {
-  return buildingApplication.parts.flatMap((part) =>
+export function visibleSections(form: FormDefinition, answers: Answers, showAll = false) {
+  return form.parts.flatMap((part) =>
     part.sections
       .filter((s) => showAll || isShown(s.showIf, answers))
       .map((s): Section & { part: string } => ({
@@ -45,9 +47,28 @@ export function visibleSections(answers: Answers, showAll = false) {
   );
 }
 
-export function visibleFields(answers: Answers) {
-  const signOff = buildingApplication.parts.flatMap((p) => p.signOff ?? []);
-  return [...visibleSections(answers).flatMap((s) => s.fields), ...signOff];
+export function signOffFields(form: FormDefinition) {
+  return form.parts.flatMap((p) => p.signOff ?? []);
+}
+
+export function visibleFields(form: FormDefinition, answers: Answers) {
+  return [...visibleSections(form, answers).flatMap((s) => s.fields), ...signOffFields(form)];
+}
+
+const num = (v: string | undefined) => (v && Number.isFinite(Number(v)) ? Number(v) : 0);
+
+/** A grid's rows with their values, plus column totals. */
+export function gridValues(field: GridField, answers: Answers) {
+  const rows = field.rows.map((r) => ({
+    ...r,
+    values: Object.fromEntries(field.columns.map((c) => [c.key, answers[`${field.name}.${r.key}.${c.key}`] ?? ""])),
+  }));
+  const totalled = (key: string) => field.total === true || (Array.isArray(field.total) && field.total.includes(key));
+  const totals: Record<string, number | null> = Object.fromEntries(
+    field.columns.map((c) => [c.key, totalled(c.key) ? rows.reduce((sum, r) => sum + num(r.values[c.key]), 0) : null]),
+  );
+  const filled = rows.some((r) => Object.values(r.values).some(Boolean));
+  return { rows, totals, filled };
 }
 
 export function unitRows(field: UnitsField, answers: Answers) {
@@ -83,9 +104,20 @@ function requiredMessage(field: Field) {
   return "This field is required";
 }
 
-export function validate(answers: Answers): Errors {
+export function validate(form: FormDefinition, answers: Answers): Errors {
   const errors: Errors = {};
-  for (const field of visibleFields(answers)) {
+  for (const field of visibleFields(form, answers)) {
+    if (field.kind === "grid") {
+      const grid = gridValues(field, answers);
+      if (!grid.filled && !field.optional) errors[field.name] = "Fill in at least one row";
+      for (const row of grid.rows) {
+        for (const col of field.columns) {
+          const key = `${field.name}.${row.key}.${col.key}`;
+          if (row.values[col.key] && !/^\d+(\.\d+)?$/.test(row.values[col.key])) errors[key] = "Enter a number";
+        }
+      }
+      continue;
+    }
     if (field.kind === "units") {
       const rows = unitRows(field, answers);
       if (rows.length === 0) errors[field.name] = "Add at least one unit";
@@ -138,12 +170,22 @@ export function moneyText(value: string) {
 }
 
 /** Plain-text version of the application, for the body of the email. */
-export function summaryText(answers: Answers) {
+export function summaryText(form: FormDefinition, answers: Answers) {
   const lines: string[] = [];
-  for (const section of visibleSections(answers)) {
+  for (const section of visibleSections(form, answers)) {
     lines.push("", section.title.toUpperCase());
     for (const field of section.fields) {
-      if (field.kind === "units") {
+      if (field.kind === "grid") {
+        const grid = gridValues(field, answers);
+        lines.push(`  ${field.label}:`);
+        for (const row of grid.rows.filter((r) => Object.values(r.values).some(Boolean))) {
+          lines.push(`    ${row.label}: ${field.columns.map((c) => `${c.label} ${row.values[c.key] || "0"}`).join(", ")}`);
+        }
+        if (field.total) {
+          const totalled = field.columns.filter((c) => grid.totals[c.key] !== null);
+          lines.push(`    Total: ${totalled.map((c) => `${c.label} ${grid.totals[c.key]}`).join(", ")}`);
+        }
+      } else if (field.kind === "units") {
         unitRows(field, answers).forEach((row) => {
           lines.push(`  ${field.columns.map((c) => `${c.label}: ${c.kind === "money" ? moneyText(row[c.key]) : row[c.key]}`).join(", ")}`);
         });
@@ -153,7 +195,7 @@ export function summaryText(answers: Answers) {
     }
   }
   lines.push("", "DECLARATION");
-  for (const field of buildingApplication.parts.flatMap((p) => p.signOff ?? [])) {
+  for (const field of signOffFields(form)) {
     lines.push(`  ${field.label}: ${displayValue(field, answers[field.name])}`);
   }
   lines.push(`  Declaration confirmed: ${answers[CONFIRM_FIELD] === "on" ? "Yes" : "No"}`);

@@ -19,12 +19,32 @@ subdomain, **portal.ottainsurance.co.nz**. The website's only link to it is the
 Brokers only ever see their own brokerage's records: every query in
 `src/lib/portal/data.ts` is scoped to the signed-in brokerage.
 
+## Online forms
+
+Brokers can fill in, or send a client, these forms (Forms page and
+Applications page):
+
+| Form | Portal page | Client link | Website download |
+| --- | --- | --- | --- |
+| Building Insurance Application | `/forms/building-application` | `/apply/building/...` | `/downloads/building-application.pdf` |
+| Corporate Travel Proposal | `/forms/corporate-travel-proposal` | `/apply/corporate-travel/...` | `/downloads/corporate-travel-proposal.pdf` |
+
+Every form works the same way: validation, the branded PDF (blank or filled),
+the email to Otta with the PDF attached, client links and the Applications
+pages. Only the building application adds the underwriting worksheet and flood
+map links.
+
+**Adding a form:** write its questions as data in `src/content/forms/` (see
+`corporate-travel.ts`), add it to `onlineForms` in `src/content/forms/index.ts`
+and list the products it belongs to in `productSlugs` (that links the blank PDF
+on Resources > Proposal Forms). Nothing else needs changing.
+
 ## Online building insurance application
 
 `/forms/building-application` is the Building Insurance Application Form as an
 online form, in Otta branding.
 
-- Questions live in `src/content/building-application.ts`. The web form, the
+- Questions live in `src/content/forms/building.ts`. The web form, the
   validation, the email and the PDF are all built from that one file.
 - Follow-up questions appear only when they apply (mortgagee name, the pre-1940
   section, multi unit, social housing and mortgagee sale questions).

@@ -1,18 +1,63 @@
 import { Card, CardHeader } from "@/components/portal/ui";
-import { buildingApplication } from "@/content/building-application";
-import { displayValue, moneyText, unitRows, visibleSections, type Answers } from "@/lib/forms/building-application";
+import type { FormDefinition } from "@/content/forms";
+import { displayValue, gridValues, moneyText, signOffFields, unitRows, visibleSections, type Answers } from "@/lib/forms/application";
 
 /** Read-only answers of a submitted application, section by section. */
-export function ApplicationSummary({ answers }: { answers: Answers }) {
-  const signOff = buildingApplication.parts.flatMap((p) => p.signOff ?? []);
+export function ApplicationSummary({ form, answers }: { form: FormDefinition; answers: Answers }) {
+  const signOff = signOffFields(form);
   return (
     <div className="space-y-6">
-      {visibleSections(answers).map((section) => (
+      {visibleSections(form, answers).map((section) => (
         <Card key={section.id}>
           <CardHeader title={section.title.replace(/, please complete the following section$/, "")} />
           <dl className="divide-y divide-[#f0f0f0]">
             {section.fields.map((field) =>
-              field.kind === "units" ? (
+              field.kind === "grid" ? (
+                <div key={field.name} className="overflow-x-auto px-6 py-4">
+                  <p className="mb-2 text-[14px] text-body">{field.label}</p>
+                  <table className="w-full min-w-[420px] text-[14px]">
+                    <thead>
+                      <tr className="text-left text-[11px] tracking-[0.06em] text-body uppercase">
+                        <th className="pb-2 font-semibold" />
+                        {field.columns.map((c) => (
+                          <th key={c.key} className="pb-2 font-semibold">
+                            {c.label}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(() => {
+                        const grid = gridValues(field, answers);
+                        return (
+                          <>
+                            {grid.rows.map((row) => (
+                              <tr key={row.key} className="border-t border-[#f0f0f0]">
+                                <td className="py-2 text-charcoal">{row.label}</td>
+                                {field.columns.map((c) => (
+                                  <td key={c.key} className="py-2 text-charcoal">
+                                    {row.values[c.key] || "0"}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                            {field.total && (
+                              <tr className="border-t border-[#e0e0e0] font-semibold">
+                                <td className="py-2 text-charcoal">Total</td>
+                                {field.columns.map((c) => (
+                                  <td key={c.key} className="py-2 text-charcoal">
+                                    {grid.totals[c.key] ?? ""}
+                                  </td>
+                                ))}
+                              </tr>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </tbody>
+                  </table>
+                </div>
+              ) : field.kind === "units" ? (
                 <div key={field.name} className="overflow-x-auto px-6 py-4">
                   <table className="w-full min-w-[420px] text-[14px]">
                     <thead>

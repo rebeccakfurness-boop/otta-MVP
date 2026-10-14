@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { buildingApplication } from "@/content/building-application";
+import { getForm } from "@/content/forms";
 import { LINK_DAYS, sealLink } from "@/lib/applications/client-link";
 import { newId, saveLink } from "@/lib/applications/store";
 import { websiteUrl } from "@/lib/applications/urls";
@@ -11,9 +11,10 @@ import { requireBroker } from "@/lib/portal/auth";
 export type LinkState =
   | { status: "idle" }
   | { status: "invalid"; errors: Record<string, string>; values: Record<string, string> }
-  | { status: "created"; url: string; clientName: string; clientEmail?: string; emailed: boolean; emailRequested: boolean; emailError?: boolean };
+  | { status: "created"; url: string; formTitle: string; clientName: string; clientEmail?: string; emailed: boolean; emailRequested: boolean; emailError?: boolean };
 
 const schema = z.object({
+  form: z.string().refine((id) => !!getForm(id), "Choose a form"),
   clientName: z.string().trim().min(1, "Enter your client's name").max(120),
   clientEmail: z.union([z.literal(""), z.email("Enter a valid email address")]),
   note: z.string().trim().max(1000),
@@ -23,6 +24,7 @@ const schema = z.object({
 export async function createClientLink(_prev: LinkState, formData: FormData): Promise<LinkState> {
   const broker = await requireBroker();
   const raw = {
+    form: String(formData.get("form") ?? ""),
     clientName: String(formData.get("clientName") ?? ""),
     clientEmail: String(formData.get("clientEmail") ?? "").trim(),
     note: String(formData.get("note") ?? ""),
@@ -35,11 +37,13 @@ export async function createClientLink(_prev: LinkState, formData: FormData): Pr
     return { status: "invalid", errors, values: { ...raw, sendEmail: raw.sendEmail ?? "" } };
   }
   const d = parsed.data;
+  const form = getForm(d.form)!;
 
   const id = newId("lnk");
   const now = new Date();
   const token = await sealLink({
     id,
+    form: form.id,
     brokerageId: broker.brokerageId,
     brokerageName: broker.brokerageName,
     brokerName: broker.name,
@@ -47,9 +51,10 @@ export async function createClientLink(_prev: LinkState, formData: FormData): Pr
     clientName: d.clientName,
     clientEmail: d.clientEmail || undefined,
   });
-  const url = await websiteUrl(`/apply/building/${encodeURIComponent(token)}`);
+  const url = await websiteUrl(`/apply/${form.id}/${encodeURIComponent(token)}`);
   await saveLink({
     id,
+    form: form.id,
     brokerageId: broker.brokerageId,
     brokerName: broker.name,
     brokerEmail: broker.email,
@@ -68,8 +73,8 @@ export async function createClientLink(_prev: LinkState, formData: FormData): Pr
         to: d.clientEmail,
         replyTo: broker.email,
         senderName: `${broker.name} via Otta`,
-        subject: buildingApplication.invite.subject(broker.brokerageName),
-        text: buildingApplication.invite.body({
+        subject: form.invite.subject(broker.brokerageName),
+        text: form.invite.body({
           clientName: d.clientName,
           brokerName: broker.name,
           brokerage: broker.brokerageName,
@@ -83,5 +88,5 @@ export async function createClientLink(_prev: LinkState, formData: FormData): Pr
       emailError = true;
     }
   }
-  return { status: "created", url, clientName: d.clientName, clientEmail: d.clientEmail || undefined, emailed, emailRequested: !!(d.sendEmail && d.clientEmail), emailError };
+  return { status: "created", url, formTitle: form.shortTitle, clientName: d.clientName, clientEmail: d.clientEmail || undefined, emailed, emailRequested: !!(d.sendEmail && d.clientEmail), emailError };
 }

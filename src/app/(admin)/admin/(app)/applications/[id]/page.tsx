@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ApplicationSummary } from "@/components/applications/ApplicationSummary";
+import { getForm } from "@/content/forms";
 import { ButtonLink, Card, DetailList, LoadingBlocks, PageHeader, StatusBadge } from "@/components/portal/ui";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminPath } from "@/lib/admin/config";
@@ -24,7 +25,8 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
   const { id } = await params;
   await requireAdmin();
   const [app, names] = await Promise.all([getApplication(id), brokerageNames()]);
-  if (!app) notFound();
+  const form = getForm(app?.form);
+  if (!app || !form) notFound();
   return (
     <>
       <PageHeader
@@ -33,9 +35,11 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
         description={app.propertyAddress}
         actions={
           <>
-            <ButtonLink href={adminPath(`/applications/${app.id}/worksheet`)} variant="secondary" icon="download" external>
-              UW worksheet (Excel)
-            </ButtonLink>
+            {form.underwriting && (
+              <ButtonLink href={adminPath(`/applications/${app.id}/worksheet`)} variant="secondary" icon="download" external>
+                UW worksheet (Excel)
+              </ButtonLink>
+            )}
             <ButtonLink href={adminPath(`/applications/${app.id}/pdf`)} icon="download" external>
               Download PDF
             </ButtonLink>
@@ -45,6 +49,7 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
       <Card className="mb-8">
         <DetailList
           items={[
+            { label: "Form", value: form.shortTitle },
             { label: "Reference", value: app.reference },
             { label: "Status", value: <StatusBadge status={app.source === "client" ? "Completed by client" : "Sent to Otta"} /> },
             { label: "Brokerage", value: names[app.brokerageId] ?? app.brokerageId },
@@ -54,8 +59,8 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
           ]}
         />
       </Card>
-      <FloodMaps address={app.propertyAddress} location={propertyLocation(app.answers)} />
-      <ApplicationSummary answers={app.answers} />
+      {form.underwriting && <FloodMaps address={app.propertyAddress} location={propertyLocation(app.answers)} />}
+      <ApplicationSummary form={form} answers={app.answers} />
     </>
   );
 }

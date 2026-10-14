@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/portal/**": ["./src/lib/pdf/fonts/*.ttf", "./public/brand/otta-logo.png", "./src/lib/uw/*.xlsx"],
     "/apply/**": ["./src/lib/pdf/fonts/*.ttf", "./public/brand/otta-logo.png", "./src/lib/uw/*.xlsx"],
+    "/downloads/**": ["./src/lib/pdf/fonts/*.ttf", "./public/brand/otta-logo.png"],
     "/admin/**": ["./src/lib/pdf/fonts/*.ttf", "./public/brand/otta-logo.png", "./src/lib/uw/*.xlsx"],
   },
   turbopack: {

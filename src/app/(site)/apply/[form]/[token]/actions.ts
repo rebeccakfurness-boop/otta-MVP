@@ -4,22 +4,25 @@ import { openLink } from "@/lib/applications/client-link";
 import { deliverApplication } from "@/lib/applications/deliver";
 import { getLink } from "@/lib/applications/store";
 import { portalUrl } from "@/lib/applications/urls";
-import { answersFromFormData, validate, type SubmitState } from "@/lib/forms/building-application";
+import { getForm } from "@/content/forms";
+import { answersFromFormData, validate, type SubmitState } from "@/lib/forms/application";
 
 /** A client submitting the application from a broker's link. */
 export async function submitClientApplication(token: string, _prev: SubmitState, formData: FormData): Promise<SubmitState> {
   const link = await openLink(token);
-  if (!link) return { status: "error", message: "This link has expired. Please ask your broker for a new one." };
+  const form = getForm(link?.form);
+  if (!link || !form) return { status: "error", message: "This link has expired. Please ask your broker for a new one." };
   if ((await getLink(link.id))?.completedAt) {
     return { status: "error", message: "This application has already been submitted. Please contact your broker if something needs changing." };
   }
   const answers = answersFromFormData(formData);
-  const errors = validate(answers);
+  const errors = validate(form, answers);
   if (Object.keys(errors).length > 0) return { status: "invalid", errors };
 
   try {
     const base = await portalUrl("/applications");
     const sent = await deliverApplication({
+      form,
       answers,
       source: "client",
       brokerageId: link.brokerageId,

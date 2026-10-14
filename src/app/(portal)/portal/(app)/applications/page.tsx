@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CopyButton } from "@/components/applications/CopyButton";
+import { getForm } from "@/content/forms";
 import { ButtonLink, Card, CardHeader, EmptyState, LoadingBlocks, PageHeader, StatusBadge } from "@/components/portal/ui";
 import { listApplications, listLinks } from "@/lib/applications/store";
 import { requireBroker } from "@/lib/portal/auth";
@@ -29,13 +30,13 @@ async function Applications() {
     <>
       <PageHeader
         title="Applications"
-        description="Building insurance applications sent to Otta, whether you filled them in or your client did from a link you sent."
+        description="Online applications sent to Otta (building insurance and corporate travel), whether you filled them in or your client did from a link you sent."
         actions={
           <>
             <ButtonLink href={portalPath("/applications/send")} variant="secondary" icon="send">
               Send to a client
             </ButtonLink>
-            <ButtonLink href={portalPath("/forms/building-application")} icon="plus">
+            <ButtonLink href={portalPath("/forms")} icon="plus">
               Fill in online
             </ButtonLink>
           </>
@@ -57,7 +58,7 @@ async function Applications() {
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-charcoal">{a.insuredName}</p>
                       <p className="truncate text-[13px] text-body">
-                        {a.propertyAddress} · {a.reference}
+                        {getForm(a.form)?.shortTitle} · {a.propertyAddress ? `${a.propertyAddress} · ` : ""}{a.reference}
                       </p>
                     </div>
                     <span className="text-[13px] text-body">
@@ -89,7 +90,7 @@ async function Applications() {
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-charcoal">{l.clientName}</p>
                     <p className="text-[13px] text-body">
-                      {l.clientEmail ? `${l.clientEmail} · ` : ""}Sent {formatDate(l.createdAt)} by {l.brokerName}
+                      {getForm(l.form)?.shortTitle} · {l.clientEmail ? `${l.clientEmail} · ` : ""}Sent {formatDate(l.createdAt)} by {l.brokerName}
                     </p>
                   </div>
                   <StatusBadge status={linkStatus(l)} />
