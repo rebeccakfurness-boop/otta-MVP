@@ -52,7 +52,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Have the declaration and duty of disclosure wording on the application form reviewed for Otta (it is carried over from the TAI form).
 
 ## Admin portal
-- **Underwriting assistant**: add `ANTHROPIC_API_KEY` in Vercel to switch on the AI brief (a few cents per application); until then the built-in checks write it. Review the assistant's instructions in `src/content/uw-assistant.ts` against Otta's underwriting guidelines (appetite, rebuild cost per square metre, the binder period 23 October 2025 to 1 December 2026).
+- **Underwriting assistant**: add `ANTHROPIC_API_KEY` in Vercel to switch on the AI brief (a few cents per application); until then the built-in checks write it. The assistant follows the July 2026 underwriting guide (summarised in `src/content/uw-assistant.ts`); update that summary when the guide changes. Still assumptions, not from the guide: the rebuild cost rule of thumb ($3,000 to $5,000 per square metre) and the binder period (23 October 2025 to 1 December 2026, from the V13 sheet). The proposal form asks about 3 years of claims while the guide's referral triggers use 5: consider changing the form question.
 - **Rating regions**: spot-check the suburb and post code mapping in `src/lib/uw/rating-region.ts`, especially the Auckland City and Wellington splits and the edges between Canterbury, Otago and Southland regions.
 - Set `NEXT_PUBLIC_ADMIN_HOST` in Vercel and add the `admin.ottainsurance.co.nz` domain (see `docs/admin-portal.md`).
 - Register staff SSO (Microsoft 365 tenant or Google Workspace) and set the `ADMIN_*` keys.

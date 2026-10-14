@@ -29,7 +29,7 @@ export { splitAddress };
 export type WorksheetMeta = { reference: string; brokerageName: string; brokerName: string; createdAt: string };
 
 /** Extras from the underwriting assistant: the underwriter's chosen rating region and the brief's notes. */
-export type WorksheetExtras = { ratingRegion?: string; underwriterNotes?: string };
+export type WorksheetExtras = { ratingRegion?: string; underwriterNotes?: string; subjectivity?: string; endorsements?: string };
 
 /**
  * Where the insured property is: its council region (for the flood maps) and
@@ -38,7 +38,8 @@ export type WorksheetExtras = { ratingRegion?: string; underwriterNotes?: string
 export function propertyLocation(answers: Answers) {
   const loc = splitAddress(answers.propertyAddress);
   const region = nzRegion(`${loc.suburb}, ${loc.city}`, loc.postcode);
-  return { ...loc, region, rating: ratingRegion(loc), flood: floodMapsFor(region) };
+  const rating = ratingRegion(loc);
+  return { ...loc, region, rating, flood: floodMapsFor(region, rating.region) };
 }
 
 const money = (v?: string) => {
@@ -71,6 +72,8 @@ export function worksheetValues(a: Answers, meta: WorksheetMeta, extras: Workshe
     C56: money(a.chattelsValue),
     // Notes run down the eight Location 1 note boxes.
     ...Object.fromEntries(Array.from({ length: 8 }, (_, i) => [`C${41 + i}`, i < 7 ? (notes[i] ?? null) : notes.slice(7).join(" ") || null])),
+    C49: extras.subjectivity || null,
+    C50: extras.endorsements || null,
     B86: extras.underwriterNotes || null,
   };
 }
@@ -308,9 +311,9 @@ async function buildOttaWorksheet(
 
   // Policy settings
   label("B49", "Subjectivity");
-  box("C49", "peach", "Nil");
+  box("C49", "peach", v.C49 || "Nil");
   label("B50", "Endorsements");
-  box("C50", "peach", "Nil");
+  box("C50", "peach", v.C50 || "Nil");
   label("B52", "Excess");
   box("C52", "peach", 1000, NZD);
   label("B53", "Flood Excess");
@@ -384,7 +387,8 @@ async function buildOttaWorksheet(
     c.font = font({ underline: true, color: { argb: C.tealDark } });
   };
   link("C95", loc.flood.national.name, loc.flood.national.url);
-  link("C96", `${loc.region || "Regional"}: ${loc.flood.regional.name}`, loc.flood.regional.url);
+  link("C96", `${loc.rating.region || loc.region || "Regional"}: ${loc.flood.regional.name}`, loc.flood.regional.url);
+  loc.flood.more.forEach((m, i) => link(`D${96 + i}`, m.name, m.url));
 
   // Quote register
   set("B98", "Quote Register", { bold: true }).font = font({ bold: true, underline: true });
@@ -499,6 +503,7 @@ export function pasteBlocks(v: Record<string, CellValue>): PasteBlock[] {
       ["C38", "Number of Units"],
     ]),
     block("C41:C48", "Notes", Array.from({ length: 8 }, (_, i): [string, string] => [`C${41 + i}`, `Notes ${i + 1}`])),
+    block("C49:C50", "Subjectivity and endorsements (suggested)", [["C49", "Subjectivity"], ["C50", "Endorsements"]]),
     block("C56", "Landlords chattels", [["C56", "Landlords Chattels (LC)"]]),
     block("B86", "Underwriter notes and rationale", [["B86", "Notes and rationale"]]),
   ].filter((b) => b.rows.some((r) => r.value));

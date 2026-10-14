@@ -15,6 +15,12 @@ import { propertyLocation } from "./worksheet";
 
 const MODEL = "claude-opus-5-5";
 
+const termSchema = z.object({
+  kind: z.enum(["subjectivity", "endorsement", "excess", "loading", "premium"]),
+  text: z.string(),
+  guideSection: z.string().describe('For example "Guide 8, Standard Excesses". Empty if not from the guide.'),
+});
+
 export const briefSchema = z.object({
   recommendation: z.enum(["accept", "refer", "decline"]),
   headline: z.string().describe("One sentence: the risk and the main reason for the recommendation."),
@@ -24,10 +30,12 @@ export const briefSchema = z.object({
       z.object({
         severity: z.enum(["high", "medium", "low"]),
         title: z.string(),
-        detail: z.string().describe("Which answer raised it and why it matters."),
+        detail: z.string().describe("Which answer raised it, why it matters and what the guide says to do."),
+        guideSection: z.string().describe('For example "Guide 6, History". Empty if not from the guide.'),
       }),
     )
     .describe("Most serious first. Empty if there are none."),
+  terms: z.array(termSchema).describe("Suggested subjectivities, endorsements, excesses, loadings and premiums."),
   positives: z.array(z.string()).describe("Short points in the risk's favour."),
   missingInformation: z.array(z.string()).describe("What the underwriter still needs from the broker."),
   brokerEmail: z.object({ subject: z.string(), body: z.string() }),
@@ -35,7 +43,17 @@ export const briefSchema = z.object({
 });
 
 export type UwBrief = z.infer<typeof briefSchema>;
-export type RiskCheck = { severity: "high" | "medium" | "low"; title: string; detail: string };
+export type UwTerm = z.infer<typeof termSchema>;
+export type RiskCheck = {
+  severity: "high" | "medium" | "low";
+  title: string;
+  detail: string;
+  guideSection: string;
+  /** What the guide says this means for the risk, when it decides it. */
+  action?: "refer" | "decline";
+  /** Something to ask the broker for. */
+  ask?: string;
+};
 
 export type BriefRecord = {
   applicationId: string;
@@ -53,13 +71,24 @@ export type BriefRecord = {
 };
 
 const COLLECTION = "uw-briefs";
-export const getBrief = (applicationId: string) => getRecord<BriefRecord>(COLLECTION, applicationId);
+export async function getBrief(applicationId: string) {
+  const record = await getRecord<BriefRecord>(COLLECTION, applicationId);
+  // Briefs from before suggested terms and guide references were added.
+  if (record?.brief) record.brief = { ...record.brief, terms: record.brief.terms ?? [], redFlags: record.brief.redFlags.map((r) => ({ ...r, guideSection: r.guideSection ?? "" })) };
+  return record;
+}
 const saveBrief = (record: BriefRecord) => putRecord(COLLECTION, record.applicationId, record);
 
 /** Shows the brief as being written straight away, before the background job starts. */
 export async function markBriefPending(applicationId: string) {
   const record = await getBrief(applicationId);
   await saveBrief({ ...(record ?? { applicationId }), status: "pending", startedAt: new Date().toISOString(), error: undefined });
+}
+
+/** The suggested terms as text for the worksheet's Subjectivity (C49) and Endorsements (C50) boxes. */
+export function worksheetTerms(brief?: UwBrief) {
+  const of = (kind: UwTerm["kind"]) => brief?.terms.filter((t) => t.kind === kind).map((t) => t.text).join("; ") || undefined;
+  return { subjectivity: of("subjectivity"), endorsements: of("endorsement") };
 }
 
 export async function setRatingRegion(applicationId: string, region: string) {
@@ -72,6 +101,9 @@ const num = (v?: string) => {
   return v && Number.isFinite(n) ? n : null;
 };
 const nzd = (n: number) => `$${Math.round(n).toLocaleString("en-NZ")}`;
+
+const isoToday = () => new Date().toISOString().slice(0, 10);
+const addDays = (iso: string, days: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
 
 /** The facts worked out from the answers, given to Claude alongside the form. */
 export function riskFacts(a: Answers) {
@@ -88,83 +120,207 @@ export function riskFacts(a: Answers) {
     sumInsured,
     sumInsuredPerSqm: sumInsured && sqm ? Math.round(sumInsured / sqm) : null,
     units: Number(multi ? a.unitsTotal : a.selfContainedUnits) || 1,
-    buildingAgeYears: year ? new Date().getUTCFullYear() - year : null,
+    yearBuilt: year,
+    insuredAgeYears: a.dateOfBirth ? ageOn(a.dateOfBirth, isoToday()) : null,
+    earthquakeSiteDeductible: earthquakeDeductible(loc.region, year),
+    councilFloodMappingAvailable: !loc.flood.unavailable,
     inceptionDate: a.inceptionDate ?? "",
+    today: isoToday(),
     binderPeriod,
   };
 }
 
-/** Plain rule checks: always run, shown to Claude and used on their own without an API key. */
+function ageOn(dob: string, on: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return null;
+  const [y, m, d] = dob.split("-").map(Number);
+  const [ty, tm, td] = on.split("-").map(Number);
+  return ty - y - (tm < m || (tm === m && td < d) ? 1 : 0);
+}
+
+/** Guide 8, Standard Excesses: the earthquake site deductible for the council region. */
+export function earthquakeDeductible(councilRegion: string, yearBuilt: number | null) {
+  const old = yearBuilt !== null && yearBuilt < 1935;
+  if (["Auckland", "Northland", "Waikato", "Otago", "Southland"].includes(councilRegion))
+    return old ? "5% of the site deductible amount, minimum $5,000 (pre-1935)" : "1% of the site deductible amount, minimum $1,000";
+  if (councilRegion === "Bay of Plenty") return old ? "5% of the site deductible amount, minimum $5,000 (pre-1935)" : "2.5% of the site deductible amount, minimum $2,500";
+  return old ? "10% of the site deductible amount, minimum $10,000 (pre-1935)" : "5% of the site deductible amount, minimum $5,000";
+}
+
+/** Appendix 2: the mortgagee sale risk category and fixed premium. */
+export function mortgageeSaleTerms(a: Answers, sumInsured: number | null) {
+  const vacant = a.possession === "Vacant possession";
+  const canInspect = a.purchaserInspected === "yes" || a.auctionDayInspection === "yes";
+  const contentious = /\b(forced|contentious|hostile|dispute|refus|evict|angry|squat)/i.test(a.contentious ?? "") && !/\bnot contentious|no issues|accepting\b/i.test(a.contentious ?? "");
+  const category: "low" | "medium" | "high" = contentious || (!vacant && !canInspect) ? "high" : vacant && canInspect ? "low" : "medium";
+  const base = { low: 2750, medium: 4000, high: 5750 }[category];
+  const over = sumInsured && sumInsured > 1_000_000 ? (sumInsured - 1_000_000) * { low: 0.001, medium: 0.002, high: 0.003 }[category] : 0;
+  return { category, premium: Math.round(base + over) };
+}
+
+const moneyAmounts = (text = "") => [...text.matchAll(/\$\s?([\d,]+(?:\.\d+)?)\s*(k\b)?/gi)].map((m) => Number(m[1].replace(/,/g, "")) * (m[2] ? 1000 : 1));
+
+/** The guide's rules applied to the answers: always run, shown to Claude, and used on their own without an API key. */
 export function riskChecks(a: Answers): RiskCheck[] {
   const f = riskFacts(a);
   const checks: RiskCheck[] = [];
-  const add = (severity: RiskCheck["severity"], title: string, detail: string) => checks.push({ severity, title, detail });
+  const add = (c: RiskCheck) => checks.push(c);
   const yes = (k: string) => a[k] === "yes";
   const no = (k: string) => a[k] === "no";
+  const year = f.yearBuilt;
 
+  // Guide 5
+  if (f.sumInsured !== null && f.sumInsured > 5_000_000)
+    add({ severity: "high", title: "Over the underwriters' limit", detail: `Sum insured ${nzd(f.sumInsured)} is over NZD 5,000,000 any one risk per location.`, guideSection: "Guide 5, Maximum Limits", action: "decline" });
+  else if (f.sumInsured !== null && f.sumInsured > 2_000_000)
+    add({ severity: "high", title: "Over the coverholder limit", detail: `Sum insured ${nzd(f.sumInsured)} is over the NZD 2,000,000 coverholder limit per location: refer to Beazley.`, guideSection: "Guide 5, Maximum Limits", action: "refer" });
   if (f.inceptionDate && (f.inceptionDate < binderPeriod.start || f.inceptionDate > binderPeriod.end))
-    add("high", "Inception outside the binder period", `Inception ${f.inceptionDate} is outside ${binderPeriod.start} to ${binderPeriod.end}.`);
-  if (no("structurallySound")) add("high", "Not confirmed structurally sound", "The insured did not confirm the house is structurally sound, well maintained, watertight and secure.");
-  if (yes("naturalHazards")) add("high", "Natural hazards at the site", "The application says there are identified natural hazards (for example flooding, slippage or coastal inundation). Check the flood maps.");
-  if (yes("insuranceHistory")) add("high", "Previous insurance declined, cancelled or claim rejected", a.insuranceHistoryDetails ? `Details given: ${a.insuranceHistoryDetails}` : "No details given.");
-  if (yes("convictions")) add("high", "Criminal convictions or prosecutions pending", "Answered yes to the convictions question.");
-  if (yes("bankrupt")) add("high", "Bankrupt in the last 10 years", "Answered yes to bankruptcy or No Asset Procedure.");
-  if (yes("losses")) add("medium", "Losses in the last 3 years", a.lossesDetails ? `Details given: ${a.lossesDetails}` : "No details given.");
-  if (f.buildingAgeYears !== null && f.buildingAgeYears > new Date().getUTCFullYear() - 1940) {
-    const notDone = [["rewired", "re-wiring"], ["plumbing", "re-plumbing"], ["pilings", "piles"], ["reroofed", "re-roofing"]].filter(([k]) => !yes(k)).map(([, l]) => l);
-    if (notDone.length) add("medium", "Pre-1940 building not fully updated", `Built ${a.yearBuilt}. Not confirmed: ${notDone.join(", ")}.`);
-    if (yes("scrim")) add("high", "Scrim present", "Scrim is a fire risk in older homes.");
-    if (yes("heritage")) add("medium", "Heritage listing", "Heritage rules can raise reinstatement costs and time.");
+    add({ severity: "high", title: "Inception outside the binder period", detail: `Inception ${f.inceptionDate} is outside the binder (${binderPeriod.start} to ${binderPeriod.end}).`, guideSection: "Guide 5, Period of Insurance", action: "refer" });
+  else if (f.inceptionDate && f.inceptionDate > addDays(f.today, 30))
+    add({ severity: "medium", title: "Inception more than 30 days away", detail: `Inception ${f.inceptionDate}: cover can't be bound or held more than 30 days before inception, so quote now and bind closer to the date.`, guideSection: "Guide 5, Period of Insurance" });
+
+  // Guide 6, History
+  if (yes("insuranceHistory"))
+    add({ severity: "high", title: "Previous insurance declined, cancelled or on special terms", detail: a.insuranceHistoryDetails ? `Details given: ${a.insuranceHistoryDetails}` : "No details given.", guideSection: "Guide 6, History", action: "refer", ask: a.insuranceHistoryDetails ? undefined : "Full details of the previous insurance decline, cancellation, special terms or rejected claim." });
+  if (yes("convictions"))
+    add({ severity: "high", title: "Criminal record or prosecution pending", detail: "Must be referred unless the record is driving convictions only.", guideSection: "Guide 6, History", action: "refer", ask: "Details of the criminal record or pending prosecution (driving convictions only don't need referral)." });
+  if (yes("bankrupt")) add({ severity: "high", title: "Bankruptcy", detail: "Bankrupt or No Asset Procedure in the last 10 years: must be referred.", guideSection: "Guide 6, History", action: "refer" });
+  if (f.insuredAgeYears !== null && f.insuredAgeYears < 18) add({ severity: "high", title: "Insured under 18", detail: `Date of birth ${a.dateOfBirth}.`, guideSection: "Guide 6, History", action: "refer" });
+
+  // Guide 6, Claims Record
+  if (yes("losses")) {
+    const details = a.lossesDetails ?? "";
+    const big = moneyAmounts(details).filter((n) => n > 10_000);
+    const perils = details.match(/\b(flood\w*|subsid\w*|landslip|slip|heave|liabilit\w*|arson)\b/gi);
+    if (big.length || perils) {
+      add({
+        severity: "high",
+        title: "Claims history needs referral",
+        detail: [big.length ? `A claim over NZD 10,000 (${big.map(nzd).join(", ")}).` : "", perils ? `Claim involving ${[...new Set(perils.map((p) => p.toLowerCase()))].join(", ")}.` : ""].filter(Boolean).join(" "),
+        guideSection: "Guide 6, Claims Record",
+        action: "refer",
+      });
+    } else {
+      add({ severity: "medium", title: "Losses in the last 3 years", detail: details ? `Details given: ${details}` : "No details given.", guideSection: "Guide 6, Claims Record" });
+    }
+    if (/\b(water|leak|burst|flood|pipe|plumbing|escape)\b/i.test(details))
+      add({ severity: "medium", title: "Escape of water history", detail: "Understand the remediation, and consider excluding the peril, a higher excess or a lower sublimit.", guideSection: "Guide 7, Escape of Water Clauses", ask: "What repairs were made after the water damage, and when." });
+    add({ severity: "low", title: "Five year claims history", detail: "The form asks about 3 years; the guide's referral triggers look at 5.", guideSection: "Guide 6, Claims Record", ask: "Claims for the last 5 years, with the cause, amount and remedial action for each." });
   }
-  if (f.sumInsuredPerSqm !== null) {
-    if (f.sumInsuredPerSqm < 2500) add("medium", "Possible underinsurance", `${nzd(f.sumInsuredPerSqm)} per square metre is below the usual $3,000 to $5,000 rebuild cost.`);
-    else if (f.sumInsuredPerSqm > 8000) add("low", "High sum insured for the floor area", `${nzd(f.sumInsuredPerSqm)} per square metre. Check the floor area and the sum insured.`);
+
+  // Guide 7, Premises
+  if (no("structurallySound"))
+    add({ severity: "high", title: "Not in a good state of repair", detail: "The insured did not confirm the house is structurally sound, well maintained, watertight and secure. The coverholder isn't authorised to bind it.", guideSection: "Guide 7, General", action: "decline" });
+  if (yes("naturalHazards"))
+    add({ severity: "high", title: "Natural hazards at the site", detail: "Check the council flood map and street view to establish why it won't flood. In a high flood area exclude flood until a satisfactory Flood Questionnaire is received.", guideSection: "Guide 7, Flood Risk Area", action: "refer", ask: "What the identified natural hazards are, and any reports (for example a LIM or geotechnical report)." });
+  if (!f.councilFloodMappingAvailable)
+    add({ severity: "medium", title: "No council flood mapping for this area", detail: `${f.ratingRegion}: the guide needs a description of how the property performed in flood events over the last five years.`, guideSection: "Guide 7, Flood Risk Area", ask: "How the property has performed in any flood events over the last five years." });
+
+  // Guide 7 and 8, Age
+  if (year !== null && year < 1935) {
+    if (!yes("rewired")) add({ severity: "medium", title: "Pre-1935 and not confirmed rewired", detail: `Built ${year}. Apply the Electrical Certificate Condition unless totally rewired since 1970.`, guideSection: "Guide 7, Electrical Certificate Condition", ask: "When the building was last rewired (and an electrical certificate if available)." });
+    if (!yes("pilings")) add({ severity: "medium", title: "Piles not confirmed inspected", detail: `Built ${year}. Piles should be inspected and replaced if needed.`, guideSection: "Guide 8, Age of Property", ask: "When the piles were last inspected or replaced." });
+    if (yes("scrim")) add({ severity: "high", title: "Scrim present", detail: "Scrim lets fire spread inside the walls and should be replaced with plasterboard.", guideSection: "Guide 8, Age of Property", action: "refer" });
   }
-  if (no("inspections")) add("medium", "No 6 monthly inspections", "Landlord obligations: inspections at least every 6 months and at each change of tenancy are a requirement for parts of the cover.");
-  else if (no("inspectionRecords")) add("low", "No written inspection records", "Written records of inspections are expected.");
+  if (year !== null && year < 1940 && yes("heritage")) add({ severity: "medium", title: "Heritage listing", detail: "Heritage rules can raise reinstatement costs and time.", guideSection: "" });
+  if (year !== null && year >= 1980 && year < 1990) add({ severity: "low", title: "1980s plumbing", detail: "Check for Dux Quest pipes, which lead to more water damage claims.", guideSection: "Guide 8, Age of Property", ask: "What internal plumbing the property has (in particular whether any Dux Quest pipes remain)." });
+  if (year !== null && year >= 1990 && year < 2010) add({ severity: "low", title: "1990s or 2000s build", detail: "Weathertightness isn't covered; confirm the building is in good repair with no known issues.", guideSection: "Guide 8, Age of Property" });
+
+  // Appendix 4, connected units
   if (a.isMultiUnit === "yes") {
-    if (no("smokeDetectors")) add("high", "Not every unit has a smoke detector", "Multi-unit dwelling without a smoke or heat detector in each unit.");
-    if (no("fireWalls")) add("medium", "No fire walls between units", "Fire spread between units is more likely.");
-    if (yes("stackedUnits")) add("low", "Stacked units", "Units are stacked, so one loss can affect several units.");
+    if (yes("stackedUnits")) {
+      const whole = a.propertyType === "Block of units";
+      add({ severity: whole ? "medium" : "high", title: "Stacked units", detail: whole ? "Acceptable only because the entire building is insured: confirm every unit is on the policy." : "Stacked units are declined unless the entire building is insured.", guideSection: "Appendix 4, Multi-connecting walls", action: whole ? undefined : "decline" });
+    }
+    if (no("fireWalls")) add({ severity: "high", title: "No fire walls between units", detail: "Connected units are only acceptable without referral if built to code with fire walls between units.", guideSection: "Appendix 4, Multi-connecting walls", action: "refer", ask: "Whether the walls between units (including roof cavity divisions) meet the 2004 building compliance standard, and if not, their fire rating and material." });
+    if (no("smokeDetectors")) add({ severity: "medium", title: "Not every unit has a smoke detector", detail: "Multi-unit dwelling without a smoke or heat detector in each unit.", guideSection: "" });
   }
-  if (yes("isMortgageeSale") && yes("contentious")) add("high", "Contentious mortgagee sale", "Risk of malicious damage or difficulty getting possession.");
-  if (yes("retainingWalls")) add("low", "Retaining walls over $25,000", "Check the walls are within cover and in good condition.");
-  if (yes("recreational")) add("low", "Recreational features", `Value ${a.recreationalValue ? `$${a.recreationalValue}` : "not given"}. For example a pool, spa or solar system.`);
+  if (a.propertyType === "Apartment")
+    add({ severity: "low", title: "Apartment: likely a body corporate", detail: "If the unit is in a body corporate, cover it as excess over the body corporate policy with the usual rate discounted 30%.", guideSection: "Appendix 7, Body Corporates", ask: "Whether the apartment is in a body corporate, and the body corporate's name." });
+
+  // Social housing and NHI
+  if (yes("isSocialHousing") && yes("shortTenancy"))
+    add({ severity: "high", title: "Tenancies under 28 days", detail: "Short stay accommodation may fall outside NHI, which must be referred to Beazley. A Short-Term Tenancy Questionnaire is needed.", guideSection: "Guide 8, Standard Excesses (NHI)", action: "refer", ask: "The completed Short-Term Tenancy Questionnaire." });
+
+  // Appendix 2, mortgagee sales
+  if (yes("isMortgageeSale")) {
+    if (a.transactionType === "Retail")
+      add({ severity: "high", title: "Retail mortgagee sale", detail: "The purchaser must be buying for a business purpose; a retail transaction can't be covered.", guideSection: "Appendix 2 and 6, Mortgagee Sales", action: "decline" });
+    const { category } = mortgageeSaleTerms(a, f.sumInsured);
+    add({ severity: category === "high" ? "high" : "medium", title: `Mortgagee sale, ${category} risk`, detail: `Possession: ${a.possession || "not given"}. Inspected: ${a.purchaserInspected || "not given"}. Contentious: ${a.contentious || "not given"}. Settlement: ${a.settlementPeriod || "not given"}.`, guideSection: "Appendix 2, Mortgagee Sales" });
+  }
+
+  // Other points from the form
+  if (f.sumInsuredPerSqm !== null && f.sumInsuredPerSqm < 2500)
+    add({ severity: "medium", title: "Possible underinsurance", detail: `${nzd(f.sumInsuredPerSqm)} per square metre is below the usual $3,000 to $5,000 rebuild cost (a rule of thumb, not from the guide).`, guideSection: "", ask: "How the sum insured was worked out (a registered valuation is ideal)." });
+  if (no("inspections")) add({ severity: "medium", title: "No 6 monthly inspections", detail: "Inspections at least every 6 months and at each change of tenancy are a requirement for parts of the cover.", guideSection: "" });
+  else if (no("inspectionRecords")) add({ severity: "low", title: "No written inspection records", detail: "Written records of inspections are expected.", guideSection: "" });
+  if (yes("retainingWalls")) add({ severity: "low", title: "Retaining walls over $25,000", detail: "Check the walls are within cover and in good condition.", guideSection: "" });
+  if (yes("recreational")) add({ severity: "low", title: "Recreational features", detail: `Value ${a.recreationalValue ? `$${a.recreationalValue}` : "not given"}. For example a pool, spa or solar system.`, guideSection: "" });
   const chattels = num(a.chattelsValue);
-  if (chattels !== null && chattels > 50000) add("medium", "Landlords chattels over $50,000", `${nzd(chattels)} is above the $50,000 maximum on the worksheet.`);
-  if (f.ratingRegion === "not found") add("medium", "Rating region not found", "Choose the region on the worksheet by hand.");
+  if (chattels !== null && chattels > 50000) add({ severity: "medium", title: "Landlords chattels over $50,000", detail: `${nzd(chattels)} is above the $50,000 maximum on the worksheet.`, guideSection: "" });
+  if (f.ratingRegion === "not found") add({ severity: "medium", title: "Rating region not found", detail: "Choose the region on the worksheet by hand.", guideSection: "" });
+
   const order = { high: 0, medium: 1, low: 2 };
   return checks.sort((x, y) => order[x.severity] - order[y.severity]);
 }
 
-/** A brief from the rule checks alone, for when the AI isn't available. */
+/** The terms the guide calls for, from the answers. */
+export function suggestedTerms(a: Answers, checks: RiskCheck[]): UwTerm[] {
+  const f = riskFacts(a);
+  const terms: UwTerm[] = [];
+  const has = (title: string) => checks.some((c) => c.title.startsWith(title));
+  terms.push({ kind: "excess", text: "Standard excess $1,000 (all perils, theft and malicious damage)", guideSection: "Guide 8, Standard Excesses" });
+  terms.push({ kind: "excess", text: `Earthquake: ${f.earthquakeSiteDeductible} (${f.councilRegion})`, guideSection: "Guide 8, Standard Excesses" });
+  if (has("Pre-1935 and not confirmed rewired")) terms.push({ kind: "endorsement", text: "Electrical Certificate Condition", guideSection: "Guide 7, Electrical Certificate Condition" });
+  if (has("Natural hazards")) terms.push({ kind: "subjectivity", text: "Flood Questionnaire within 14 days (flood excluded until received if in a high flood area)", guideSection: "Guide 9, Flood Questionnaire" });
+  if (has("Escape of water")) terms.push({ kind: "excess", text: "Consider a higher escape of water excess or sublimit", guideSection: "Guide 7, Escape of Water Clauses" });
+  if (has("Apartment")) terms.push({ kind: "endorsement", text: "Body Corporate / Unit Title Excess Cover Endorsement (rate discounted 30%)", guideSection: "Appendix 7, Body Corporates" });
+  if (a.isMultiUnit === "yes" && a.fireWalls === "yes")
+    terms.push({ kind: "loading", text: "Connected units: load 10% for one connecting wall, 20% for two", guideSection: "Appendix 4, Multi-connecting walls" });
+  if (a.isMortgageeSale === "yes") {
+    const { category, premium } = mortgageeSaleTerms(a, f.sumInsured);
+    terms.push({ kind: "premium", text: `Mortgagee sale (${category} risk): ${nzd(premium)} for the settlement period up to 3 months, plus taxes and levies; add 30% per extra month`, guideSection: "Appendix 2, Mortgagee Sales" });
+    terms.push({ kind: "excess", text: "Malicious damage excess $5,000; fire excess $10,000", guideSection: "Appendix 2, Mortgagee Sales" });
+    terms.push({ kind: "endorsement", text: "Unoccupied Endorsement", guideSection: "Appendix 2, Mortgagee Sales" });
+    terms.push({ kind: "endorsement", text: "Pre-existing damage exclusion", guideSection: "Appendix 2, Mortgagee Sales" });
+  }
+  return terms;
+}
+
+/** "Natural hazards at the site; claims history needs referral." */
+const sentence = (titles: string[]) => {
+  const text = titles.map((t, i) => (i === 0 ? t : t.charAt(0).toLowerCase() + t.slice(1))).join("; ");
+  return `${text}.`;
+};
+
+/** A brief from the guide checks alone, for when the AI isn't available. */
 export function rulesBrief(app: Application, checks: RiskCheck[]): UwBrief {
   const f = riskFacts(app.answers);
   const a = app.answers;
-  const high = checks.filter((c) => c.severity === "high");
-  const recommendation = high.length ? "refer" : checks.some((c) => c.severity === "medium") ? "refer" : "accept";
-  const missing = [
-    ...(yes(a, "insuranceHistory") && !a.insuranceHistoryDetails ? ["Full details of the previous insurance decline, cancellation or rejected claim."] : []),
-    ...(yes(a, "losses") && !a.lossesDetails ? ["Full details of each loss in the last 3 years."] : []),
-    ...(yes(a, "naturalHazards") ? ["What the identified natural hazards are, and any reports (for example a LIM or geotechnical report)."] : []),
-    ...(checks.some((c) => c.title === "Pre-1940 building not fully updated") ? ["When the building was last re-wired, re-plumbed, re-piled and re-roofed."] : []),
-    ...(checks.some((c) => c.title === "Possible underinsurance") ? ["How the sum insured was worked out (a registered valuation is ideal)."] : []),
-  ];
+  const decline = checks.filter((c) => c.action === "decline");
+  const refer = checks.filter((c) => c.action === "refer");
+  const recommendation = decline.length ? "decline" : refer.length || checks.some((c) => c.severity !== "low") ? "refer" : "accept";
+  const missing = [...new Set(checks.map((c) => c.ask).filter((x): x is string => !!x))];
   const first = app.brokerName.split(" ")[0];
+  const terms = suggestedTerms(a, checks);
   return {
     recommendation,
-    headline: high.length
-      ? `${high.length === 1 ? "One serious point needs" : `${high.length} serious points need`} the underwriter's review before quoting.`
-      : checks.length
-        ? "No serious concerns; a few points to check before quoting."
-        : "Nothing unusual in the answers given.",
+    headline: decline.length
+      ? sentence(decline.map((c) => c.title))
+      : refer.length
+        ? sentence(refer.map((c) => c.title))
+        : checks.some((c) => c.severity !== "low")
+          ? "No referral triggers; a few points to check before quoting."
+          : "Within binder authority on the answers given.",
     summary: `${a.propertyType || "Property"} at ${f.address || "an unknown address"}${f.ratingRegion !== "not found" ? ` (${f.ratingRegion})` : ""}, built ${a.yearBuilt || "in an unknown year"}, sum insured ${f.sumInsured ? nzd(f.sumInsured) : "not given"}${f.sumInsuredPerSqm ? ` (${nzd(f.sumInsuredPerSqm)} per square metre)` : ""}, ${f.units} ${f.units === 1 ? "unit" : "units"}.`,
-    redFlags: checks,
+    redFlags: checks.map(({ severity, title, detail, guideSection }) => ({ severity, title, detail, guideSection })),
+    terms,
     positives: [
       ...(a.structurallySound === "yes" ? ["Confirmed structurally sound, well maintained and watertight."] : []),
       ...(a.inspections === "yes" ? ["6 monthly inspections carried out."] : []),
       ...(a.losses === "no" ? ["No losses in the last 3 years."] : []),
       ...(a.insuranceHistory === "no" ? ["Clean insurance history."] : []),
+      ...(f.sumInsured !== null && f.sumInsured <= 2_000_000 ? ["Within the NZD 2,000,000 coverholder limit."] : []),
     ],
     missingInformation: missing,
     brokerEmail: {
@@ -173,10 +329,12 @@ export function rulesBrief(app: Application, checks: RiskCheck[]): UwBrief {
         ? `Kia ora ${first},\n\nThanks for the application for ${app.insuredName}. To finish our assessment, could you please send:\n\n${missing.map((m, i) => `${i + 1}. ${m}`).join("\n")}\n\nNgā mihi,\nThe Otta underwriting team`
         : `Kia ora ${first},\n\nThanks for the application for ${app.insuredName}. We're reviewing it now and will be in touch shortly.\n\nNgā mihi,\nThe Otta underwriting team`,
     },
-    underwriterNotes: (checks.length ? `Checks: ${checks.map((c) => c.title).join("; ")}.` : "No issues found by the automatic checks.").slice(0, 600),
+    underwriterNotes: (checks.length
+      ? `Guide checks: ${checks.map((c) => `${c.title}${c.guideSection ? ` (${c.guideSection.replace(/,.*$/, "")})` : ""}`).join("; ")}.`
+      : "No issues found by the guide checks."
+    ).slice(0, 600),
   };
 }
-const yes = (a: Answers, k: string) => a[k] === "yes";
 
 const noDashes = (s: string) => s.replace(/\s*[–—]\s*/g, ", ");
 function tidy(brief: UwBrief): UwBrief {
@@ -186,6 +344,7 @@ function tidy(brief: UwBrief): UwBrief {
     headline: t(brief.headline),
     summary: t(brief.summary),
     redFlags: brief.redFlags.map((r) => ({ ...r, title: t(r.title), detail: t(r.detail) })),
+    terms: brief.terms.map((x) => ({ ...x, text: t(x.text) })),
     positives: brief.positives.map(t),
     missingInformation: brief.missingInformation.map(t),
     brokerEmail: { subject: t(brief.brokerEmail.subject), body: t(brief.brokerEmail.body) },
@@ -211,8 +370,11 @@ async function claudeBrief(app: Application, checks: RiskCheck[]): Promise<{ bri
           `Worked out from the answers:`,
           JSON.stringify(riskFacts(app.answers), null, 2),
           ``,
-          `Automatic checks (verify them, and add anything they missed):`,
-          checks.length ? checks.map((c) => `- [${c.severity}] ${c.title}: ${c.detail}`).join("\n") : "- none",
+          `Automatic guide checks (verify them against the guide, and add anything they missed):`,
+          checks.length ? checks.map((c) => `- [${c.severity}${c.action ? `, ${c.action}` : ""}] ${c.title}: ${c.detail}${c.guideSection ? ` (${c.guideSection})` : ""}`).join("\n") : "- none",
+          ``,
+          `Terms the checks suggest:`,
+          suggestedTerms(app.answers, checks).map((x) => `- ${x.kind}: ${x.text} (${x.guideSection})`).join("\n"),
           ``,
           `The application as submitted:`,
           summaryText(buildingApplication, app.answers),

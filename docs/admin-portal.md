@@ -23,14 +23,24 @@ the broker portal, so what staff see is exactly what brokers see.
 
 Every building insurance application gets an AI brief, written in the
 background as soon as it is submitted (`src/lib/uw/brief.ts`, instructions in
-`src/content/uw-assistant.ts`). On the application page in the admin portal:
+`src/content/uw-assistant.ts`). It applies the Coverholder Underwriting
+Guidelines, Property and Landlord Risks (version 05, July 2026), the source of
+truth for property underwriting: the instructions summarise the guide's rules
+(limits, referral triggers, premises and age rules, flood, excesses and
+earthquake deductibles, endorsements, mortgagee sales, connected units, body
+corporates) and cite its sections. Update them when the guide changes. On the
+application page in the admin portal:
 
-- **The brief**: a recommendation (within appetite, refer, outside appetite),
-  a summary, red flags by severity, what's still needed from the broker, and a
+- **The brief**: a recommendation (within binder authority, refer, outside the
+  binder), a summary, red flags by severity with the guide section, suggested
+  terms (subjectivities, endorsements, excesses including the earthquake site
+  deductible, loadings, mortgagee sale premiums), what's still needed from the
+  broker, and a
   draft email to the broker (copy it, or open it in your email app). "Write
   again" rewrites it. The underwriter makes every decision.
 - **Copy into the V13 worksheet**: the yellow boxes as blocks that line up with
-  the V13 worksheet (C7, C11:C12, C25:C26, F25, C31:C38, C41:C48, C56, B86),
+  the V13 worksheet (C7, C11:C12, C25:C26, F25, C31:C38, C41:C48, C49:C50
+  suggested subjectivity and endorsements, C56, B86),
   skipping its formula cells. Copy a block, click its first cell in V13 and
   paste: only values go in, so the formatting, dropdowns and formulas stay.
 - **Region (C35)**: worked out from the suburb, town or post code as one of the
@@ -40,6 +50,11 @@ background as soon as it is submitted (`src/lib/uw/brief.ts`, instructions in
   Region cells are a dropdown of the same 47 regions (Lists sheet).
 - **V13 worksheet (Excel)** includes the brief's notes in the "Underwriter use
   only" box.
+
+Flood map links follow the guide's table by rating region
+(`src/content/flood-maps.ts`); where the guide says no council mapping exists
+(Palmerston North, Wanganui, Dunedin) the brief asks for the property's flood
+history instead.
 
 The brief is written by Claude (`claude-opus-5-5`) when `ANTHROPIC_API_KEY` is
 set. Without it, or if the AI call fails, built-in rule checks write a simpler

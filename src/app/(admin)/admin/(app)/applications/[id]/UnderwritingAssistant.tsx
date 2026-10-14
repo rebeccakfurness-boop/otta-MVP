@@ -2,7 +2,7 @@ import { after } from "next/server";
 import { Card } from "@/components/portal/ui";
 import { uwAssistantCopy as copy } from "@/content/uw-assistant";
 import type { Application } from "@/lib/applications/store";
-import { generateBrief, getBrief, type BriefRecord, type RiskCheck } from "@/lib/uw/brief";
+import { generateBrief, getBrief, worksheetTerms, type BriefRecord, type RiskCheck } from "@/lib/uw/brief";
 import { pasteBlocks, propertyLocation, worksheetValues } from "@/lib/uw/worksheet";
 import { CopyButton, RefreshWhilePending, RegionSelect, RewriteButton } from "./BriefControls";
 
@@ -30,7 +30,7 @@ export async function UnderwritingAssistant({ app, brokerageName }: { app: Appli
   const values = worksheetValues(
     app.answers,
     { reference: app.reference, brokerageName, brokerName: app.brokerName, createdAt: app.createdAt },
-    { ratingRegion: region, underwriterNotes: record.brief?.underwriterNotes },
+    { ratingRegion: region, underwriterNotes: record.brief?.underwriterNotes, ...worksheetTerms(record.brief) },
   );
   const blocks = pasteBlocks(values);
   const brief = record.status === "ready" ? record.brief : undefined;
@@ -77,7 +77,23 @@ export async function UnderwritingAssistant({ app, brokerageName }: { app: Appli
                       </span>
                       <span className="text-[14px] leading-relaxed">
                         <strong className="font-semibold text-charcoal">{f.title}.</strong> <span className="text-body">{f.detail}</span>
+                        {f.guideSection && <span className="ml-1.5 text-[12px] whitespace-nowrap text-[#2e7d74]">{f.guideSection}</span>}
                       </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {brief.terms.length > 0 && (
+              <section>
+                <h3 className="text-[12px] font-semibold tracking-[0.12em] text-body uppercase">Suggested terms</h3>
+                <ul className="mt-3 divide-y divide-[#f0f0f0] border border-[#eaeaea]">
+                  {brief.terms.map((t, i) => (
+                    <li key={i} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-2.5 text-[14px]">
+                      <span className="w-24 shrink-0 text-[11px] font-semibold tracking-[0.08em] text-body uppercase">{copy.termKinds[t.kind]}</span>
+                      <span className="min-w-0 flex-1 text-charcoal">{t.text}</span>
+                      {t.guideSection && <span className="text-[12px] text-[#2e7d74]">{t.guideSection}</span>}
                     </li>
                   ))}
                 </ul>

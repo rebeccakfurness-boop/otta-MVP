@@ -100,8 +100,10 @@ export async function deliverApplication(d: Delivery) {
       `FLOOD MAPPING`,
       `  Property: ${detail}${location.region ? ` (${location.region})` : ""}`,
       `  Complete flood map (national): ${location.flood.national.url}`,
-      `  ${location.region || "Regional"} flood map: ${location.flood.regional.name}`,
+      `  ${location.rating.region || location.region || "Regional"} flood map: ${location.flood.regional.name}`,
       `  ${location.flood.regional.url}`,
+      ...location.flood.more.map((m) => `  Also: ${m.name}: ${m.url}`),
+      ...(location.flood.unavailable ? [`  No council flood mapping for this area: ask how the property performed in flood events over the last five years.`] : []),
       ``,
     ];
   }

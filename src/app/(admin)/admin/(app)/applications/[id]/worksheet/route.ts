@@ -1,7 +1,7 @@
 import { brokerageNames } from "@/lib/admin/data";
 import { readAdminSession } from "@/lib/admin/session";
 import { getApplication } from "@/lib/applications/store";
-import { getBrief } from "@/lib/uw/brief";
+import { getBrief, worksheetTerms } from "@/lib/uw/brief";
 import { buildWorksheet } from "@/lib/uw/worksheet";
 
 // The pre-filled underwriting worksheet for an application (Otta staff only),
@@ -15,7 +15,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/admin/applicati
   const file = await buildWorksheet(
     app.answers,
     { reference: app.reference, brokerageName: names[app.brokerageId] ?? app.brokerageId, brokerName: app.brokerName, createdAt: app.createdAt },
-    { ratingRegion: brief?.ratingRegion, underwriterNotes: brief?.brief?.underwriterNotes },
+    { ratingRegion: brief?.ratingRegion, underwriterNotes: brief?.brief?.underwriterNotes, ...worksheetTerms(brief?.brief) },
   );
   return new Response(Buffer.from(file.content), {
     headers: {

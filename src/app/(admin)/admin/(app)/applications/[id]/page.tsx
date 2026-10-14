@@ -74,7 +74,8 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
 function FloodMaps({ address, location }: { address: string; location: ReturnType<typeof propertyLocation> }) {
   const links = [
     { label: "Complete flood map (national)", map: location.flood.national },
-    { label: `${location.region || "Regional"} flood map`, map: location.flood.regional },
+    { label: `${location.rating.region || location.region || "Regional"} flood map`, map: location.flood.regional },
+    ...location.flood.more.map((map) => ({ label: "Also check", map })),
   ];
   return (
     <Card className="mb-8">
@@ -84,6 +85,11 @@ function FloodMaps({ address, location }: { address: string; location: ReturnTyp
           {address}
           {location.region ? `, ${location.region} region` : ""}
         </p>
+        {location.flood.unavailable && (
+          <p className="mt-2 text-[13px] text-site-purple">
+            The underwriting guide notes there is no council flood mapping for this area: ask the broker how the property performed in any flood events over the last five years.
+          </p>
+        )}
       </div>
       <ul className="divide-y divide-[#f0f0f0]">
         {links.map((l) => (
