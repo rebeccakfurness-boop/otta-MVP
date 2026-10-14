@@ -19,6 +19,22 @@ the broker portal, so what staff see is exactly what brokers see.
 - **Data sources**: which records came from InsuredHQ and which were entered
   manually.
 
+## Live activity and celebrations
+
+Every new website enquiry, quote request (online proposal form), renewal
+declaration, claim and bind instruction is recorded (`src/lib/activity.ts`).
+The Overview shows them under **Live activity**, and on every admin page a new
+one pops Otta-coloured confetti with a card ("New enquiry", "New quote
+request", "New bind instruction", ...) linking to it. The page checks every 8
+seconds while it is open; on a browser's first visit nothing old is
+celebrated. "Try the celebration" on the Overview shows it without a real
+event. Confetti is skipped for people who prefer reduced motion.
+
+**Bind instructions**: on a quote with status Quoted, the broker portal shows
+"Bind this quote" (start date, notes, and a confirmation that the client has
+accepted). It is saved, emailed to the product's team and shown on the admin
+quote page.
+
 ## Enquiries and email
 
 - **Enquiries** (`/enquiries`): every message from the website's Contact Us page

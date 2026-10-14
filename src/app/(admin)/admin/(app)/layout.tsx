@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { ActivityCelebration } from "@/components/admin/ActivityCelebration";
 import { AdminUser } from "@/components/admin/AdminUser";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { SidebarUserFallback } from "@/components/portal/SidebarUser";
@@ -34,6 +35,7 @@ export default function AdminAppLayout({ children }: { children: React.ReactNode
       }
     >
       {children}
+      <ActivityCelebration feedUrl={adminPath("/activity")} adminBase={ADMIN_HOST ? "" : "/admin"} />
     </PortalShell>
   );
 }

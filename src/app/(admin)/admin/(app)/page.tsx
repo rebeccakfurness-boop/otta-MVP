@@ -10,6 +10,8 @@ import { brokerageNames, listAllPolicies, listAllQuotes, listBrokerages } from "
 import { getForm } from "@/content/forms";
 import { applicationChannel, applicationStatus } from "@/lib/applications/labels";
 import { listApplications } from "@/lib/applications/store";
+import { CelebrationPreview } from "@/components/admin/ActivityCelebration";
+import { activityLabel, listActivity, type ActivityKind } from "@/lib/activity";
 import { listEnquiries } from "@/lib/enquiries";
 import { listAccessRequests } from "@/lib/portal/accounts";
 import { productName } from "@/lib/portal/products";
@@ -35,7 +37,7 @@ const pipeline = [
 
 async function Overview() {
   const admin = await requireAdmin();
-  const [policies, quotes, brokers, names, applications, accessRequests, enquiries] = await Promise.all([
+  const [policies, quotes, brokers, names, applications, accessRequests, enquiries, activity] = await Promise.all([
     listAllPolicies(),
     listAllQuotes(),
     listBrokerages(),
@@ -43,6 +45,7 @@ async function Overview() {
     listApplications(),
     listAccessRequests(),
     listEnquiries(),
+    listActivity({ limit: 8 }),
   ]);
   const openEnquiries = enquiries.filter((e) => !e.handledAt).length;
   const waiting = accessRequests.filter((r) => r.status === "pending").length;
@@ -113,6 +116,8 @@ async function Overview() {
           </span>
         </Link>
       )}
+
+      <LiveActivity events={activity} />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
         {tiles.map((t) => (
@@ -307,5 +312,55 @@ async function Overview() {
         )}
       </Card>
     </>
+  );
+}
+
+const kindTone: Record<ActivityKind, string> = {
+  enquiry: "bg-[#e6f4f2] text-[#2e7d74]",
+  quote: "bg-site-teal text-white",
+  renewal: "bg-[#efefef] text-[#555]",
+  claim: "bg-[#f8f1fa] text-site-purple",
+  bind: "bg-site-blue text-white",
+};
+
+/** What has just come in: enquiries, quote requests, renewals, claims and bind instructions. New ones also pop with confetti. */
+function LiveActivity({ events }: { events: Awaited<ReturnType<typeof listActivity>> }) {
+  return (
+    <Card className="mb-10">
+      <CardHeader
+        title="Live activity"
+        action={
+          <span className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-[12px] text-body">
+              <span aria-hidden className="h-2 w-2 animate-pulse rounded-full bg-site-teal" />
+              Updates as things come in
+            </span>
+            <CelebrationPreview />
+          </span>
+        }
+      />
+      {events.length === 0 ? (
+        <EmptyState title="Nothing yet">New enquiries, quote requests and bind instructions appear here, with a little celebration.</EmptyState>
+      ) : (
+        <ul className="divide-y divide-[#eaeaea]">
+          {events.map((e) => (
+            <li key={e.id}>
+              <Link href={adminPath(e.path)} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-6 py-3.5 hover:bg-footer">
+                <span className={`w-44 shrink-0 rounded-sm px-2 py-1 text-center text-[11px] font-semibold tracking-[0.06em] uppercase ${kindTone[e.kind]}`}>
+                  {activityLabel[e.kind]}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[14px] font-medium text-charcoal">{e.title}</span>
+                  <span className="block truncate text-[13px] text-body">{e.detail}</span>
+                </span>
+                <span className="text-[12px] whitespace-nowrap text-body">
+                  {new Date(e.createdAt).toLocaleString("en-NZ", { timeZone: "Pacific/Auckland", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }

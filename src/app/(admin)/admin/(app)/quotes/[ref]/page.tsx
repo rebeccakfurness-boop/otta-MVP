@@ -6,6 +6,7 @@ import { Card, CardHeader, DetailList, LoadingBlocks, PageHeader, SourceBadge, S
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminPath } from "@/lib/admin/config";
 import { brokerageNames, findQuote } from "@/lib/admin/data";
+import { getBindInstruction } from "@/lib/binds";
 import { productName } from "@/lib/portal/products";
 import { formatDate } from "@/lib/portal/status";
 
@@ -24,7 +25,7 @@ async function Quote({ params }: { params: Promise<{ ref: string }> }) {
   const { ref } = await params;
   const quote = await findQuote(ref);
   if (!quote) notFound();
-  const names = await brokerageNames();
+  const [names, bind] = await Promise.all([brokerageNames(), getBindInstruction(ref)]);
 
   return (
     <>
@@ -37,6 +38,16 @@ async function Quote({ params }: { params: Promise<{ ref: string }> }) {
           </span>
         }
       />
+      {bind && (
+        <div className="mb-6 border-l-4 border-site-teal bg-[#f1f8f7] px-5 py-4 text-[14px] text-charcoal">
+          <p className="font-semibold">Bind instruction received {formatDate(bind.createdAt)}</p>
+          <p className="mt-1">
+            {bind.brokerName} (<a href={`mailto:${bind.brokerEmail}`} className="text-[#2e7d74] hover:underline">{bind.brokerEmail}</a>) asked us to bind
+            this quote with cover from {formatDate(bind.inceptionDate)}. The broker confirmed the client has accepted the quote and its terms.
+          </p>
+          {bind.notes && <p className="mt-1 text-body">Notes: {bind.notes}</p>}
+        </div>
+      )}
       <div className="grid gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2">
           <CardHeader title="Request details" />

@@ -1,6 +1,9 @@
 import "server-only";
 import { getForm } from "@/content/forms";
+import { recordActivity } from "@/lib/activity";
+import { saveBindInstruction } from "@/lib/binds";
 import { getRecord, putRecord } from "@/lib/db/records";
+import { saveEnquiry } from "@/lib/enquiries";
 import { keyName, type Answers } from "@/lib/forms/application";
 import { saveAccessRequest } from "@/lib/portal/accounts";
 import { saveApplication, saveLink, type Application, type ApplicationSource } from "./store";
@@ -428,7 +431,49 @@ async function seed() {
       });
     }
     await saveApplication(app);
+    await recordActivity({
+      kind: form.resource === "claim-forms" ? "claim" : form.resource === "renewal-declarations" ? "renewal" : "quote",
+      title: app.insuredName,
+      detail: `${form.shortTitle}, ${d.client ? `completed by the client for ${broker.brokerName}` : `from ${broker.brokerName}`}`,
+      path: `/applications/${id}`,
+      createdAt: app.createdAt,
+    });
   }
+
+  // A website enquiry, and a broker's instruction to bind a quoted policy.
+  const enquiryAt = ago(3).toISOString();
+  await saveEnquiry({
+    id: "enq-demo-1",
+    name: "Hemi Walker",
+    email: "hemi@walkerproperties.co.nz",
+    phone: "021 664 2290",
+    company: "Walker Properties",
+    enquiryType: "Apply for cover",
+    product: "Rental Property Insurance",
+    message: "We own eight rental houses across Hamilton and Cambridge and our renewal is due next month. Can a broker you work with quote on the portfolio?",
+    createdAt: enquiryAt,
+    emailed: "sent",
+  });
+  await recordActivity({ kind: "enquiry", title: "Hemi Walker, Walker Properties", detail: "Apply for cover: Rental Property Insurance", path: "/enquiries", createdAt: enquiryAt });
+  const bindAt = ago(2).toISOString();
+  await saveBindInstruction({
+    quoteRef: "Q-26-0139",
+    brokerageId: "brk-kowhai",
+    brokerName: "Mere Tipene",
+    brokerEmail: "mere@kowhaipm.co.nz",
+    insured: "Kowhai managed portfolio (12 properties)",
+    productSlug: "landlord-insurance",
+    inceptionDate: inDays(7),
+    notes: "Annual payment by direct credit.",
+    createdAt: bindAt,
+  });
+  await recordActivity({
+    kind: "bind",
+    title: "Kowhai managed portfolio (12 properties)",
+    detail: "Landlord Insurance, Q-26-0139, from Mere Tipene, Kowhai Property Management",
+    path: "/quotes/Q-26-0139",
+    createdAt: bindAt,
+  });
 
   // A link a broker has sent that the client hasn't completed yet.
   await saveLink({

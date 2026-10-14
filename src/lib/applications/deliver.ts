@@ -5,6 +5,7 @@ import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { keyName, summaryText, type Answers } from "@/lib/forms/application";
 import { buildApplicationPdf } from "@/lib/forms/application-pdf";
+import { recordActivity } from "@/lib/activity";
 import { generateBrief } from "@/lib/uw/brief";
 import { buildWorksheet, propertyLocation } from "@/lib/uw/worksheet";
 import { getLink, newId, newReference, saveApplication, saveLink, type Application, type ApplicationSource } from "./store";
@@ -58,6 +59,13 @@ export async function deliverApplication(d: Delivery) {
     createdAt,
   };
   await saveApplication(application);
+  await recordActivity({
+    kind: form.resource === "claim-forms" ? "claim" : form.resource === "renewal-declarations" ? "renewal" : "quote",
+    title: name || form.shortTitle,
+    detail: `${form.shortTitle}, ${viaClient ? `completed by the client for ${d.brokerageName}` : `from ${d.brokerName}, ${d.brokerageName}`}`,
+    path: `/applications/${id}`,
+    createdAt,
+  });
   // Building applications: the underwriting assistant writes its brief in the
   // background, ready for the underwriter in the admin portal.
   if (form.underwriting) {

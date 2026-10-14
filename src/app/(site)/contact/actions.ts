@@ -2,6 +2,7 @@
 
 import { sendEmail } from "@/lib/email";
 import { adminUrl } from "@/lib/applications/urls";
+import { recordActivity } from "@/lib/activity";
 import { saveEnquiry, type Enquiry } from "@/lib/enquiries";
 import { env } from "@/lib/env";
 import { contactSchema } from "@/lib/schemas";
@@ -44,6 +45,13 @@ export async function submitContact(
   await saveEnquiry(enquiry).catch((err) =>
     console.error("[contact] could not save the enquiry", err),
   );
+  await recordActivity({
+    kind: "enquiry",
+    title: d.company ? `${d.name}, ${d.company}` : d.name,
+    detail: `${d.enquiryType}${d.product ? `: ${d.product}` : ""}`,
+    path: "/enquiries",
+    createdAt: enquiry.createdAt,
+  });
 
   try {
     const sent = await sendEmail({
