@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useActionState, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { startTransition, useActionState, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Icon } from "@/components/portal/Icon";
 import { Card } from "@/components/portal/ui";
 import { AddressInput, AddressSearchUrl } from "./AddressInput";
@@ -54,6 +54,8 @@ export function ApplicationForm(props: Props) {
 function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName }: Props) {
   const form = getForm(formId)!;
   const isClient = audience === "client";
+  // Claim forms say "claim" where proposal forms say "application".
+  const noun = form.resource === "claim-forms" ? "claim" : "application";
   const formRef = useRef<HTMLFormElement>(null);
   const [answers, setAnswers] = useState<Answers>(defaults);
   const [showErrors, setShowErrors] = useState(false);
@@ -112,7 +114,7 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
         <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-site-teal text-site-teal">
           <Icon name="check" className="h-8 w-8" />
         </span>
-        <h2 className="mt-6 text-[26px] tracking-[-0.01em]">{isClient ? "Thank you, your application is in" : "Application sent"}</h2>
+        <h2 className="mt-6 text-[26px] tracking-[-0.01em]">{isClient ? `Thank you, your ${noun} is in` : noun === "claim" ? "Claim sent" : "Application sent"}</h2>
         <p className="mt-3 text-[15px] leading-relaxed text-body">
           Your reference is <strong className="font-semibold text-charcoal">{state.reference}</strong>.{" "}
           {isClient
@@ -166,7 +168,7 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
         <div id="form-status" aria-live="polite">
           {showErrors && errorCount > 0 && (
             <p role="alert" className="mb-6 border-l-4 border-site-purple bg-[#f8f1fa] px-4 py-3 text-[14px] text-site-purple">
-              {errorCount === 1 ? "1 answer needs" : `${errorCount} answers need`} checking before you can send the application.
+              {errorCount === 1 ? "1 answer needs" : `${errorCount} answers need`} checking before you can send the {noun}.
             </p>
           )}
           {state.status === "error" && (
@@ -196,7 +198,7 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
                 <Card className="px-6 py-6 md:px-8">
                   <div className="space-y-6 text-[14px] leading-relaxed text-body">
                     {part.text.map((block) => (
-                      <div key={block.heading}>
+                      <div key={block.heading} id={block.id} className={block.id ? "scroll-mt-24" : undefined}>
                         {block.heading && <h3 className="mb-2 text-[17px] font-semibold tracking-normal text-[#2e7d74]">{block.heading}</h3>}
                         {block.paragraphs?.map((p) => (
                           <p key={p} className="mt-2">
@@ -303,7 +305,7 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
               {download.busy ? "Preparing PDF" : "Download PDF"}
             </button>
             <button type="submit" disabled={sending} className={buttonClass("primary")}>
-              {sending ? "Sending" : "Submit application"}
+              {sending ? "Sending" : `Submit ${noun}`}
               {!sending && <Icon name="arrow" className="h-4 w-4" />}
             </button>
           </div>
@@ -433,17 +435,23 @@ function FieldInput({ field, error, defaultValue }: { field: Field; error?: stri
           <Hint text={field.hint} />
         </span>
         <div className={`mt-3 grid gap-2 ${field.options.length > 2 ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-2"}`}>
-          {field.options.map((option, i) => (
-            <label key={option} className="cursor-pointer">
-              <input id={i === 0 ? id : undefined} type="radio" name={field.name} value={option} className="peer sr-only" />
-              <span
-                className={`flex h-full items-center gap-3 border px-4 py-3 text-[14px] text-charcoal transition-colors peer-checked:border-site-teal peer-checked:bg-[#f1f8f7] peer-focus-visible:ring-2 peer-focus-visible:ring-site-teal/40 ${border(error)} hover:border-site-teal`}
-              >
-                <span aria-hidden className="h-4 w-4 shrink-0 rounded-full border border-[#bdbdbd] bg-white [input:checked+span>&]:border-[5px] [input:checked+span>&]:border-site-teal" />
-                {option}
-              </span>
-            </label>
-          ))}
+          {field.options.map((option, i) => {
+            const help = field.optionHelp?.[option];
+            return (
+              <div key={option} className="relative">
+                <label className="cursor-pointer">
+                  <input id={i === 0 ? id : undefined} type="radio" name={field.name} value={option} className="peer sr-only" />
+                  <span
+                    className={`flex h-full items-center gap-3 border px-4 py-3 text-[14px] text-charcoal transition-colors peer-checked:border-site-teal peer-checked:bg-[#f1f8f7] peer-focus-visible:ring-2 peer-focus-visible:ring-site-teal/40 ${border(error)} hover:border-site-teal ${help ? "pr-11" : ""}`}
+                  >
+                    <span aria-hidden className="h-4 w-4 shrink-0 rounded-full border border-[#bdbdbd] bg-white [input:checked+span>&]:border-[5px] [input:checked+span>&]:border-site-teal" />
+                    {option}
+                  </span>
+                </label>
+                {help && <OptionHelp option={option} text={help} link={field.optionHelpLink} />}
+              </div>
+            );
+          })}
         </div>
         <FieldError name={field.name} error={error} />
       </fieldset>
@@ -691,5 +699,59 @@ function Progress({ form, answers, errors }: { form: FormDefinition; answers: An
         ))}
       </ol>
     </nav>
+  );
+}
+
+/** The "?" beside a choice option: a short explanation, opened by click, tap or keyboard. */
+function OptionHelp({ option, text, link }: { option: string; text: string; link?: { label: string; href: string } }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent ? e.key === "Escape" : !ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+  const panelId = `help-${option.replace(/\W+/g, "-").toLowerCase()}`;
+  return (
+    <div ref={ref} className={`absolute top-1/2 right-2.5 -translate-y-1/2 ${open ? "z-30" : ""}`}>
+      <button
+        type="button"
+        aria-label={`What ${option} covers`}
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((o) => !o)}
+        className={`flex h-6 w-6 items-center justify-center rounded-full border text-[12px] font-semibold transition-colors ${
+          open ? "border-site-teal bg-site-teal text-white" : "border-[#bdbdbd] bg-white text-body hover:border-site-teal hover:text-site-teal"
+        }`}
+      >
+        ?
+      </button>
+      {open && (
+        <div
+          id={panelId}
+          role="note"
+          className="absolute top-8 right-0 z-20 w-72 max-w-[80vw] border border-site-teal bg-white p-4 text-left text-[13px] leading-relaxed text-charcoal shadow-lg"
+        >
+          <p className="mb-1 font-semibold text-[#2e7d74]">{option}</p>
+          <p>{text}</p>
+          {link && (
+            <a
+              href={link.href}
+              onClick={() => setOpen(false)}
+              className="mt-2 inline-block text-[12px] font-medium tracking-[0.08em] text-[#2e7d74] uppercase hover:underline"
+            >
+              {link.label}
+            </a>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

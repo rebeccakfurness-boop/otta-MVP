@@ -96,8 +96,15 @@ export const landlordProtectApplication: FormDefinition = {
               kind: "choice",
               name: "coverOption",
               label: "Select the cover you require",
-              hint: "See the comparison of the four Landlord Protect policies at the end of this form.",
+              hint: "Tap ? on an option for what it covers, or see the comparison of the four policies at the end of this form.",
               options: ["Protect", "Protect +", "Protect Multi", "Protect Prime"],
+              optionHelp: {
+                Protect: "Our essential cover. Loss of rent up to $1,400 a week, landlord's contents up to $25,000 and intentional damage up to $25,000. No methamphetamine decontamination cover.",
+                "Protect +": "More cover than Protect. Loss of rent up to $2,000 a week, contents up to $50,000, intentional damage up to $25,000, and methamphetamine decontamination up to $15,000.",
+                "Protect Multi": "Loss of rent up to $500 per room, to a combined maximum of $2,000 a week. Contents up to $25,000 including common areas, and intentional damage up to $25,000. No methamphetamine decontamination cover.",
+                "Protect Prime": "Our highest cover. Loss of rent up to $4,000 a week, contents up to $75,000, intentional damage up to $25,000, and methamphetamine decontamination up to $30,000.",
+              },
+              optionHelpLink: { label: "Compare all four policies", href: "#compare" },
             },
             {
               kind: "choice",
@@ -165,6 +172,7 @@ export const landlordProtectApplication: FormDefinition = {
       sections: [],
       text: [
         {
+          id: "compare",
           heading: "Compare the policies",
           table: {
             head: ["", "Protect", "Protect +", "Protect Multi", "Protect Prime"],

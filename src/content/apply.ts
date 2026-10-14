@@ -11,6 +11,7 @@ export const applyCopy = {
   download: {
     heading: "Download the proposal form",
     body: (form: string) => `Download the ${form} as a PDF to read through or fill in, then give it to your broker to send to us.`,
+    bodyMany: "Download the proposal forms as PDFs to read through or fill in, then give them to your broker to send to us.",
     button: "Download PDF",
   },
   noForm: {

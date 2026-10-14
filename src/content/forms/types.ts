@@ -28,7 +28,14 @@ type Base = {
 export type Field =
   | (Base & { kind: "text" | "email" | "tel" | "date" | "money" | "number" | "year" | "textarea" })
   | (Base & { kind: "yesno" })
-  | (Base & { kind: "choice"; options: string[] })
+  | (Base & {
+      kind: "choice";
+      options: string[];
+      /** A short explanation shown from a "?" beside each option. */
+      optionHelp?: Record<string, string>;
+      /** A link under each explanation, e.g. to a comparison table (#id) or a document. */
+      optionHelpLink?: { label: string; href: string };
+    })
   /** A table the person adds rows to (e.g. units in a block). */
   | (Base & {
       kind: "units";
@@ -45,6 +52,8 @@ export type Field =
     });
 
 export type TextBlock = {
+  /** Anchor for links to this block, e.g. "compare" for #compare. */
+  id?: string;
   heading?: string;
   paragraphs?: string[];
   bullets?: string[];

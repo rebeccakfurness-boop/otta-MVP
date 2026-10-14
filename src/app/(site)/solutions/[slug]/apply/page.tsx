@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container, PageIntro } from "@/components/Mockup";
 import { applyCopy } from "@/content/apply";
-import { applicationFormFor } from "@/content/forms";
+import { applicationFormFor, proposalFormsFor } from "@/content/forms";
 import { getProduct, products } from "@/content/products";
 import { portalUrl } from "@/lib/portal/config";
 
@@ -21,6 +21,7 @@ export default async function ApplyPage({ params }: PageProps<"/solutions/[slug]
   const product = getProduct((await params).slug);
   if (!product) notFound();
   const form = applicationFormFor(product.slug);
+  const downloads = proposalFormsFor(product.slug);
   const brokerHref = portalUrl(form ? `/forms/${form.slug}` : "/");
 
   return (
@@ -38,7 +39,25 @@ export default async function ApplyPage({ params }: PageProps<"/solutions/[slug]
             external
             tone="blue"
           />
-          {form ? (
+          {downloads.length > 1 ? (
+            <div className="flex h-full flex-col bg-site-teal p-9 text-white">
+              <h2 className="text-[26px] font-bold tracking-[-0.01em] text-white">{applyCopy.download.heading}s</h2>
+              <p className="mt-4 text-[16px] leading-relaxed text-white/90">{applyCopy.download.bodyMany}</p>
+              <ul className="mt-6 space-y-2">
+                {downloads.map((f) => (
+                  <li key={f.id}>
+                    <a
+                      href={`/downloads/${f.slug}.pdf`}
+                      className="group flex items-center justify-between gap-3 bg-white px-5 py-3 text-[14px] font-medium text-charcoal transition-colors hover:bg-[#f1f8f7]"
+                    >
+                      {f.title}
+                      <span className="shrink-0 text-[11px] tracking-[0.12em] text-[#2e7d74] uppercase">PDF</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : form ? (
             <Choice
               heading={applyCopy.download.heading}
               body={applyCopy.download.body(form.title)}

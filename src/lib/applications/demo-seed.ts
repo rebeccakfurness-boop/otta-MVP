@@ -29,7 +29,7 @@ const brokers = {
 };
 
 const codes: Record<string, string> = {
-  building: "BA", "corporate-travel": "CT", "landlord-protect": "LP", "no-claims-declaration": "ND", "professional-indemnity": "PI", "pa-group": "PA", "pa-claim": "CL",
+  building: "BA", "corporate-travel": "CT", "landlord-protect": "LP", "no-claims-declaration": "ND", "professional-indemnity": "PI", "pa-group": "PG", "pa-individual": "PA", "pa-health": "HD", "pa-claim": "CL", "travel-claim": "TC",
 };
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
