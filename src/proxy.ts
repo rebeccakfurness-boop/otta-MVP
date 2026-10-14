@@ -34,6 +34,8 @@ export async function proxy(request: NextRequest) {
       return res;
     }
   }
+  // Document and download files are served as they are on every host (the portals link to them).
+  if (/^\/(documents|downloads)\/.+\.[a-z0-9]+$/i.test(url.pathname)) return NextResponse.next();
   const host = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const hostApp = apps.find((a) => a.host !== "" && a.host === host);
 

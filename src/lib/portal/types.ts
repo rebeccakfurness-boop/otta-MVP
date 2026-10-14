@@ -72,3 +72,25 @@ export type PortalForm = {
   updated: string;
   file?: string;
 };
+
+export type ClaimStatus = "Lodged" | "Being assessed" | "Approved" | "Settled" | "Declined";
+
+export type Claim = {
+  id: string;
+  number: string;
+  brokerageId: string;
+  policyId: string;
+  insured: string;
+  productSlug: string;
+  lodged: string; // ISO date
+  dateOfLoss: string;
+  description: string;
+  status: ClaimStatus;
+  /** Amount claimed, when known. */
+  claimed?: number;
+  /** Amount paid so far. */
+  paid?: number;
+  handler: string;
+  history: { date: string; event: string }[];
+  source: RecordSource;
+};

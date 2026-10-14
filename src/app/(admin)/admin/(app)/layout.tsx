@@ -16,6 +16,7 @@ export default function AdminAppLayout({ children }: { children: React.ReactNode
       homeHref={adminPath("/")}
       nav={[
         { label: "Overview", href: adminPath("/"), icon: "home" },
+        { label: "Reporting", href: adminPath("/reporting"), icon: "chart" },
         { label: "Policies", href: adminPath("/policies"), icon: "policies" },
         { label: "Quote requests", href: adminPath("/quotes"), icon: "quotes" },
         { label: "Applications", href: adminPath("/applications"), icon: "apply" },

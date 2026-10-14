@@ -4,7 +4,7 @@ import { Card, CardHeader, PageHeader } from "@/components/portal/ui";
 import { onboarding } from "@/content/onboarding";
 import { site } from "@/content/site";
 import { contactTeams } from "@/content/steve-ui";
-import { PORTAL_HOST, portalPath } from "@/lib/portal/config";
+import { portalPath } from "@/lib/portal/config";
 
 export const metadata: Metadata = { title: "Help & contact" };
 
@@ -43,7 +43,7 @@ export default function HelpPage() {
             <div className="px-6 py-5">
               <p className="text-[14px] leading-relaxed text-body">{onboarding.guide.blurb}</p>
               <a
-                href={`${PORTAL_HOST ? site.url : ""}${onboarding.guide.href}`}
+                href={onboarding.guide.href}
                 target="_blank"
                 rel="noopener"
                 className="mt-3 inline-flex items-center gap-2 text-[14px] font-medium text-site-teal hover:underline"

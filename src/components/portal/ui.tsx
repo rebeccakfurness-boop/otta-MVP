@@ -100,6 +100,9 @@ const badgeTones: Record<string, string> = {
   "Link expired": "bg-[#efefef] text-[#555]",
   "Direct (website)": "bg-site-blue text-white",
   Approved: "bg-[#e6f4f2] text-[#2e7d74]",
+  Lodged: "bg-[#efefef] text-[#555]",
+  "Being assessed": "bg-[#e3eef3] text-site-blue",
+  Settled: "bg-site-teal text-white",
 };
 
 export function StatusBadge({ status }: { status: string }) {
@@ -181,5 +184,21 @@ export function SourceBadge({ source }: { source: "manual" | "ihq" }) {
     <span className="inline-flex items-center rounded-sm bg-[#f3f0e8] px-2 py-1 text-[11px] font-semibold tracking-[0.06em] whitespace-nowrap text-[#7a6a3a] uppercase">
       Manual
     </span>
+  );
+}
+
+/** A vertical progress timeline, newest last. */
+export function Timeline({ items, format }: { items: { date: string; event: string }[]; format: (date: string) => string }) {
+  return (
+    <ol className="px-6 py-6">
+      {items.map((h, i) => (
+        <li key={i} className="relative pb-6 pl-7 last:pb-0">
+          {i < items.length - 1 && <span className="absolute top-3 left-[5px] h-full w-px bg-[#dcdcdc]" />}
+          <span className={`absolute top-1.5 left-0 h-[11px] w-[11px] rounded-full ${i === items.length - 1 ? "bg-site-teal" : "border-2 border-site-teal bg-white"}`} />
+          <p className="text-[14px] font-medium text-charcoal">{h.event}</p>
+          <p className="text-[13px] text-body">{format(h.date)}</p>
+        </li>
+      ))}
+    </ol>
   );
 }

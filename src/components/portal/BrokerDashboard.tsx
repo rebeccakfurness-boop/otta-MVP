@@ -2,7 +2,9 @@ import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
 import { Card, CardHeader, EmptyState, StatusBadge } from "./ui";
 import { productName } from "@/lib/portal/products";
-import { daysUntil, formatDate, policyStatus } from "@/lib/portal/status";
+import { daysUntil, formatDate, formatMoney, policyStatus } from "@/lib/portal/status";
+import { portalBook } from "@/content/portal-pages";
+import { products } from "@/content/products";
 import type { Policy, QuoteRequest } from "@/lib/portal/types";
 
 export type DashboardLinks = {
@@ -41,7 +43,18 @@ export function BrokerDashboard({
   const active = policies.filter((p) => policyStatus(p, now) !== "Expired");
   const renewals = policies.filter((p) => policyStatus(p, now) === "Renewal due");
 
+  const book = active.reduce((sum, p) => sum + p.premium, 0);
+  const byProduct = products
+    .map((p) => {
+      const ps = active.filter((x) => x.productSlug === p.slug);
+      return { slug: p.slug, name: productName(p.slug), count: ps.length, premium: ps.reduce((sum, x) => sum + x.premium, 0) };
+    })
+    .filter((r) => r.count > 0)
+    .sort((a, b) => b.premium - a.premium);
+  const maxPremium = Math.max(1, ...byProduct.map((r) => r.premium));
+
   const stats = [
+    { label: portalBook.tile, value: formatMoney(book), href: links.policies, icon: "money" as const },
     { label: "Open quote requests", value: open.length, href: links.quotes, icon: "quotes" as const },
     { label: "Active policies", value: active.length, href: links.policies, icon: "policies" as const },
     { label: "Renewals due in 60 days", value: renewals.length, href: links.renewals, icon: "calendar" as const },
@@ -55,20 +68,45 @@ export function BrokerDashboard({
         <p className="mt-2 text-[15px] text-body">Here&apos;s what&apos;s happening with your Otta business.</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 sm:gap-5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className="group rounded-sm border border-[#eaeaea] bg-white p-4 transition-colors hover:border-site-teal sm:p-6">
             <div className="flex items-center justify-between text-body">
               <span className="text-[12px] leading-snug sm:text-[13px]">{s.label}</span>
               <Icon name={s.icon} className="hidden h-5 w-5 shrink-0 text-site-teal sm:block" />
             </div>
-            <p className="mt-3 font-heading text-[30px] leading-none font-bold text-charcoal sm:text-[40px]">{s.value}</p>
+            <p className="mt-3 font-heading text-[26px] leading-none font-bold text-charcoal sm:text-[36px]">{s.value}</p>
             <span className="mt-4 hidden items-center gap-1 text-[12px] sm:inline-flex font-medium tracking-[0.1em] text-site-teal uppercase">
               View <Icon name="arrow" className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </span>
           </Link>
         ))}
       </div>
+
+      <Card className="mt-6">
+        <CardHeader
+          title={portalBook.title}
+          action={<span className="text-[12px] text-body">{portalBook.tileNote(active.length)}</span>}
+        />
+        {byProduct.length === 0 ? (
+          <EmptyState title={portalBook.empty} />
+        ) : (
+          <ul className="space-y-3 px-6 py-6">
+            <li className="pb-1 text-[13px] text-body">{portalBook.intro}</li>
+            {byProduct.map((r) => (
+              <li key={r.slug} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1.5 sm:grid-cols-[minmax(0,280px)_minmax(0,1fr)_100px]">
+                <span className="truncate text-[14px] text-charcoal">
+                  {r.name} <span className="text-body">({r.count})</span>
+                </span>
+                <span className="order-3 col-span-2 h-3 rounded-sm bg-[#efefef] sm:order-none sm:col-span-1">
+                  <span className="block h-3 rounded-sm bg-site-teal" style={{ width: `${(r.premium / maxPremium) * 100}%` }} />
+                </span>
+                <span className="text-right text-[14px] font-semibold text-charcoal">{formatMoney(r.premium)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
 
       <h2 className="mt-12 mb-4 font-heading text-[20px] font-semibold tracking-normal text-charcoal">Forms</h2>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

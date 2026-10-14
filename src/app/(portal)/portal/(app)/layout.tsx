@@ -17,7 +17,10 @@ export default function PortalAppLayout({ children }: { children: React.ReactNod
         { label: "Forms", href: portalPath("/forms"), icon: "forms" },
         { label: "Quote requests", href: portalPath("/quotes"), icon: "quotes" },
         { label: "Policies", href: portalPath("/policies"), icon: "policies" },
+        { label: "Claims", href: portalPath("/claims"), icon: "claim" },
         { label: "Documents", href: portalPath("/documents"), icon: "documents" },
+        { label: "Policy wordings", href: portalPath("/wordings"), icon: "book" },
+        { label: "Training", href: portalPath("/training"), icon: "training" },
         { label: "Help & contact", href: portalPath("/help"), icon: "help" },
         { label: "Your account", href: portalPath("/account"), icon: "users" },
       ]}

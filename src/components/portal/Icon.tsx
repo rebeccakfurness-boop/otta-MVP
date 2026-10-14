@@ -29,6 +29,9 @@ const paths = {
   send: "M21 3 10 14M21 3l-7 18-4-7-7-4z",
   copy: "M8 8h12v12H8zM16 8V4H4v12h4",
   check: "M5 12.5l4.5 4.5L19 7.5",
+  book: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21a2 2 0 0 1 2-2h13v2H6a2 2 0 0 1-2-2zM8 7h7",
+  training: "M2 9l10-5 10 5-10 5zM6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5M22 9v6",
+  chart: "M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6",
   trash: "M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3",
 } as const;
 

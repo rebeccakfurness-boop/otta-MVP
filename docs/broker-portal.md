@@ -13,11 +13,14 @@ subdomain, **portal.ottainsurance.co.nz**. The website's only link to it is the
 | Request access | `/join` | New brokers ask for an account (see Joining the portal) |
 | Welcome | `/welcome?token=…` | A newly approved broker sets their password (link valid 7 days) |
 | Your account | `/account` | Their details; change or reset their password |
-| Dashboard | `/` | Open quotes, active policies, renewals due, quick links to forms |
+| Dashboard | `/` | Active book (annual premium of active policies, by product), open quotes, active policies, renewals due, quick links to forms |
 | Forms | `/forms` | Every proposal form, renewal declaration, claim form and general form; filter by type and product, search, download |
 | Quote requests | `/quotes`, `/quotes/<ref>` | All quote requests with status, details and progress |
 | Policies | `/policies`, `/policies/<id>` | Bound policies, status (active, renewal due, expired), documents, renewal and claim shortcuts |
+| Claims | `/claims`, `/claims/<id>` | The brokerage's claims with status, amounts and progress, claims sent online, how to lodge a claim and emergency contacts |
 | Documents | `/documents` | Every policy's documents plus product wordings and fact sheets |
+| Policy wordings | `/wordings` | The current wording for every product (`src/content/documents.ts`) |
+| Training | `/training` | Five getting started steps, an annotated walkthrough (`public/images/portal-training`) and the guide PDF |
 | Help & contact | `/help` | Team emails, phone, how to get portal access |
 
 Brokers only ever see their own brokerage's records: every query in

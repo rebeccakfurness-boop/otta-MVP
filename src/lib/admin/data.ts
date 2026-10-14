@@ -4,7 +4,7 @@ import "server-only";
 // read the same store (demo data now; Neon Postgres fed by manual entry and
 // InsuredHQ later), so they always agree.
 import { allBrokerages, allUsers } from "@/lib/portal/accounts";
-import { forms, policies, quotes, staff } from "@/lib/portal/demo-data";
+import { claims, forms, policies, quotes, staff } from "@/lib/portal/demo-data";
 
 export async function findStaffByEmail(email: string) {
   return staff.find((s) => s.email.toLowerCase() === email.toLowerCase()) ?? null;
@@ -48,4 +48,8 @@ export async function brokerageNames() {
 
 export async function listAllForms() {
   return forms;
+}
+
+export async function listAllClaims() {
+  return [...claims].sort((a, b) => b.lodged.localeCompare(a.lodged));
 }

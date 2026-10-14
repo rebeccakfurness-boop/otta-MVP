@@ -135,7 +135,14 @@ async function Overview() {
       </div>
 
       <Card className="mt-10">
-        <CardHeader title="By product" action={<span className="text-[12px] text-body">Click a number to see the records</span>} />
+        <CardHeader
+          title="Active book by product"
+          action={
+            <Link href={adminPath("/reporting")} className="text-[12px] font-medium tracking-[0.1em] text-site-teal uppercase hover:underline">
+              Reporting
+            </Link>
+          }
+        />
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-[14px]">
             <thead>

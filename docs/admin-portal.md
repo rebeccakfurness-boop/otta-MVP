@@ -8,6 +8,13 @@ the broker portal, so what staff see is exactly what brokers see.
 
 - **Overview**: active policies, renewals due, open quote requests and premium
   in force, split by product. Every number links through to the matching list.
+- **Reporting** (`/reporting`): premium in force by product and brokerage,
+  quoted to bound conversion by month and product, renewal retention by month
+  and product, average premium change at renewal, and renewal premium due over
+  the next 12 months. Filter by product or brokerage. Figures come from
+  `src/lib/admin/reporting.ts`, which adds 12 months of sample history to the
+  live demo records; replace `sampleHistory()` with real quotes and renewals
+  once InsuredHQ is connected.
 - **Policies** and **Quote requests**: every record across all brokers, with
   product tabs, status filters and search (insured, policy number, broker or
   InsuredHQ reference).

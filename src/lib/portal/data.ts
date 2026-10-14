@@ -2,7 +2,7 @@ import "server-only";
 // Data access for the broker portal. Every read is scoped to the signed-in
 // broker's brokerage. Swap the demo arrays for Neon Postgres queries here.
 import { allBrokerages, allUsers } from "./accounts";
-import { forms, policies, quotes } from "./demo-data";
+import { claims, forms, policies, quotes } from "./demo-data";
 
 export async function findUserByEmail(email: string) {
   return (await allUsers()).find((u) => u.email.toLowerCase() === email.toLowerCase()) ?? null;
@@ -34,4 +34,12 @@ export async function getPolicy(brokerageId: string, id: string) {
 
 export async function listForms() {
   return forms;
+}
+
+export async function listClaims(brokerageId: string) {
+  return claims.filter((c) => c.brokerageId === brokerageId).sort((a, b) => b.lodged.localeCompare(a.lodged));
+}
+
+export async function getClaim(brokerageId: string, id: string) {
+  return claims.find((c) => c.brokerageId === brokerageId && c.id === id) ?? null;
 }

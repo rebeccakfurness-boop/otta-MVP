@@ -31,7 +31,7 @@ async function Applications() {
     <>
       <PageHeader
         title="Applications"
-        description="Online applications sent to Otta (building insurance and corporate travel), whether you filled them in or your client did from a link you sent."
+        description="Online forms sent to Otta, whether you filled them in or your client did from a link you created."
         actions={
           <>
             <ButtonLink href={portalPath("/applications/send")} variant="secondary" icon="send">
