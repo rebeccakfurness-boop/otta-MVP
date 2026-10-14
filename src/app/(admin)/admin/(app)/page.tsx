@@ -10,6 +10,7 @@ import { brokerageNames, listAllPolicies, listAllQuotes, listBrokerages } from "
 import { getForm } from "@/content/forms";
 import { applicationChannel, applicationStatus } from "@/lib/applications/labels";
 import { listApplications } from "@/lib/applications/store";
+import { listEnquiries } from "@/lib/enquiries";
 import { listAccessRequests } from "@/lib/portal/accounts";
 import { productName } from "@/lib/portal/products";
 import { daysUntil, formatDate, formatMoney, policyStatus } from "@/lib/portal/status";
@@ -34,14 +35,16 @@ const pipeline = [
 
 async function Overview() {
   const admin = await requireAdmin();
-  const [policies, quotes, brokers, names, applications, accessRequests] = await Promise.all([
+  const [policies, quotes, brokers, names, applications, accessRequests, enquiries] = await Promise.all([
     listAllPolicies(),
     listAllQuotes(),
     listBrokerages(),
     brokerageNames(),
     listApplications(),
     listAccessRequests(),
+    listEnquiries(),
   ]);
+  const openEnquiries = enquiries.filter((e) => !e.handledAt).length;
   const waiting = accessRequests.filter((r) => r.status === "pending").length;
   const now = new Date();
   const statusOf = new Map(policies.map((p) => [p.id, policyStatus(p, now)]));
@@ -93,6 +96,20 @@ async function Overview() {
           </span>
           <span className="inline-flex items-center gap-1 text-[12px] font-medium tracking-[0.1em] text-[#2e7d74] uppercase">
             Review <Icon name="arrow" className="h-3.5 w-3.5" />
+          </span>
+        </Link>
+      )}
+
+      {openEnquiries > 0 && (
+        <Link
+          href={adminPath("/enquiries")}
+          className="mb-8 flex items-center justify-between gap-4 border-l-4 border-site-teal bg-[#f1f8f7] px-5 py-4 text-[14px] text-charcoal hover:bg-[#e6f4f2]"
+        >
+          <span>
+            <strong className="font-semibold">{openEnquiries === 1 ? "1 website enquiry" : `${openEnquiries} website enquiries`}</strong> waiting for a reply.
+          </span>
+          <span className="inline-flex items-center gap-1 text-[12px] font-medium tracking-[0.1em] text-[#2e7d74] uppercase">
+            View <Icon name="arrow" className="h-3.5 w-3.5" />
           </span>
         </Link>
       )}

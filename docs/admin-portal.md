@@ -19,6 +19,17 @@ the broker portal, so what staff see is exactly what brokers see.
 - **Data sources**: which records came from InsuredHQ and which were entered
   manually.
 
+## Enquiries and email
+
+- **Enquiries** (`/enquiries`): every message from the website's Contact Us page
+  is saved here first, then emailed to `ENQUIRY_TO_EMAIL` (hello@ by default).
+  Each shows whether its email went out; staff mark them handled. Open
+  enquiries show as a banner on the Overview.
+- **Email check** (`/email`): how this deployment sends email (Brevo key set,
+  the sender address and whether Brevo has verified it, demo mode, where
+  enquiries and applications go) and a test send that shows Brevo's exact
+  reply. Start here when an email doesn't arrive.
+
 ## Demo data
 
 While the portals are in demo mode (`PORTAL_DEMO_LOGIN` not `false`), the first

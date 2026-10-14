@@ -1,6 +1,8 @@
 "use server";
 
 import { sendEmail } from "@/lib/email";
+import { adminUrl } from "@/lib/applications/urls";
+import { saveEnquiry, type Enquiry } from "@/lib/enquiries";
 import { env } from "@/lib/env";
 import { contactSchema } from "@/lib/schemas";
 
@@ -11,9 +13,14 @@ export type ContactState = {
   values?: Record<string, string>;
 };
 
-export async function submitContact(_prev: ContactState, formData: FormData): Promise<ContactState> {
+export async function submitContact(
+  _prev: ContactState,
+  formData: FormData,
+): Promise<ContactState> {
   const raw = Object.fromEntries(
-    [...formData.entries()].filter(([k]) => !k.startsWith("$")).map(([k, v]) => [k, String(v)]),
+    [...formData.entries()]
+      .filter(([k]) => !k.startsWith("$"))
+      .map(([k, v]) => [k, String(v)]),
   );
   const parsed = contactSchema.safeParse(raw);
   if (!parsed.success) {
@@ -25,9 +32,21 @@ export async function submitContact(_prev: ContactState, formData: FormData): Pr
     };
   }
 
-  const d = parsed.data;
+  const d = { ...parsed.data };
+  delete d.website; // the honeypot, always empty here
+  // Saved first, so the enquiry shows in the admin portal even if the email fails.
+  const enquiry: Enquiry = {
+    ...d,
+    id: `enq-${crypto.randomUUID().slice(0, 8)}`,
+    createdAt: new Date().toISOString(),
+    emailed: "not-sent",
+  };
+  await saveEnquiry(enquiry).catch((err) =>
+    console.error("[contact] could not save the enquiry", err),
+  );
+
   try {
-    await sendEmail({
+    const sent = await sendEmail({
       to: env.enquiryToEmail,
       replyTo: d.email,
       subject: `Website enquiry: ${d.enquiryType}${d.product ? `: ${d.product}` : ""}`,
@@ -40,16 +59,27 @@ export async function submitContact(_prev: ContactState, formData: FormData): Pr
         `Product: ${d.product || "-"}`,
         "",
         d.message,
+        "",
+        `See all enquiries in the admin portal: ${await adminUrl("/enquiries")}`,
       ].join("\n"),
     });
+    if (!sent)
+      console.warn(
+        "[contact] BREVO_API_KEY isn't set on this deployment: the enquiry was saved but not emailed.",
+      );
+    await saveEnquiry({
+      ...enquiry,
+      emailed: sent ? "sent" : "not-sent",
+    }).catch(() => {});
   } catch (err) {
-    console.error("Contact form email failed", err);
-    return {
-      status: "error",
-      message: "Sorry, we couldn't send your message. Please call or email us directly.",
-      values: raw,
-    };
+    // The enquiry is saved, so the visitor doesn't need to try again.
+    console.error("[contact] enquiry email failed", err);
+    await saveEnquiry({ ...enquiry, emailed: "failed" }).catch(() => {});
   }
 
-  return { status: "success", message: "Thanks, we've received your enquiry and will be in touch shortly." };
+  return {
+    status: "success",
+    message:
+      "Thanks, we've received your enquiry and will be in touch shortly.",
+  };
 }
