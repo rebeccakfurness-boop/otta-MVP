@@ -25,6 +25,12 @@ export const onboarding = {
     sso: "Prefer to sign in with your brokerage's Microsoft or Google account? You can do that from the sign-in page once your account is set up.",
     expired: "This welcome link has expired or has already been used. Email yourself a sign-in link instead, or ask the Otta team to resend your invite.",
   },
+  /** The broker guide, sent with the welcome email and linked from Help & contact. */
+  guide: {
+    href: "/documents/guides/otta-broker-portal-guide.pdf",
+    label: "Download the broker portal guide (PDF)",
+    blurb: "New to the portal? Our guide walks through signing in, forms, applications and binding quotes, with screenshots.",
+  },
   account: {
     resetPrompt: "You're signed in with an emailed link. Set a new password below so you can sign in with it next time.",
   },
@@ -44,7 +50,7 @@ export const onboarding = {
         `The Otta team`,
       ].join("\n"),
     }),
-    invite: (o: { name: string; brokerage: string; url: string }) => ({
+    invite: (o: { name: string; brokerage: string; url: string; guideUrl: string; helpEmail: string; phone: string }) => ({
       subject: "Welcome to the Otta Broker Portal",
       text: [
         `Kia ora ${o.name.split(" ")[0]},`,
@@ -52,7 +58,20 @@ export const onboarding = {
         `Your Otta Broker Portal account for ${o.brokerage} is ready. Set your password here:`,
         o.url,
         ``,
-        `The link works for 7 days. In the portal you can track quote requests and policies, download documents, and complete or send our proposal forms.`,
+        `The link works for 7 days.`,
+        ``,
+        `Getting started in five steps`,
+        ``,
+        `1. Set your password. Use the link above. Next time, sign in with your email and password, your Microsoft or Google work account, or an emailed sign-in link.`,
+        `2. Find your way around. Your dashboard shows your open quote requests, active policies and renewals due in the next 60 days.`,
+        `3. Complete or send a form. Under Forms, fill in a proposal online and submit it straight to Otta, or select Send to a client and we'll email them a secure link (it works for 30 days).`,
+        `4. Track it. Applications shows everything you and your clients have sent us. When a client accepts a quote, open it under Quote requests and instruct Otta to bind.`,
+        `5. Ask us anything. Help & contact lists each underwriting team's email, or call us on ${o.phone}.`,
+        ``,
+        `Our broker guide walks through each step with screenshots:`,
+        o.guideUrl,
+        ``,
+        `Questions? Email ${o.helpEmail} and we'll help.`,
         ``,
         `The Otta team`,
       ].join("\n"),

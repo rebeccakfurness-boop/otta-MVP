@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Icon } from "@/components/portal/Icon";
 import { Card, CardHeader, PageHeader } from "@/components/portal/ui";
+import { onboarding } from "@/content/onboarding";
 import { site } from "@/content/site";
 import { contactTeams } from "@/content/steve-ui";
-import { portalPath } from "@/lib/portal/config";
+import { PORTAL_HOST, portalPath } from "@/lib/portal/config";
 
 export const metadata: Metadata = { title: "Help & contact" };
 
@@ -35,6 +36,21 @@ export default function HelpPage() {
                 {site.phone}
               </a>
               <p className="mt-2 text-[13px] text-body">Claims: {site.claimsEmail}</p>
+            </div>
+          </Card>
+          <Card>
+            <CardHeader title="Broker guide" />
+            <div className="px-6 py-5">
+              <p className="text-[14px] leading-relaxed text-body">{onboarding.guide.blurb}</p>
+              <a
+                href={`${PORTAL_HOST ? site.url : ""}${onboarding.guide.href}`}
+                target="_blank"
+                rel="noopener"
+                className="mt-3 inline-flex items-center gap-2 text-[14px] font-medium text-site-teal hover:underline"
+              >
+                <Icon name="download" className="h-4 w-4" />
+                {onboarding.guide.label}
+              </a>
             </div>
           </Card>
           <Card>
