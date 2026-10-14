@@ -1,5 +1,6 @@
 // Demo data for the broker portal prototype. Replace with Neon Postgres
 // queries in src/lib/portal/data.ts; nothing else reads this file.
+import { wordingsFor } from "@/content/documents";
 import { products } from "@/content/products";
 import type { Brokerage, FormType, Policy, PortalForm, PortalUser, QuoteRequest, StaffUser } from "./types";
 
@@ -148,3 +149,9 @@ export const forms: PortalForm[] = [
   { id: "general-mid-term-alteration", title: "Mid-term alteration request", type: "General", updated: "2026-09-01" },
   { id: "general-cancellation", title: "Policy cancellation request", type: "General", updated: "2026-09-01" },
 ];
+
+// Link each policy's "Policy wording" to the current wording for its product.
+for (const policy of policies) {
+  const file = wordingsFor(policy.productSlug)[0]?.file;
+  for (const doc of policy.documents) if (doc.kind === "Wording" && file) doc.file = file;
+}

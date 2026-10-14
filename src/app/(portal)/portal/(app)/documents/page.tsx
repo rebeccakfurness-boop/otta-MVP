@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Card, CardHeader, DownloadButton, LoadingBlocks, PageHeader } from "@/components/portal/ui";
+import { wordingsFor } from "@/content/documents";
 import { products } from "@/content/products";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
@@ -60,8 +61,11 @@ async function Documents() {
           {products.map((p) => (
             <li key={p.slug} className="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center">
               <p className="flex-1 text-[15px] font-medium text-charcoal">{productName(p.slug)}</p>
-              <div className="flex gap-2">
-                <DownloadButton label="Policy wording" />
+              <div className="flex flex-wrap gap-2">
+                {wordingsFor(p.slug).length === 0 && <DownloadButton label="Policy wording" />}
+                {wordingsFor(p.slug).map((d) => (
+                  <DownloadButton key={d.file} file={d.file} label={wordingsFor(p.slug).length > 1 ? d.title.replace(/ Insurance Policy$| Policy$/, "") : "Policy wording"} />
+                ))}
                 <DownloadButton label="Fact sheet" />
               </div>
             </li>
