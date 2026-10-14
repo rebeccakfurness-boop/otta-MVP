@@ -14,6 +14,8 @@ const requestSchema = z.object({
     .min(1)
     .max(20)
     .refine((m) => m.length > 0 && m[0].role === "user" && m[m.length - 1].role === "user", "Conversation must start and end with the visitor"),
+  /** Which otter is answering (see chatPersonas in src/content/steve-ui.ts). */
+  persona: z.enum(["steve", "brad"]).optional(),
 });
 
 // Best-effort per-instance rate limit: 20 messages per IP per 10 minutes.
@@ -41,7 +43,8 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return new Response("Sorry, I couldn't read that message.", { status: 400, headers: textHeaders });
   }
-  const { messages } = parsed.data;
+  const { messages, persona } = parsed.data;
+  const system = persona === "brad" ? steveSystemPrompt.replace("You are Steve,", "You are Brad,") : steveSystemPrompt;
 
   // Without an API key (local development, previews) Steve answers from a
   // simple keyword lookup so the widget still works.
@@ -56,7 +59,7 @@ export async function POST(request: Request) {
     output_config: { effort: "low" },
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",
-    system: [{ type: "text", text: steveSystemPrompt, cache_control: { type: "ephemeral" } }],
+    system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
     messages,
   });
 

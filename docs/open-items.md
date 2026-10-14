@@ -28,6 +28,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - Lorem ipsum on the home page replaced with draft copy drawn from the product summaries.
 
 ## Steve the otter (chatbot)
+- **Temporary**: the chat offers Brad (normal answers) or Steve (pub replies only, no AI). Turn it off with `enabled: false` in `chatPersonas` in `src/content/steve-ui.ts`.
 - Add `ANTHROPIC_API_KEY` in Vercel (Settings, Environment Variables) to switch Steve from built-in keyword answers to Claude.
 - Have compliance review Steve's instructions in `src/content/steve.ts` (general information only, no advice, no personal details) and the disclaimer under the chat box.
 - The rate limit is per server instance and best effort; add a shared store (for example Vercel KV) if traffic grows.
