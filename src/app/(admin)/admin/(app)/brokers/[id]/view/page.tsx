@@ -9,6 +9,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { adminPath } from "@/lib/admin/config";
 import { findBrokerageWithUsers } from "@/lib/admin/data";
 import { listPolicies, listQuotes } from "@/lib/portal/data";
+import { brokerageScope } from "@/lib/portal/scope";
 import { formatDate } from "@/lib/portal/status";
 
 export const metadata: Metadata = { title: "Broker view" };
@@ -28,7 +29,7 @@ async function BrokerView({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const broker = await findBrokerageWithUsers(id);
   if (!broker) notFound();
-  const [policies, quotes] = await Promise.all([listPolicies(id), listQuotes(id)]);
+  const [policies, quotes] = await Promise.all([listPolicies(brokerageScope(id)), listQuotes(brokerageScope(id))]);
   const firstName = broker.users[0]?.name.split(" ")[0] ?? "there";
 
   return (

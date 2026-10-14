@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { ButtonLink, LoadingBlocks, PageHeader } from "@/components/portal/ui";
 import { formBySlug, onlineForms } from "@/content/forms";
-import { requireBroker } from "@/lib/portal/auth";
+import { requirePlacingBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
 import { submitApplication } from "./actions";
 
@@ -27,7 +27,7 @@ export default function OnlineFormPage(props: PageProps<"/portal/forms/[form]">)
 async function OnlineForm({ params }: { params: PageProps<"/portal/forms/[form]">["params"] }) {
   const form = formBySlug((await params).form);
   if (!form) notFound();
-  const broker = await requireBroker();
+  const broker = await requirePlacingBroker();
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Pacific/Auckland" }).format(new Date());
   return (
     <>

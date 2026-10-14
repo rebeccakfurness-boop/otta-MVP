@@ -5,9 +5,21 @@ import { products } from "@/content/products";
 import type { Brokerage, Claim, FormType, Policy, PortalForm, PortalUser, QuoteRequest, StaffUser } from "./types";
 
 export const brokerages: Brokerage[] = [
-  { id: "brk-harbour", name: "Harbour Insurance Brokers", domains: ["harbourbrokers.co.nz"], microsoftTenantIds: [] },
-  { id: "brk-southern", name: "Southern Alps Brokers", domains: ["southernalpsbrokers.co.nz"], microsoftTenantIds: [] },
+  { id: "brk-harbour", name: "Harbour Insurance Brokers", domains: ["harbourbrokers.co.nz"], microsoftTenantIds: [], networkId: "net-steadfast" },
+  { id: "brk-southern", name: "Southern Alps Brokers", domains: ["southernalpsbrokers.co.nz"], microsoftTenantIds: [], networkId: "net-steadfast" },
   { id: "brk-kowhai", name: "Kowhai Property Management", domains: ["kowhaipm.co.nz"], microsoftTenantIds: [] },
+  // A broker network: its people see the business of every member brokerage.
+  { id: "net-steadfast", name: "Steadfast", kind: "network", domains: [], microsoftTenantIds: [] },
+  // Coverholders: their people see the business on the products they write.
+  { id: "ch-canopius", name: "Canopius", kind: "coverholder", productSlugs: ["corporate-travel-insurance"], domains: [], microsoftTenantIds: [] },
+  {
+    id: "ch-beazley",
+    name: "Beazley",
+    kind: "coverholder",
+    productSlugs: ["rental-property-insurance", "social-and-community-housing-insurance", "landlord-insurance"],
+    domains: [],
+    microsoftTenantIds: [],
+  },
 ];
 
 // Otta staff who can sign in to the admin portal.
@@ -22,18 +34,26 @@ export const staff: StaffUser[] = [
   },
 ];
 
+const DEMO_HASH = "$2b$12$kgw6YZ.3I6gyPzLWMBC.3.dB5rb1sN1UMjvrXtE.1eYFyA.vI.j4u";
+
 export const users: PortalUser[] = [
   {
     id: "usr-alex",
     name: "Alex Morgan",
     email: "demo@harbourbrokers.co.nz",
     brokerageId: "brk-harbour",
+    sees: "brokerage",
     // Demo password: OttaDemo2026!
     passwordHash: "$2b$12$kgw6YZ.3I6gyPzLWMBC.3.dB5rb1sN1UMjvrXtE.1eYFyA.vI.j4u",
   },
-  { id: "usr-priya", name: "Priya Shah", email: "priya@harbourbrokers.co.nz", brokerageId: "brk-harbour" },
+  // Sees only the business she placed. Demo password: OttaDemo2026!
+  { id: "usr-priya", name: "Priya Shah", email: "priya@harbourbrokers.co.nz", brokerageId: "brk-harbour", sees: "own", passwordHash: DEMO_HASH },
   { id: "usr-tom", name: "Tom Ngata", email: "tom@southernalpsbrokers.co.nz", brokerageId: "brk-southern" },
   { id: "usr-mere", name: "Mere Tipene", email: "mere@kowhaipm.co.nz", brokerageId: "brk-kowhai" },
+  // Network and coverholder people. Demo password: OttaDemo2026!
+  { id: "usr-steadfast", name: "Sam Lee", email: "steadfast.demo@ottainsurance.co.nz", brokerageId: "net-steadfast", passwordHash: DEMO_HASH },
+  { id: "usr-canopius", name: "Claire Jones", email: "canopius.demo@ottainsurance.co.nz", brokerageId: "ch-canopius", passwordHash: DEMO_HASH },
+  { id: "usr-beazley", name: "Mark Davies", email: "beazley.demo@ottainsurance.co.nz", brokerageId: "ch-beazley", passwordHash: DEMO_HASH },
 ];
 
 const B = "brk-harbour";
@@ -201,6 +221,13 @@ export const forms: PortalForm[] = [
   { id: "general-mid-term-alteration", title: "Mid-term alteration request", type: "General", updated: "2026-09-01" },
   { id: "general-cancellation", title: "Policy cancellation request", type: "General", updated: "2026-09-01" },
 ];
+
+// Who placed each Harbour record: Priya placed these, Alex the rest.
+const placedByPriya = new Set(["Q-26-0141", "Q-26-0137", "pol-pa-2611", "pol-sc-2490", "pol-ll-2547", "clm-2611-01", "clm-2547-01"]);
+for (const r of [...quotes, ...policies, ...claims]) {
+  if (r.brokerageId !== B) continue;
+  r.brokerUserId = placedByPriya.has("ref" in r ? r.ref : r.id) ? "usr-priya" : "usr-alex";
+}
 
 // Link each policy's "Policy wording" to the current wording for its product.
 for (const policy of policies) {

@@ -3,10 +3,10 @@
 import { getForm } from "@/content/forms";
 import { deliverApplication } from "@/lib/applications/deliver";
 import { answersFromFormData, validate, type SubmitState } from "@/lib/forms/application";
-import { requireBroker } from "@/lib/portal/auth";
+import { requirePlacingBroker } from "@/lib/portal/auth";
 
 export async function submitApplication(formId: string, _prev: SubmitState, formData: FormData): Promise<SubmitState> {
-  const broker = await requireBroker();
+  const broker = await requirePlacingBroker();
   const form = getForm(formId);
   if (!form) return { status: "error", message: "This form isn't available." };
   const answers = answersFromFormData(formData);

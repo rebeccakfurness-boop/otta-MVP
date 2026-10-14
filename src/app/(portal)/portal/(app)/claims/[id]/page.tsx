@@ -24,7 +24,7 @@ export default function ClaimPage({ params }: PageProps<"/portal/claims/[id]">) 
 async function ClaimDetail({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireBroker();
   const { id } = await params;
-  const claim = await getClaim(user.brokerageId, id);
+  const claim = await getClaim(user.scope, id);
   if (!claim) notFound();
   const mailto = `mailto:${site.claimsEmail}?subject=${encodeURIComponent(`${claim.number}: ${claim.insured}`)}`;
 

@@ -6,6 +6,7 @@ import { getForm } from "@/content/forms";
 import { applicationStatus } from "@/lib/applications/labels";
 import { ButtonLink, Card, DetailList, LoadingBlocks, PageHeader, StatusBadge } from "@/components/portal/ui";
 import { getApplication } from "@/lib/applications/store";
+import { canSeeApplication } from "@/lib/portal/scope";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
 import { formatDate } from "@/lib/portal/status";
@@ -23,7 +24,8 @@ export default function ApplicationPage(props: PageProps<"/portal/applications/[
 async function ApplicationDetail({ params }: { params: PageProps<"/portal/applications/[id]">["params"] }) {
   const { id } = await params;
   const broker = await requireBroker();
-  const app = await getApplication(id, broker.brokerageId);
+  const found = await getApplication(id);
+  const app = found && canSeeApplication(broker.scope, found) ? found : null;
   const form = getForm(app?.form);
   if (!app || !form) notFound();
   return (

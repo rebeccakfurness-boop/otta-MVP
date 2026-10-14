@@ -3,7 +3,7 @@ import "server-only";
 // span every brokerage, so only call them after requireAdmin(). Both portals
 // read the same store (demo data now; Neon Postgres fed by manual entry and
 // InsuredHQ later), so they always agree.
-import { allBrokerages, allUsers } from "@/lib/portal/accounts";
+import { allBrokerages, allOrganisations, allUsers } from "@/lib/portal/accounts";
 import { claims, forms, policies, quotes, staff } from "@/lib/portal/demo-data";
 
 export async function findStaffByEmail(email: string) {
@@ -43,7 +43,7 @@ export async function findBrokerageWithUsers(id: string) {
 }
 
 export async function brokerageNames() {
-  return Object.fromEntries((await allBrokerages()).map((b) => [b.id, b.name]));
+  return Object.fromEntries((await allOrganisations()).map((b) => [b.id, b.name]));
 }
 
 export async function listAllForms() {

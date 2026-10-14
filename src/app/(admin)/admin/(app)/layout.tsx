@@ -22,6 +22,7 @@ export default function AdminAppLayout({ children }: { children: React.ReactNode
         { label: "Applications", href: adminPath("/applications"), icon: "apply" },
         { label: "Enquiries", href: adminPath("/enquiries"), icon: "mail" },
         { label: "Brokers", href: adminPath("/brokers"), icon: "users" },
+        { label: "Networks and coverholders", href: adminPath("/organisations"), icon: "network" },
         { label: "Access requests", href: adminPath("/access-requests"), icon: "plus" },
         { label: "Documents", href: adminPath("/documents"), icon: "documents" },
         { label: "Forms", href: adminPath("/forms"), icon: "forms" },

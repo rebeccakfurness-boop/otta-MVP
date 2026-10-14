@@ -4,7 +4,7 @@ import { LoadingBlocks, PageHeader } from "@/components/portal/ui";
 import { onlineForms } from "@/content/forms";
 import { portalPath } from "@/lib/portal/config";
 import { products } from "@/content/products";
-import { requireBroker } from "@/lib/portal/auth";
+import { requirePlacingBroker } from "@/lib/portal/auth";
 import { listForms } from "@/lib/portal/data";
 import { FormsBrowser } from "./FormsBrowser";
 
@@ -21,7 +21,7 @@ export default function FormsPage() {
 }
 
 async function Forms() {
-  await requireBroker();
+  await requirePlacingBroker();
   const forms = await listForms();
   return (
     <>

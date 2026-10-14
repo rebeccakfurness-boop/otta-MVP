@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Icon } from "@/components/portal/Icon";
-import { ButtonLink, Card, PageHeader } from "@/components/portal/ui";
+import { Suspense } from "react";
+import { ButtonLink, Card, LoadingBlocks, PageHeader } from "@/components/portal/ui";
+import { requirePlacingBroker } from "@/lib/portal/auth";
 import { onboarding } from "@/content/onboarding";
 import { portalTraining as copy, trainingWalkthrough } from "@/content/portal-pages";
 
 export const metadata: Metadata = { title: "Training" };
 
 export default function TrainingPage() {
+  return (
+    <Suspense fallback={<LoadingBlocks rows={6} />}>
+      <Training />
+    </Suspense>
+  );
+}
+
+async function Training() {
+  await requirePlacingBroker();
   return (
     <>
       <PageHeader

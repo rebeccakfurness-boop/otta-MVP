@@ -6,7 +6,8 @@ import { getForm } from "@/content/forms";
 import { applicationStatus } from "@/lib/applications/labels";
 import { ButtonLink, Card, CardHeader, EmptyState, LoadingBlocks, PageHeader, StatusBadge } from "@/components/portal/ui";
 import { listApplications, listLinks } from "@/lib/applications/store";
-import { requireBroker } from "@/lib/portal/auth";
+import { requirePlacingBroker } from "@/lib/portal/auth";
+import { canSeeApplication } from "@/lib/portal/scope";
 import { portalPath } from "@/lib/portal/config";
 import { formatDate } from "@/lib/portal/status";
 
@@ -21,8 +22,10 @@ export default function ApplicationsPage() {
 }
 
 async function Applications() {
-  const broker = await requireBroker();
-  const [apps, links] = await Promise.all([listApplications(broker.brokerageId), listLinks(broker.brokerageId)]);
+  const broker = await requirePlacingBroker();
+  const [allApps, allLinks] = await Promise.all([listApplications(broker.brokerageId), listLinks(broker.brokerageId)]);
+  const apps = allApps.filter((a) => canSeeApplication(broker.scope, a));
+  const links = allLinks.filter((l) => canSeeApplication(broker.scope, l));
   const now = new Date().getTime();
   const linkStatus = (l: (typeof links)[number]) =>
     l.completedAt ? "Completed by client" : new Date(l.expiresAt).getTime() < now ? "Link expired" : "Waiting for client";

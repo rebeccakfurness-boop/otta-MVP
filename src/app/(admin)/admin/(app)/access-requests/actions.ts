@@ -2,12 +2,11 @@
 
 import { z } from "zod";
 import { onboarding } from "@/content/onboarding";
-import { site } from "@/content/site";
-import { portalUrl, websiteUrl } from "@/lib/applications/urls";
 import { readAdminSession } from "@/lib/admin/session";
 import { sendEmail } from "@/lib/email";
 import {
   allBrokerages,
+  allUsers,
   createBrokerage,
   createUser,
   emailDomain,
@@ -16,8 +15,7 @@ import {
   saveAccessRequest,
 } from "@/lib/portal/accounts";
 import { findUserByEmail } from "@/lib/portal/data";
-import { createSignInLink } from "@/lib/portal/sign-in-links";
-import type { PortalUser } from "@/lib/portal/types";
+import { sendInvite } from "@/lib/portal/invite";
 
 export type AccessActionState = { ok?: boolean; message?: string; error?: string };
 
@@ -27,14 +25,6 @@ async function staff() {
   return session;
 }
 
-/** Emails a broker their 7 day welcome link. */
-async function sendInvite(user: PortalUser, brokerageName: string) {
-  const token = await createSignInLink("invite", user.id);
-  const url = await portalUrl(`/welcome?token=${encodeURIComponent(token)}`);
-  const guideUrl = await websiteUrl(onboarding.guide.href);
-  const message = onboarding.emails.invite({ name: user.name, brokerage: brokerageName, url, guideUrl, helpEmail: site.email, phone: site.phone });
-  return sendEmail({ to: user.email, senderName: "Otta Broker Portal", subject: message.subject, text: message.text });
-}
 
 /** An existing brokerage by id, or a new one ("new") named in the form. */
 async function chooseBrokerage(formData: FormData, email: string, fallbackName: string) {
@@ -55,7 +45,9 @@ export async function approveRequest(_prev: AccessActionState, formData: FormDat
   if (await findUserByEmail(request.email)) return { error: `${request.email} already has a portal account.` };
   const brokerage = await chooseBrokerage(formData, request.email, request.brokerageName);
   if (!brokerage) return { error: "Choose a brokerage, or enter a name for the new one." };
-  const user = await createUser({ name: request.name, email: request.email, brokerageId: brokerage.id });
+  // New logins start seeing only their own business, unless they are the first at a new brokerage. Otta can change this on the Brokers page.
+  const firstAtBrokerage = !(await allUsers()).some((u) => u.brokerageId === brokerage.id);
+  const user = await createUser({ name: request.name, email: request.email, brokerageId: brokerage.id, sees: firstAtBrokerage ? "brokerage" : "own" });
   await saveAccessRequest({ ...request, status: "approved", decidedAt: new Date().toISOString(), decidedBy: admin.name, userId: user.id, matchedBrokerageId: brokerage.id });
   const emailed = await sendInvite(user, brokerage.name).catch(() => false);
   return { ok: true, message: `${request.name} is set up at ${brokerage.name}. ${sentNote(emailed, request.email)}` };
@@ -95,7 +87,8 @@ export async function inviteBroker(_prev: AccessActionState, formData: FormData)
   if (await findUserByEmail(email)) return { error: `${email} already has a portal account.` };
   const brokerage = await chooseBrokerage(formData, email, "");
   if (!brokerage) return { error: "Choose a brokerage, or enter a name for the new one." };
-  const user = await createUser({ name: parsed.data.name, email, brokerageId: brokerage.id });
+  const firstAtBrokerage = !(await allUsers()).some((u) => u.brokerageId === brokerage.id);
+  const user = await createUser({ name: parsed.data.name, email, brokerageId: brokerage.id, sees: firstAtBrokerage ? "brokerage" : "own" });
   await saveAccessRequest({
     id: `req-${crypto.randomUUID().slice(0, 8)}`,
     name: user.name,

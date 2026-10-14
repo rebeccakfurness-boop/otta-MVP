@@ -31,6 +31,8 @@ export function BrokerDashboard({
   policies,
   now,
   links,
+  placesBusiness = true,
+  brokerageNames,
 }: {
   brokerageName: string;
   firstName: string;
@@ -38,6 +40,10 @@ export function BrokerDashboard({
   policies: Policy[];
   now: Date;
   links: DashboardLinks;
+  /** False for networks and coverholders: no forms shortcuts. */
+  placesBusiness?: boolean;
+  /** Set when the records span several brokerages, so each row names its brokerage. */
+  brokerageNames?: Record<string, string>;
 }) {
   const open = quotes.filter((q) => q.status === "Submitted" || q.status === "In review" || q.status === "Quoted");
   const active = policies.filter((p) => policyStatus(p, now) !== "Expired");
@@ -108,6 +114,8 @@ export function BrokerDashboard({
         )}
       </Card>
 
+      {placesBusiness && (
+      <>
       <h2 className="mt-12 mb-4 font-heading text-[20px] font-semibold tracking-normal text-charcoal">Forms</h2>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {quickForms.map((f) => (
@@ -126,6 +134,8 @@ export function BrokerDashboard({
           </Link>
         ))}
       </div>
+      </>
+      )}
 
       <div className="mt-12 grid gap-6 xl:grid-cols-5">
         <Card className="xl:col-span-3">
@@ -147,7 +157,7 @@ export function BrokerDashboard({
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[15px] font-medium text-charcoal">{q.insured}</p>
                       <p className="truncate text-[13px] text-body">
-                        {q.ref} · {productName(q.productSlug)} · {formatDate(q.submitted)}
+                        {brokerageNames && `${brokerageNames[q.brokerageId]} · `}{q.ref} · {productName(q.productSlug)} · {formatDate(q.submitted)}
                       </p>
                     </div>
                     <StatusBadge status={q.status} />

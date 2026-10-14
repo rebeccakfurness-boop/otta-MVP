@@ -8,7 +8,8 @@ import { portalClaims as copy } from "@/content/portal-pages";
 import { listApplications } from "@/lib/applications/store";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
-import { listClaims } from "@/lib/portal/data";
+import { listClaims, organisationNames } from "@/lib/portal/data";
+import { canPlace, canSeeApplication } from "@/lib/portal/scope";
 import { productName } from "@/lib/portal/products";
 import { formatDate, formatMoney } from "@/lib/portal/status";
 
@@ -26,7 +27,8 @@ const OPEN = ["Lodged", "Being assessed", "Approved"];
 
 async function Claims() {
   const broker = await requireBroker();
-  const [claims, apps] = await Promise.all([listClaims(broker.brokerageId), listApplications(broker.brokerageId)]);
+  const [claims, allApps, names] = await Promise.all([listClaims(broker.scope), listApplications(broker.scope.ownBrokerageId ?? undefined), organisationNames()]);
+  const apps = allApps.filter((a) => canSeeApplication(broker.scope, a));
   const online = apps.filter((a) => getForm(a.form)?.resource === "claim-forms");
   const yearAgo = new Date(new Date().getTime() - 365 * 86_400_000).toISOString().slice(0, 10);
   const recent = claims.filter((c) => c.lodged >= yearAgo);
@@ -42,9 +44,11 @@ async function Claims() {
         title={copy.title}
         description={copy.intro}
         actions={
+          canPlace(broker.scope) && (
           <ButtonLink href={portalPath("/forms?type=claim")} icon="claim">
             {copy.lodge.title}
           </ButtonLink>
+          )
         }
       />
 
@@ -71,7 +75,7 @@ async function Claims() {
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-charcoal">{c.insured}</p>
                         <p className="truncate text-[13px] text-body">
-                          {c.number} · {productName(c.productSlug)} · Lodged {formatDate(c.lodged)}
+                          {broker.scope.spansBrokerages && `${names[c.brokerageId]} · `}{c.number} · {productName(c.productSlug)} · Lodged {formatDate(c.lodged)}
                         </p>
                       </div>
                       {c.claimed !== undefined && <span className="text-[14px] text-charcoal">{formatMoney(c.claimed)}</span>}
@@ -106,6 +110,7 @@ async function Claims() {
           </Card>
         </div>
         <div className="space-y-6">
+          {canPlace(broker.scope) && (
           <Card>
             <CardHeader title={copy.lodge.title} />
             <div className="px-6 py-5">
@@ -115,6 +120,7 @@ async function Claims() {
               </Link>
             </div>
           </Card>
+          )}
           <Card>
             <CardHeader title={copy.emergency.title} />
             <div className="px-6 py-5">

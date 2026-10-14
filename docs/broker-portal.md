@@ -23,8 +23,29 @@ subdomain, **portal.ottainsurance.co.nz**. The website's only link to it is the
 | Training | `/training` | Five getting started steps, an annotated walkthrough (`public/images/portal-training`) and the guide PDF |
 | Help & contact | `/help` | Team emails, phone, how to get portal access |
 
-Brokers only ever see their own brokerage's records: every query in
-`src/lib/portal/data.ts` is scoped to the signed-in brokerage.
+## Who sees what
+
+Every login belongs to an organisation, and Otta decides what it sees. The
+portal never shows a level or role: each person simply sees the right records.
+The rules live in `src/lib/portal/scope.ts` and every read in
+`src/lib/portal/data.ts` goes through them.
+
+| Level | Example | Sees | Can place business |
+| --- | --- | --- | --- |
+| Individual broker | Priya Shah | Only the quotes, policies, claims and applications they placed | Yes |
+| Broker company | Harbour Insurance Brokers | Everything placed by the brokerage's brokers | Yes |
+| Broker network | Steadfast | Everything placed by its member brokerages | No (view only) |
+| Coverholder | Beazley (property), Canopius (travel) | Everything on the products it writes, across all brokers | No (view only) |
+
+- Otta sets a broker's level on their brokerage's page in the admin portal
+  (Brokers), along with which network the brokerage belongs to. Networks,
+  coverholders, their products and their people are managed under
+  **Networks and coverholders**.
+- New logins start as individual brokers (own clients only), except the first
+  person at a new brokerage, who sees the whole brokerage.
+- Levels are read on every request, so a change applies on the next page load.
+- Network and coverholder logins don't see Applications, Forms or Training,
+  can't bind, and lists name the brokerage on each record.
 
 ## Online forms
 
@@ -222,5 +243,14 @@ automatically); without it they are kept in memory and reset on restart.
 
 ## Demo account (prototype only)
 
-Email `demo@harbourbrokers.co.nz`, password `OttaDemo2026!`. All brokerages,
-quotes and policies in the prototype are fictional.
+Password `OttaDemo2026!` for each of these:
+
+| Login | Level |
+| --- | --- |
+| `demo@harbourbrokers.co.nz` (Alex Morgan) | Broker company: all of Harbour Insurance Brokers |
+| `priya@harbourbrokers.co.nz` (Priya Shah) | Individual broker: only her own clients |
+| `steadfast.demo@ottainsurance.co.nz` | Network: Harbour and Southern Alps |
+| `canopius.demo@ottainsurance.co.nz` | Coverholder: corporate travel |
+| `beazley.demo@ottainsurance.co.nz` | Coverholder: rental, social housing and landlord |
+
+All brokerages, quotes and policies in the prototype are fictional.

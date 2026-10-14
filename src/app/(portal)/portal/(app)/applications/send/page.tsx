@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { LoadingBlocks, PageHeader } from "@/components/portal/ui";
 import { getForm, onlineForms } from "@/content/forms";
 import { LINK_DAYS } from "@/lib/applications/client-link";
-import { requireBroker } from "@/lib/portal/auth";
+import { requirePlacingBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
 import { SendLinkForm } from "./SendLinkForm";
 
@@ -18,7 +18,7 @@ export default function SendPage(props: PageProps<"/portal/applications/send">) 
 }
 
 async function Send({ searchParams }: { searchParams: PageProps<"/portal/applications/send">["searchParams"] }) {
-  await requireBroker();
+  await requirePlacingBroker();
   const requested = (await searchParams).form;
   const selected = getForm(typeof requested === "string" ? requested : undefined)?.id ?? onlineForms[0].id;
   return (

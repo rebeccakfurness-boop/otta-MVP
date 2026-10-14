@@ -4,7 +4,8 @@ import { BrokerDashboard } from "@/components/portal/BrokerDashboard";
 import { LoadingBlocks } from "@/components/portal/ui";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
-import { listPolicies, listQuotes } from "@/lib/portal/data";
+import { listPolicies, listQuotes, organisationNames } from "@/lib/portal/data";
+import { canPlace } from "@/lib/portal/scope";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -18,7 +19,7 @@ export default function DashboardPage() {
 
 async function Dashboard() {
   const user = await requireBroker();
-  const [quotes, policies] = await Promise.all([listQuotes(user.brokerageId), listPolicies(user.brokerageId)]);
+  const [quotes, policies, names] = await Promise.all([listQuotes(user.scope), listPolicies(user.scope), organisationNames()]);
   return (
     <BrokerDashboard
       brokerageName={user.brokerageName}
@@ -26,6 +27,8 @@ async function Dashboard() {
       quotes={quotes}
       policies={policies}
       now={new Date()}
+      placesBusiness={canPlace(user.scope)}
+      brokerageNames={user.scope.spansBrokerages ? names : undefined}
       links={{
         quotes: portalPath("/quotes"),
         policies: portalPath("/policies"),

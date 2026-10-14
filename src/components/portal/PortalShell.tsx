@@ -3,10 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Suspense, useState, type ReactNode } from "react";
+import { Suspense, use, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "./Icon";
 
-export type NavItem = { label: string; href: string; icon: IconName };
+export type NavItem = {
+  label: string;
+  href: string;
+  icon: IconName;
+  /** Only shown once the login is known to be allowed it (see hiddenPaths). */
+  restricted?: boolean;
+};
 
 type ShellProps = {
   /** Small label beside the logo, e.g. "Broker Portal". */
@@ -14,21 +20,36 @@ type ShellProps = {
   labelClassName?: string;
   homeHref: string;
   nav: NavItem[];
+  /** Menu links to leave out for this login, resolved on the server. */
+  hiddenPaths?: Promise<string[]>;
   user: ReactNode;
   websiteUrl: string;
   children: ReactNode;
 };
 
-function NavLinks({ nav, homeHref, onNavigate, highlight = true }: { nav: NavItem[]; homeHref: string; onNavigate: () => void; highlight?: boolean }) {
-  return highlight ? (
-    <ActiveNavLinks nav={nav} homeHref={homeHref} onNavigate={onNavigate} />
-  ) : (
-    <NavList nav={nav} homeHref={homeHref} pathname={null} onNavigate={onNavigate} />
-  );
+function NavLinks({
+  nav,
+  homeHref,
+  onNavigate,
+  highlight = true,
+  hiddenPaths,
+}: {
+  nav: NavItem[];
+  homeHref: string;
+  onNavigate: () => void;
+  highlight?: boolean;
+  hiddenPaths?: Promise<string[]>;
+}) {
+  if (!highlight) {
+    // While the login loads, leave out the restricted links rather than flash them.
+    return <NavList nav={nav.filter((i) => !i.restricted)} homeHref={homeHref} pathname={null} onNavigate={onNavigate} />;
+  }
+  return <ActiveNavLinks nav={nav} homeHref={homeHref} onNavigate={onNavigate} hiddenPaths={hiddenPaths} />;
 }
 
-function ActiveNavLinks(props: { nav: NavItem[]; homeHref: string; onNavigate: () => void }) {
-  return <NavList {...props} pathname={usePathname()} />;
+function ActiveNavLinks({ nav, hiddenPaths, ...props }: { nav: NavItem[]; homeHref: string; onNavigate: () => void; hiddenPaths?: Promise<string[]> }) {
+  const hidden = hiddenPaths ? use(hiddenPaths) : [];
+  return <NavList {...props} nav={nav.filter((i) => !hidden.includes(i.href))} pathname={usePathname()} />;
 }
 
 function NavList({ nav, homeHref, pathname, onNavigate }: { nav: NavItem[]; homeHref: string; pathname: string | null; onNavigate: () => void }) {
@@ -62,7 +83,7 @@ function NavList({ nav, homeHref, pathname, onNavigate }: { nav: NavItem[]; home
   );
 }
 
-export function PortalShell({ label, labelClassName = "text-site-teal", homeHref, nav, user, websiteUrl, children }: ShellProps) {
+export function PortalShell({ label, labelClassName = "text-site-teal", homeHref, nav, hiddenPaths, user, websiteUrl, children }: ShellProps) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -77,7 +98,7 @@ export function PortalShell({ label, labelClassName = "text-site-teal", homeHref
       <nav aria-label="Portal" className="flex-1 px-3">
         {/* The current-page highlight reads the URL, so it streams in. */}
         <Suspense fallback={<NavLinks nav={nav} homeHref={homeHref} onNavigate={close} highlight={false} />}>
-          <NavLinks nav={nav} homeHref={homeHref} onNavigate={close} />
+          <NavLinks nav={nav} homeHref={homeHref} onNavigate={close} hiddenPaths={hiddenPaths} />
         </Suspense>
       </nav>
       <div className="border-t border-[#eaeaea] px-6 py-5">

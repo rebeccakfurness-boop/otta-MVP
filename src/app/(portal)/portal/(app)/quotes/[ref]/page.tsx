@@ -15,6 +15,7 @@ import { getBindInstruction } from "@/lib/binds";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
 import { getQuote } from "@/lib/portal/data";
+import { canPlace } from "@/lib/portal/scope";
 import { productName, teamEmail } from "@/lib/portal/products";
 import { formatDate } from "@/lib/portal/status";
 import { BindForm } from "./BindForm";
@@ -34,7 +35,7 @@ export default function QuotePage({
 async function Quote({ params }: { params: Promise<{ ref: string }> }) {
   const user = await requireBroker();
   const { ref } = await params;
-  const quote = await getQuote(user.brokerageId, ref);
+  const quote = await getQuote(user.scope, ref);
   if (!quote) notFound();
   const email = teamEmail(quote.productSlug);
   const bind = await getBindInstruction(quote.ref);
@@ -117,7 +118,8 @@ async function Quote({ params }: { params: Promise<{ ref: string }> }) {
               </div>
             </Card>
           ) : (
-            quote.status === "Quoted" && (
+            quote.status === "Quoted" &&
+            canPlace(user.scope, quote.brokerageId) && (
               <Card>
                 <CardHeader title="Bind this quote" />
                 <BindForm quoteRef={quote.ref} defaultDate={inAWeek} />

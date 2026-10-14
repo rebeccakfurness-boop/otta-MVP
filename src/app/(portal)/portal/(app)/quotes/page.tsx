@@ -4,7 +4,8 @@ import { RecordList } from "@/components/portal/RecordList";
 import { ButtonLink, LoadingBlocks, PageHeader } from "@/components/portal/ui";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
-import { listQuotes } from "@/lib/portal/data";
+import { listQuotes, organisationNames } from "@/lib/portal/data";
+import { canPlace } from "@/lib/portal/scope";
 import { productName } from "@/lib/portal/products";
 import { formatDate } from "@/lib/portal/status";
 
@@ -20,20 +21,23 @@ export default function QuotesPage() {
 
 async function Quotes() {
   const user = await requireBroker();
-  const quotes = await listQuotes(user.brokerageId);
+  const [quotes, names] = await Promise.all([listQuotes(user.scope), organisationNames()]);
+  const span = user.scope.spansBrokerages;
   return (
     <>
       <PageHeader
         title="Quote requests"
         description="Every quote request you've sent to Otta and where it's up to."
         actions={
-          <ButtonLink href={portalPath("/forms?type=proposal")} icon="plus">
-            New quote request
-          </ButtonLink>
+          canPlace(user.scope) && (
+            <ButtonLink href={portalPath("/forms?type=proposal")} icon="plus">
+              New quote request
+            </ButtonLink>
+          )
         }
       />
       <RecordList
-        columns={["Insured", "Reference", "Product", "Submitted"]}
+        columns={span ? ["Insured", "Reference", "Brokerage", "Product", "Submitted"] : ["Insured", "Reference", "Product", "Submitted"]}
         searchPlaceholder="Search insured, reference or product"
         emptyTitle="No quote requests found"
         statuses={[
@@ -47,8 +51,8 @@ async function Quotes() {
           id: q.ref,
           href: portalPath(`/quotes/${q.ref}`),
           status: q.status,
-          search: `${q.insured} ${q.ref} ${productName(q.productSlug)}`,
-          cells: [q.insured, q.ref, productName(q.productSlug), formatDate(q.submitted)],
+          search: `${q.insured} ${q.ref} ${productName(q.productSlug)} ${span ? names[q.brokerageId] : ""}`,
+          cells: span ? [q.insured, q.ref, names[q.brokerageId], productName(q.productSlug), formatDate(q.submitted)] : [q.insured, q.ref, productName(q.productSlug), formatDate(q.submitted)],
         }))}
       />
     </>

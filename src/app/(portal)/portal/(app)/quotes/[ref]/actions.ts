@@ -7,7 +7,8 @@ import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { findBrokerage, getQuote } from "@/lib/portal/data";
 import { productName, teamEmail } from "@/lib/portal/products";
-import { readSession } from "@/lib/portal/session";
+import { readBroker } from "@/lib/portal/auth";
+import { canPlace } from "@/lib/portal/scope";
 
 export type BindState = { ok?: boolean; error?: string };
 
@@ -16,12 +17,12 @@ export async function instructBind(
   _prev: BindState,
   formData: FormData,
 ): Promise<BindState> {
-  const session = await readSession();
+  const session = await readBroker();
   if (!session)
     return { error: "Your session has ended. Please sign in again." };
   const ref = String(formData.get("ref") ?? "");
-  const quote = await getQuote(session.brokerageId, ref);
-  if (!quote) return { error: "We couldn't find that quote." };
+  const quote = await getQuote(session.scope, ref);
+  if (!quote || !canPlace(session.scope, quote.brokerageId)) return { error: "We couldn't find that quote." };
   if (quote.status !== "Quoted")
     return { error: "Only a quote Otta has issued can be bound." };
   if (await getBindInstruction(ref))

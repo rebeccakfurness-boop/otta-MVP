@@ -22,7 +22,7 @@ export default function DocumentsPage() {
 
 async function Documents() {
   const user = await requireBroker();
-  const policies = await listPolicies(user.brokerageId);
+  const policies = await listPolicies(user.scope);
 
   return (
     <>

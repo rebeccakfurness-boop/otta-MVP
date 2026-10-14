@@ -5,6 +5,7 @@ import { ButtonLink, Card, CardHeader, DetailList, DownloadButton, LoadingBlocks
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
 import { getPolicy } from "@/lib/portal/data";
+import { canPlace } from "@/lib/portal/scope";
 import { productName, teamEmail } from "@/lib/portal/products";
 import { formatDate, formatMoney, policyStatus } from "@/lib/portal/status";
 
@@ -21,7 +22,7 @@ export default function PolicyPage({ params }: PageProps<"/portal/policies/[id]"
 async function Policy({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireBroker();
   const { id } = await params;
-  const policy = await getPolicy(user.brokerageId, id);
+  const policy = await getPolicy(user.scope, id);
   if (!policy) notFound();
   const status = policyStatus(policy, new Date());
   const product = policy.productSlug;
@@ -38,6 +39,7 @@ async function Policy({ params }: { params: Promise<{ id: string }> }) {
           </span>
         }
         actions={
+          canPlace(user.scope, policy.brokerageId) && (
           <>
             <ButtonLink href={portalPath(`/forms?type=renewal&product=${product}`)} icon="renew" variant={status === "Renewal due" ? "primary" : "secondary"}>
               Renewal declaration
@@ -46,6 +48,7 @@ async function Policy({ params }: { params: Promise<{ id: string }> }) {
               Lodge a claim
             </ButtonLink>
           </>
+          )
         }
       />
       <div className="grid gap-6 xl:grid-cols-5">

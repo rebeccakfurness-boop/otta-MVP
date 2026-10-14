@@ -4,7 +4,7 @@ import { RecordList } from "@/components/portal/RecordList";
 import { LoadingBlocks, PageHeader } from "@/components/portal/ui";
 import { requireBroker } from "@/lib/portal/auth";
 import { portalPath } from "@/lib/portal/config";
-import { listPolicies } from "@/lib/portal/data";
+import { listPolicies, organisationNames } from "@/lib/portal/data";
 import { productName } from "@/lib/portal/products";
 import { formatDate, policyStatus } from "@/lib/portal/status";
 
@@ -20,13 +20,14 @@ export default function PoliciesPage() {
 
 async function Policies() {
   const user = await requireBroker();
-  const policies = await listPolicies(user.brokerageId);
+  const [policies, names] = await Promise.all([listPolicies(user.scope), organisationNames()]);
+  const span = user.scope.spansBrokerages;
   const now = new Date();
   return (
     <>
       <PageHeader title="Policies" description="Policies bound with Otta for your clients, with their documents and renewal dates." />
       <RecordList
-        columns={["Insured", "Policy number", "Product", "Expires"]}
+        columns={span ? ["Insured", "Policy number", "Brokerage", "Product", "Expires"] : ["Insured", "Policy number", "Product", "Expires"]}
         searchPlaceholder="Search insured, policy number or product"
         emptyTitle="No policies found"
         statuses={[
@@ -39,8 +40,8 @@ async function Policies() {
           id: p.id,
           href: portalPath(`/policies/${p.id}`),
           status: policyStatus(p, now),
-          search: `${p.insured} ${p.number} ${productName(p.productSlug)}`,
-          cells: [p.insured, p.number, productName(p.productSlug), formatDate(p.end)],
+          search: `${p.insured} ${p.number} ${productName(p.productSlug)} ${span ? names[p.brokerageId] : ""}`,
+          cells: span ? [p.insured, p.number, names[p.brokerageId], productName(p.productSlug), formatDate(p.end)] : [p.insured, p.number, productName(p.productSlug), formatDate(p.end)],
         }))}
       />
     </>

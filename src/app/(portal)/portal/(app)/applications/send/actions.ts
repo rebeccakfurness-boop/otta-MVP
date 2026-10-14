@@ -5,7 +5,7 @@ import { getForm } from "@/content/forms";
 import { LINK_DAYS, sealLink } from "@/lib/applications/client-link";
 import { newId, saveLink } from "@/lib/applications/store";
 import { websiteUrl } from "@/lib/applications/urls";
-import { requireBroker } from "@/lib/portal/auth";
+import { requirePlacingBroker } from "@/lib/portal/auth";
 
 export type LinkState =
   | { status: "idle" }
@@ -18,7 +18,7 @@ const schema = z.object({
 });
 
 export async function createClientLink(_prev: LinkState, formData: FormData): Promise<LinkState> {
-  const broker = await requireBroker();
+  const broker = await requirePlacingBroker();
   const raw = {
     form: String(formData.get("form") ?? ""),
     clientName: String(formData.get("clientName") ?? ""),

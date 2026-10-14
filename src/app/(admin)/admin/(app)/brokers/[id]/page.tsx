@@ -9,6 +9,10 @@ import { adminPath } from "@/lib/admin/config";
 import { findBrokerageWithUsers } from "@/lib/admin/data";
 import { productTabs } from "@/lib/admin/products";
 import { listPolicies, listQuotes } from "@/lib/portal/data";
+import { allOrganisations } from "@/lib/portal/accounts";
+import { brokerageScope } from "@/lib/portal/scope";
+import { access } from "@/content/admin-access";
+import { AccessSelect, NetworkSelect } from "../../organisations/AccessForms";
 import { productName } from "@/lib/portal/products";
 import { formatDate, formatMoney, policyStatus } from "@/lib/portal/status";
 
@@ -28,7 +32,8 @@ async function Broker({ params }: { params: Promise<{ id: string }> }) {
   const broker = await findBrokerageWithUsers(id);
   if (!broker) notFound();
   // The same scoped reads the broker portal uses, so this matches their view.
-  const [policies, quotes] = await Promise.all([listPolicies(id), listQuotes(id)]);
+  const [policies, quotes, orgs] = await Promise.all([listPolicies(brokerageScope(id)), listQuotes(brokerageScope(id)), allOrganisations()]);
+  const networks = orgs.filter((o) => o.kind === "network");
   const now = new Date();
   const live = policies.filter((p) => policyStatus(p, now) !== "Expired");
 
@@ -47,16 +52,27 @@ async function Broker({ params }: { params: Promise<{ id: string }> }) {
 
       <Card>
         <CardHeader title="People" />
+        <p className="border-b border-[#eaeaea] px-6 py-3 text-[13px] text-body">{access.levelHelp}</p>
         <ul className="divide-y divide-[#eaeaea]">
           {broker.users.map((u) => (
-            <li key={u.id} className="flex flex-col gap-1 px-6 py-3.5 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-[15px] font-medium text-charcoal">{u.name}</span>
-              <a href={`mailto:${u.email}`} className="text-[14px] text-site-teal hover:underline">
-                {u.email}
-              </a>
+            <li key={u.id} className="flex flex-col gap-2 px-6 py-3.5 lg:flex-row lg:items-center lg:justify-between">
+              <span>
+                <span className="block text-[15px] font-medium text-charcoal">{u.name}</span>
+                <a href={`mailto:${u.email}`} className="text-[13px] text-site-teal hover:underline">
+                  {u.email}
+                </a>
+              </span>
+              <AccessSelect userId={u.id} sees={u.sees ?? "brokerage"} />
             </li>
           ))}
         </ul>
+        <div className="flex flex-col gap-2 border-t border-[#eaeaea] px-6 py-3.5 lg:flex-row lg:items-center lg:justify-between">
+          <span>
+            <span className="block text-[14px] font-medium text-charcoal">{access.network}</span>
+            <span className="text-[13px] text-body">{access.networkHelp}</span>
+          </span>
+          <NetworkSelect brokerageId={id} networkId={broker.networkId} networks={networks.map((n) => ({ id: n.id, name: n.name }))} />
+        </div>
         <p className="border-t border-[#eaeaea] px-6 py-3 text-[13px] text-body">
           SSO domains: {broker.domains.join(", ")}
           {broker.microsoftTenantIds.length === 0 && " · Microsoft tenant not registered yet"}

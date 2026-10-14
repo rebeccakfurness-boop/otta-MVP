@@ -21,6 +21,11 @@ the broker portal, so what staff see is exactly what brokers see.
 - **Brokers**: search brokerages and their users, open a brokerage to see its
   policies and quotes, or open **Broker view** to see the portal exactly as that
   brokerage sees it (read only).
+- **Who sees what in the broker portal**: on a brokerage's page, set each
+  person to their own clients only or the whole brokerage, and choose the
+  brokerage's network. **Networks and coverholders** manages networks,
+  coverholders (and the products they see) and their people. See "Who sees
+  what" in `docs/broker-portal.md`.
 - **Documents** and **Forms**: every policy document by product, and the forms
   library brokers use.
 - **Data sources**: which records came from InsuredHQ and which were entered
