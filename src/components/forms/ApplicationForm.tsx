@@ -8,6 +8,8 @@ import { getForm, type Field, type FormDefinition, type Section } from "@/conten
 import {
   answersFromFormData,
   CONFIRM_FIELD,
+  HONEYPOT_FIELD,
+  withContact,
   gridTotal,
   gridValues,
   isShown,
@@ -31,7 +33,7 @@ type Props = {
   /** Which online form (see src/content/forms). */
   formId: string;
   /** Who is filling it in: a signed-in broker, or a client from a broker's link. */
-  audience: "broker" | "client";
+  audience: "broker" | "client" | "public";
   action: (state: SubmitState, data: FormData) => Promise<SubmitState>;
   defaults: Answers;
   pdfUrl: string;
@@ -52,8 +54,12 @@ export function ApplicationForm(props: Props) {
 }
 
 function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName }: Props) {
-  const form = getForm(formId)!;
-  const isClient = audience === "client";
+  const isPublic = audience === "public";
+  const base = getForm(formId)!;
+  // Direct website applicants also give their contact details.
+  const form = isPublic ? withContact(base) : base;
+  // Clients from a broker's link and direct applicants see the same applicant wording.
+  const isClient = audience === "client" || isPublic;
   const formRef = useRef<HTMLFormElement>(null);
   const [answers, setAnswers] = useState<Answers>(defaults);
   const [showErrors, setShowErrors] = useState(false);
@@ -116,7 +122,9 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
         <p className="mt-3 text-[15px] leading-relaxed text-body">
           Your reference is <strong className="font-semibold text-charcoal">{state.reference}</strong>.{" "}
           {isClient
-            ? `It has gone to ${brokerageName ?? "your broker"} and the Otta team. Your broker will be in touch about the next steps.`
+            ? isPublic
+              ? `It has gone to ${form.sendTo}, who will be in touch with you about the next steps.`
+              : `It has gone to ${brokerageName ?? "your broker"} and the Otta team. Your broker will be in touch about the next steps.`
             : `The completed form has gone to ${form.sendTo} as a PDF, and it is saved in your Applications.`}
         </p>
         {!state.emailed && (
@@ -163,6 +171,15 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
         className="min-w-0"
         aria-describedby="form-status"
       >
+        {isPublic && (
+          // Spam trap: hidden from people, filled in by bots.
+          <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+            <label>
+              Leave this empty
+              <input type="text" name={HONEYPOT_FIELD} tabIndex={-1} autoComplete="off" defaultValue="" />
+            </label>
+          </div>
+        )}
         <div id="form-status" aria-live="polite">
           {showErrors && errorCount > 0 && (
             <p role="alert" className="mb-6 border-l-4 border-site-purple bg-[#f8f1fa] px-4 py-3 text-[14px] text-site-purple">

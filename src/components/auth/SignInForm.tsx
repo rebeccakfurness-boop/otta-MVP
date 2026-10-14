@@ -32,10 +32,14 @@ export function SignInForm({
   const [state, action, pending] = useActionState<SignInState, FormData>(signIn, {});
   const error = state.error ?? ssoErrors[params.get("error") ?? ""];
 
+  // After signing in, go back to the page they asked for (same site only).
+  const next = params.get("next");
+  const destination = next && next.startsWith("/") && !next.startsWith("//") ? next : homeHref;
+
   useEffect(() => {
     // Full page load, so the subdomain routing in src/proxy.ts applies.
-    if (state.ok) window.location.assign(homeHref);
-  }, [state.ok, homeHref]);
+    if (state.ok) window.location.assign(destination);
+  }, [state.ok, destination]);
 
   return (
     <div className="mt-8">

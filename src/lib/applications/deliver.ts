@@ -63,7 +63,12 @@ export async function deliverApplication(d: Delivery) {
     reference,
     brokerage: d.brokerageName,
     completedBy: d.source,
-    submittedBy: viaClient ? `Completed by ${d.submittedBy} for ${d.brokerName}` : `${d.brokerName} (${d.brokerEmail})`,
+    submittedBy:
+      d.source === "public"
+        ? `Direct application from ${d.submittedBy}`
+        : viaClient
+          ? `Completed by ${d.submittedBy} for ${d.brokerName}`
+          : `${d.brokerName} (${d.brokerEmail})`,
   });
   const attachment = { name: `${form.fileName}-${reference}.pdf`, content: pdf };
   // Building applications only: the Otta team also gets the pre-filled
@@ -88,24 +93,29 @@ export async function deliverApplication(d: Delivery) {
   }
   const subject = `${form.shortTitle}: ${name}${detail ? `, ${detail}` : ""} (${reference})`;
 
+  const direct = d.source === "public";
+  const contact = direct ? "the applicant" : "the broker";
   const emailed = await sendEmail({
-    to: env.applicationToEmail,
+    to: env.applicationToEmail || form.teamEmail,
     replyTo: d.brokerEmail,
-    senderName: "Otta Broker Portal",
-    subject,
+    senderName: direct ? "Otta website" : "Otta Broker Portal",
+    subject: direct ? `Direct application: ${subject}` : subject,
     text: [
-      viaClient
-        ? `A ${noun} was completed by ${d.submittedBy} using a link from their broker.`
-        : `A new ${noun} was submitted through the Otta Broker Portal.`,
+      direct
+        ? `A ${noun} was submitted directly on the Otta website (no broker).`
+        : viaClient
+          ? `A ${noun} was completed by ${d.submittedBy} using a link from their broker.`
+          : `A new ${noun} was submitted through the Otta Broker Portal.`,
       ``,
       `Reference: ${reference}`,
-      `Brokerage: ${d.brokerageName}`,
-      `Broker: ${d.brokerName} (${d.brokerEmail})`,
+      ...(direct
+        ? [`Applicant: ${d.submittedBy} (${d.submittedByEmail})`, d.answers.contactPhone ? `Phone: ${d.answers.contactPhone}` : ``]
+        : [`Brokerage: ${d.brokerageName}`, `Broker: ${d.brokerName} (${d.brokerEmail})`]),
       viaClient ? `Completed by: ${d.submittedBy} (${d.submittedByEmail})` : ``,
       ``,
       worksheet
-        ? `The completed form is attached as a PDF, with the underwriting worksheet pre-filled (Excel). Reply to this email to contact the broker.`
-        : `The completed form is attached as a PDF. Reply to this email to contact the broker.`,
+        ? `The completed form is attached as a PDF, with the underwriting worksheet pre-filled (Excel). Reply to this email to contact ${contact}.`
+        : `The completed form is attached as a PDF. Reply to this email to contact ${contact}.`,
       ``,
       ...floodLines,
       summaryText(form, d.answers),

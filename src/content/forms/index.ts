@@ -12,4 +12,8 @@ export { buildingApplication, corporateTravelProposal, landlordProtectApplicatio
 export const onlineForms: FormDefinition[] = [buildingApplication, landlordProtectApplication, corporateTravelProposal, professionalIndemnityProposal, noClaimsDeclaration];
 
 export const getForm = (id: string | undefined) => onlineForms.find((f) => f.id === (id || "building"));
+/** The proposal form for a product, used by "Apply now" on the product page. */
+export const applicationFormFor = (productSlug: string) =>
+  onlineForms.find((f) => (f.resource ?? "proposal-forms") === "proposal-forms" && f.productSlugs.includes(productSlug));
+
 export const formBySlug = (slug: string) => onlineForms.find((f) => f.slug === slug);

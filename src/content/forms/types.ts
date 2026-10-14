@@ -92,6 +92,8 @@ export type FormDefinition = {
   summary: string;
   fileName: string;
   sendTo: string;
+  /** The Otta team inbox completed forms are emailed to. */
+  teamEmail: string;
   /** Products this form belongs to, and the Resources page it is listed on. */
   productSlugs: string[];
   resource?: "proposal-forms" | "renewal-declarations";

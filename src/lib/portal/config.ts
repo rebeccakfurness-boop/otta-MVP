@@ -13,6 +13,11 @@ export function portalPath(path = "/") {
   return path === "/" ? "/portal" : `/portal${path}`;
 }
 
+/** Full link to a portal page from the website (the portal may be on its own subdomain). */
+export function portalUrl(path: string) {
+  return PORTAL_HOST ? `https://${PORTAL_HOST}${path}` : portalPath(path);
+}
+
 /** The website's "Account Login" button points here. */
 export const portalLoginUrl = PORTAL_HOST ? `https://${PORTAL_HOST}/login` : "/portal/login";
 

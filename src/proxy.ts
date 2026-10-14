@@ -52,7 +52,10 @@ export async function proxy(request: NextRequest) {
     }
     const pathApp = apps.find((a) => under(url.pathname, a.prefix));
     if (pathApp && !pathApp.isPublic(url.pathname) && !request.cookies.has(pathApp.cookie)) {
-      return NextResponse.redirect(new URL(`${pathApp.prefix}/login`, url.origin));
+      // Come back to the page they asked for after signing in.
+      const login = new URL(`${pathApp.prefix}/login`, url.origin);
+      if (url.pathname !== pathApp.prefix) login.searchParams.set("next", url.pathname + url.search);
+      return NextResponse.redirect(login);
     }
     return NextResponse.next();
   }
@@ -70,7 +73,9 @@ export async function proxy(request: NextRequest) {
 
   const internalPath = url.pathname === "/" ? hostApp.prefix : `${hostApp.prefix}${url.pathname}`;
   if (!hostApp.isPublic(internalPath) && !request.cookies.has(hostApp.cookie)) {
-    return NextResponse.redirect(new URL("/login", browserOrigin));
+    const login = new URL("/login", browserOrigin);
+    if (url.pathname !== "/") login.searchParams.set("next", url.pathname + url.search);
+    return NextResponse.redirect(login);
   }
   const rewritten = url.clone();
   rewritten.pathname = internalPath;

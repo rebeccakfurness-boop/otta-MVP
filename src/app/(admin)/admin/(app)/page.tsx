@@ -7,6 +7,9 @@ import { products } from "@/content/products";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminPath } from "@/lib/admin/config";
 import { brokerageNames, listAllPolicies, listAllQuotes, listBrokerages } from "@/lib/admin/data";
+import { getForm } from "@/content/forms";
+import { applicationChannel, applicationStatus } from "@/lib/applications/labels";
+import { listApplications } from "@/lib/applications/store";
 import { productName } from "@/lib/portal/products";
 import { daysUntil, formatDate, formatMoney, policyStatus } from "@/lib/portal/status";
 
@@ -30,7 +33,13 @@ const pipeline = [
 
 async function Overview() {
   const admin = await requireAdmin();
-  const [policies, quotes, brokers, names] = await Promise.all([listAllPolicies(), listAllQuotes(), listBrokerages(), brokerageNames()]);
+  const [policies, quotes, brokers, names, applications] = await Promise.all([
+    listAllPolicies(),
+    listAllQuotes(),
+    listBrokerages(),
+    brokerageNames(),
+    listApplications(),
+  ]);
   const now = new Date();
   const statusOf = new Map(policies.map((p) => [p.id, policyStatus(p, now)]));
   const live = policies.filter((p) => statusOf.get(p.id) !== "Expired");
@@ -233,6 +242,36 @@ async function Overview() {
           </ul>
         </Card>
       </div>
+
+      <Card className="mt-6">
+        <CardHeader
+          title="Latest online applications"
+          action={
+            <Link href={adminPath("/applications")} className="text-[12px] font-medium tracking-[0.1em] text-site-teal uppercase hover:underline">
+              View all
+            </Link>
+          }
+        />
+        {applications.length === 0 ? (
+          <EmptyState title="No online applications yet">Applications from brokers, their clients and the website appear here.</EmptyState>
+        ) : (
+          <ul className="divide-y divide-[#eaeaea]">
+            {applications.slice(0, 5).map((a) => (
+              <li key={a.id}>
+                <Link href={adminPath(`/applications/${a.id}`)} className="flex items-center gap-4 px-6 py-4 hover:bg-footer">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[15px] font-medium text-charcoal">{a.insuredName}</p>
+                    <p className="truncate text-[13px] text-body">
+                      {getForm(a.form)?.shortTitle} · {applicationChannel(a, names)} · {formatDate(a.createdAt)}
+                    </p>
+                  </div>
+                  <StatusBadge status={applicationStatus(a)} />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
     </>
   );
 }

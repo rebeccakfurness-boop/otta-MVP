@@ -223,3 +223,36 @@ export function keyNameDefaults(form: FormDefinition, fullName: string): Answers
   const [first, ...rest] = fullName.trim().split(/\s+/);
   return { [fields[0]]: first ?? "", [fields[1]]: rest.join(" ") };
 }
+
+/** Hidden field that only bots fill in, on the public website forms. */
+export const HONEYPOT_FIELD = "website_url";
+
+/**
+ * A form as it is shown to someone applying directly on the website: the same
+ * questions, plus their contact details first (there is no broker to contact).
+ */
+export function withContact(form: FormDefinition): FormDefinition {
+  const [first, ...rest] = form.parts;
+  return {
+    ...form,
+    parts: [
+      {
+        ...first,
+        sections: [
+          {
+            id: "contact",
+            title: "Your Contact Details",
+            intro: "We'll use these to get in touch about your application.",
+            fields: [
+              { kind: "text", name: "contactName", label: "Your name", span: 2 },
+              { kind: "email", name: "contactEmail", label: "Email", span: 2 },
+              { kind: "tel", name: "contactPhone", label: "Phone", span: 2 },
+            ],
+          },
+          ...first.sections,
+        ],
+      },
+      ...rest,
+    ],
+  };
+}

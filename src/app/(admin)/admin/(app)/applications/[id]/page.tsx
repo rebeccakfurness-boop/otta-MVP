@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ApplicationSummary } from "@/components/applications/ApplicationSummary";
 import { getForm } from "@/content/forms";
+import { applicationChannel, applicationStatus } from "@/lib/applications/labels";
+import { withContact } from "@/lib/forms/application";
 import { ButtonLink, Card, DetailList, LoadingBlocks, PageHeader, StatusBadge } from "@/components/portal/ui";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminPath } from "@/lib/admin/config";
@@ -25,7 +27,9 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
   const { id } = await params;
   await requireAdmin();
   const [app, names] = await Promise.all([getApplication(id), brokerageNames()]);
-  const form = getForm(app?.form);
+  const base = getForm(app?.form);
+  // Direct website applications include the applicant's contact details.
+  const form = base && app?.source === "public" ? withContact(base) : base;
   if (!app || !form) notFound();
   return (
     <>
@@ -51,9 +55,9 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
           items={[
             { label: "Form", value: form.shortTitle },
             { label: "Reference", value: app.reference },
-            { label: "Status", value: <StatusBadge status={app.source === "client" ? "Completed by client" : "Sent to Otta"} /> },
-            { label: "Brokerage", value: names[app.brokerageId] ?? app.brokerageId },
-            { label: "Broker", value: `${app.brokerName} (${app.brokerEmail})` },
+            { label: "Status", value: <StatusBadge status={applicationStatus(app)} /> },
+            { label: "Brokerage", value: applicationChannel(app, names) },
+            { label: app.source === "public" ? "Applicant" : "Broker", value: `${app.brokerName} (${app.brokerEmail})` },
             { label: app.source === "client" ? "Completed by" : "Sent by", value: `${app.submittedBy} (${app.submittedByEmail})` },
             { label: "Date", value: formatDate(app.createdAt) },
           ]}

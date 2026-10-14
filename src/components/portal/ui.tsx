@@ -98,6 +98,7 @@ const badgeTones: Record<string, string> = {
   "Waiting for client": "bg-[#fdf3e1] text-[#8a5a00]",
   "Completed by client": "bg-site-teal text-white",
   "Link expired": "bg-[#efefef] text-[#555]",
+  "Direct (website)": "bg-site-blue text-white",
 };
 
 export function StatusBadge({ status }: { status: string }) {

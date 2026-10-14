@@ -15,6 +15,7 @@ export const landlordProtectApplication: FormDefinition = {
     "Apply for Landlord Protect cover for permanent residential tenancies. Fill it in online and send it straight to the Otta team, or download it as a PDF.",
   fileName: "Otta-Landlord-Protect-Application",
   sendTo: "the Otta property team",
+  teamEmail: "real@ottainsurance.co.nz",
   productSlugs: ["landlord-insurance"],
   keyFields: { name: ["firstName", "surname"], detail: "postalAddress" },
   confirm: {
@@ -66,7 +67,7 @@ export const landlordProtectApplication: FormDefinition = {
             },
             { kind: "text", name: "postCode", label: "Post code", span: 2 },
             { kind: "email", name: "email", label: "Applicant's email", span: 3 },
-            { kind: "text", name: "broker", label: "Insurance broker", span: 3 },
+            { kind: "text", name: "broker", label: "Insurance broker", hint: "Leave blank if you are applying without a broker.", optional: true, span: 3 },
             { kind: "date", name: "inceptionDate", label: "Policy inception date", span: 2 },
           ],
         },

@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { adminPath } from "@/lib/admin/config";
 import { brokerageNames } from "@/lib/admin/data";
 import { getForm } from "@/content/forms";
+import { applicationChannel, applicationStatus } from "@/lib/applications/labels";
 import { listApplications, storageMode } from "@/lib/applications/store";
 import { formatDate } from "@/lib/portal/status";
 
@@ -26,7 +27,7 @@ async function Applications() {
     <>
       <PageHeader
         title="Applications"
-        description="Online applications (building insurance and corporate travel) from every broker, including those completed by clients from a broker's link."
+        description="Every online application: from brokers, from clients using a broker's link, and direct applications from the website."
       />
       {storageMode === "memory" && (
         <p className="mb-6 border-l-4 border-site-purple bg-[#f8f1fa] px-4 py-3 text-[13px] text-site-purple">
@@ -49,9 +50,9 @@ async function Applications() {
                     </p>
                   </div>
                   <span className="text-[13px] text-body">
-                    {names[a.brokerageId] ?? a.brokerageId} · {a.brokerName} · {formatDate(a.createdAt)}
+                    {applicationChannel(a, names)} · {a.brokerName} · {formatDate(a.createdAt)}
                   </span>
-                  <StatusBadge status={a.source === "client" ? "Completed by client" : "Sent to Otta"} />
+                  <StatusBadge status={applicationStatus(a)} />
                 </Link>
               </li>
             ))}

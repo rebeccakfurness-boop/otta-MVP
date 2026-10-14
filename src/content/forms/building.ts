@@ -14,6 +14,7 @@ export const buildingApplication: FormDefinition = {
     "Apply for building insurance for a rental or investment property. Fill it in online and send it straight to the Otta team, or download it as a PDF.",
   fileName: "Otta-Building-Insurance-Application",
   sendTo: "the Otta property team",
+  teamEmail: "property@ottainsurance.co.nz",
   productSlugs: ["rental-property-insurance", "social-and-community-housing-insurance"],
   keyFields: { name: "insuredName", detail: "propertyAddress" },
   underwriting: true,
@@ -46,7 +47,7 @@ export const buildingApplication: FormDefinition = {
           id: "agency",
           title: "Agency Details",
           fields: [
-            { kind: "text", name: "broker", label: "Broker", span: 3 },
+            { kind: "text", name: "broker", label: "Broker", hint: "Leave blank if you are applying without a broker.", optional: true, span: 3 },
             {
               kind: "text",
               name: "propertyManager",

@@ -23,6 +23,7 @@ export const corporateTravelProposal: FormDefinition = {
     "Apply for corporate travel insurance for a business and its people. Fill it in online and send it straight to the Otta team, or download it as a PDF.",
   fileName: "Otta-Corporate-Travel-Proposal",
   sendTo: "the Otta travel team",
+  teamEmail: "travel@ottainsurance.co.nz",
   productSlugs: ["corporate-travel-insurance"],
   keyFields: { name: "namedInsured", detail: "address" },
   invite: inviteFor("corporate travel proposal"),

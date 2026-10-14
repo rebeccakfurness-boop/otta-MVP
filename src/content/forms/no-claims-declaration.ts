@@ -14,6 +14,7 @@ export const noClaimsDeclaration: FormDefinition = {
     "Confirm nothing has changed since the proposal form and there have been no losses. Complete it online and send it straight to the Otta team, or download it as a PDF.",
   fileName: "Otta-No-Claims-Material-Changes-Declaration",
   sendTo: "the Otta team",
+  teamEmail: "hello@ottainsurance.co.nz",
   productSlugs: products.map((p) => p.slug),
   resource: "renewal-declarations",
   keyFields: { name: "company", detail: "policyNumber" },

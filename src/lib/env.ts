@@ -6,8 +6,9 @@ import { demoMode } from "@/lib/auth/sealed-session";
 export const env = {
   brevoApiKey: process.env.BREVO_API_KEY,
   enquiryToEmail: process.env.ENQUIRY_TO_EMAIL ?? "hello@ottainsurance.co.nz",
-  // Where online building insurance applications from the broker portal go.
-  applicationToEmail: process.env.APPLICATION_TO_EMAIL ?? "rebecca@tai.co.nz",
+  // Completed online forms go to each form's team inbox (teamEmail in
+  // src/content/forms). Set APPLICATION_TO_EMAIL to send them all to one address.
+  applicationToEmail: process.env.APPLICATION_TO_EMAIL ?? "",
   // While the site runs as a demo, every email (enquiries, client links, broker
   // notices) goes to this one address instead. Set EMAIL_DEMO_TO=off to stop.
   emailDemoTo:

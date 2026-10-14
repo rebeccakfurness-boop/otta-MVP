@@ -37,6 +37,20 @@ the email to Otta with the PDF attached, client links and the Applications
 pages. Only the building application adds the underwriting worksheet and flood
 map links.
 
+**Apply now on the website:** each product page's Apply now button opens
+`/solutions/<product>/apply`, which offers "I'm a broker" (the broker portal,
+straight to that product's form after signing in) or "Apply directly" (the same
+form on the website at `/solutions/<product>/apply/online`, with the
+applicant's contact details first). Direct applications are saved with source
+`public`, appear in the admin portal (Overview and Applications) as "Direct
+(website)", and are emailed to the form's team inbox. Products without an
+online form offer the broker portal or the contact page.
+
+Completed forms go to each form's `teamEmail` (property@, real@ for Landlord
+Protect, travel@, liability@, hello@ for declarations), unless
+`APPLICATION_TO_EMAIL` is set. In demo mode every email still goes to
+`EMAIL_DEMO_TO`.
+
 **Adding a form:** write its questions as data in `src/content/forms/` (see
 `corporate-travel.ts`), add it to `onlineForms` in `src/content/forms/index.ts`
 and list the products it belongs to in `productSlugs` (that links the blank PDF

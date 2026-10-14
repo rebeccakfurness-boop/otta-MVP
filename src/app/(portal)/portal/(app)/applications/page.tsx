@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CopyButton } from "@/components/applications/CopyButton";
 import { getForm } from "@/content/forms";
+import { applicationStatus } from "@/lib/applications/labels";
 import { ButtonLink, Card, CardHeader, EmptyState, LoadingBlocks, PageHeader, StatusBadge } from "@/components/portal/ui";
 import { listApplications, listLinks } from "@/lib/applications/store";
 import { requireBroker } from "@/lib/portal/auth";
@@ -64,7 +65,7 @@ async function Applications() {
                     <span className="text-[13px] text-body">
                       {a.source === "client" ? `Completed by ${a.submittedBy}` : `Sent by ${a.submittedBy}`} · {formatDate(a.createdAt)}
                     </span>
-                    <StatusBadge status={a.source === "client" ? "Completed by client" : "Sent to Otta"} />
+                    <StatusBadge status={applicationStatus(a)} />
                   </Link>
                 </li>
               ))}

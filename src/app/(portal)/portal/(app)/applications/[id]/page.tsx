@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ApplicationSummary } from "@/components/applications/ApplicationSummary";
 import { getForm } from "@/content/forms";
+import { applicationStatus } from "@/lib/applications/labels";
 import { ButtonLink, Card, DetailList, LoadingBlocks, PageHeader, StatusBadge } from "@/components/portal/ui";
 import { getApplication } from "@/lib/applications/store";
 import { requireBroker } from "@/lib/portal/auth";
@@ -42,7 +43,7 @@ async function ApplicationDetail({ params }: { params: PageProps<"/portal/applic
           items={[
             { label: "Form", value: form.shortTitle },
             { label: "Reference", value: app.reference },
-            { label: "Status", value: <StatusBadge status={app.source === "client" ? "Completed by client" : "Sent to Otta"} /> },
+            { label: "Status", value: <StatusBadge status={applicationStatus(app)} /> },
             { label: app.source === "client" ? "Completed by" : "Sent by", value: `${app.submittedBy} (${app.submittedByEmail})` },
             { label: "Date", value: formatDate(app.createdAt) },
             { label: "Broker", value: app.brokerName },

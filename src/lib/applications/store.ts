@@ -10,7 +10,11 @@ import type { Answers } from "@/lib/forms/application";
 // The client link itself never depends on storage (it is a sealed token), so a
 // client can always complete the form and the email always goes out.
 
-export type ApplicationSource = "broker" | "client";
+/** Who sent it: a broker, a broker's client from a link, or someone applying directly on the website. */
+export type ApplicationSource = "broker" | "client" | "public";
+
+/** Direct website applications have no brokerage. */
+export const DIRECT_BROKERAGE = "direct";
 
 export type Application = {
   id: string;

@@ -14,6 +14,7 @@ export const professionalIndemnityProposal: FormDefinition = {
     "Apply for professional indemnity insurance (a claims made policy). Fill it in online and send it straight to the Otta team, or download it as a PDF.",
   fileName: "Otta-Professional-Indemnity-Proposal",
   sendTo: "the Otta liability team",
+  teamEmail: "liability@ottainsurance.co.nz",
   productSlugs: ["liability-insurance"],
   keyFields: { name: "namedInsured", detail: "principalAddress" },
   invite: inviteFor("professional indemnity proposal"),

@@ -47,6 +47,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Address suggestions**: currently free OpenStreetMap data, which can miss newer addresses. For production, sign up to Addressfinder (addressfinder.nz) and set `ADDRESSFINDER_KEY` and `ADDRESSFINDER_SECRET` in Vercel.
 - **Underwriting worksheet**: confirm the levy rates and caps on the Rates sheet (FSL 0.1074 per $100 was taken from the V13 sheet; NHI 0.16 per $100 capped at $300,000; FSL cap $100,000) and the binder number and dates. Premium per unit is left for the underwriter because the V13 rating tables weren't supplied: send the original .xlsx to bring its rating formulas across. Broker street address, city and post code stay blank until brokerage addresses are stored.
 - **Flood map links** (`src/content/flood-maps.ts`): confirm each council link. Regions without their own link (Bay of Plenty, Gisborne, Hawke's Bay, Taranaki, Wellington, Marlborough, West Coast, Southland) currently point to the Natural Hazards Portal council directory; add their direct viewer links.
+- **Team inboxes**: online forms are emailed to property@, real@ (Landlord Protect), travel@, liability@ and hello@ottainsurance.co.nz. Make sure these mailboxes exist before turning off demo email.
 - Have the declaration and duty of disclosure wording on the application form reviewed for Otta (it is carried over from the TAI form).
 
 ## Admin portal

@@ -67,7 +67,7 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
               )}
             </div>
             <div className="mt-10 flex flex-wrap gap-[18px]">
-              <Link href={`/contact?product=${product.slug}`} className={`${smallButton} bg-site-teal hover:bg-[#4fa99c]`}>
+              <Link href={`/solutions/${product.slug}/apply`} className={`${smallButton} bg-site-teal hover:bg-[#4fa99c]`}>
                 Apply now
               </Link>
               <Link href={policyWording} className={`${smallButton} bg-[#777] hover:bg-charcoal`}>

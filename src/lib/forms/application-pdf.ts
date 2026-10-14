@@ -34,7 +34,7 @@ type Fonts = { regular: PDFFont; semibold: PDFFont; heading: PDFFont };
 export async function buildApplicationPdf(
   form: FormDefinition,
   answers: Answers,
-  meta: { reference?: string; brokerage?: string; submittedBy?: string; completedBy?: "broker" | "client" } = {},
+  meta: { reference?: string; brokerage?: string; submittedBy?: string; completedBy?: "broker" | "client" | "public" } = {},
 ) {
   const doc = await PDFDocument.create();
   doc.registerFontkit(fontkit);
@@ -90,7 +90,7 @@ export async function buildApplicationPdf(
       w.signOff(part.signOff, answers, blank);
       if (!blank && answers[CONFIRM_FIELD] === "on") {
         const note =
-          meta.completedBy === "client"
+          meta.completedBy === "client" || meta.completedBy === "public"
             ? "Completed online by the applicant, who confirmed they have read and agree to the declaration."
             : "Submitted online through the Otta Broker Portal. The broker confirmed the applicant has read and agreed to the declaration.";
         w.paragraph(note, {
