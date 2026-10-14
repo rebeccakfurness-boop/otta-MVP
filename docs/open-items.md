@@ -14,7 +14,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Our Team**: all twelve members are listed; photos still needed for Shabnam, Michelle, Jemma, Gaby, Carmel and Jen (`src/content/team.ts`, `public/team/`).
 - **Case Studies**: copy and photos.
 - **Hero video**: `public/media/hero.mp4` is a watermarked, low-resolution iStock preview (iStock 1390591506) used as a placeholder. License the full clip (or replace it) and swap both `hero.mp4` and `hero-poster.jpg` before launch.
-- **Photography**: product pages, the home page product columns, property banner and About Us banner now use real photos (`public/images/`, set per product in `products.ts`). Still placeholders: the case study images and the About us page values. Confirm the stock photo licences.
+- **Photography**: product pages, the home page product columns, property banner and About Us banner now use real photos (`public/images/`, set per product in `products.ts`). Still placeholders: the Case Studies page images and the About us page values (the home page case study uses a stock photo for now). Confirm the stock photo licences.
 - **Home page case study**: heading, summary and copy are placeholders.
 - **Documents**: PDFs for fact sheets, policy wordings, proposal forms, renewal declarations and claim forms.
 - **Product page "Why choose Otta" text**: the paragraph under each statement is draft copy drawn from the product summaries (`statementDetails` in `products.ts`).

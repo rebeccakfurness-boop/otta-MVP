@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HeroVideo } from "@/components/HeroVideo";
-import { ImagePlaceholder, SquareButton } from "@/components/Mockup";
+import { SquareButton } from "@/components/Mockup";
 import { getProduct } from "@/content/products";
 
 // Home page columns. Landlord has its own column (it is sold through property
@@ -167,7 +167,16 @@ export default function Home() {
                 <SquareButton href="/about-us/case-studies">View the case study</SquareButton>
               </div>
             </div>
-            <ImagePlaceholder label="Case study" className="aspect-[3/2]" />
+            <div className="relative aspect-[3/2] overflow-hidden">
+              <Image
+                src="/images/personal-accident-care.jpg"
+                alt="A carer pushing a smiling man in a wheelchair outdoors"
+                fill
+                sizes="(min-width: 768px) 500px, 100vw"
+                className="object-cover"
+                style={{ objectPosition: "40% center" }}
+              />
+            </div>
           </div>
         </div>
       </section>
