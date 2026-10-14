@@ -5,7 +5,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { BlendMode, PDFDocument, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import type { Field, FormDefinition } from "@/content/forms";
 import { site } from "@/content/site";
-import { CONFIRM_FIELD, displayValue, gridValues, moneyText, unitRows, visibleSections, type Answers, type GridField } from "./application";
+import { CONFIRM_FIELD, displayValue, gridTotal, gridValues, moneyText, unitRows, visibleSections, type Answers, type GridField } from "./application";
 
 // Draws an online form (building application, travel proposal, ...) as an A4 PDF in Otta branding.
 // Used for the broker's "Download PDF" button and the copy attached to the
@@ -360,8 +360,12 @@ class Writer {
       });
       this.y -= rowH;
     };
-    for (const row of rows) drawRow(row.label, field.columns.map((c) => (blank ? "" : row.values[c.key])));
-    if (field.total) drawRow("Total", field.columns.map((c) => (blank || totals[c.key] === null ? "" : String(totals[c.key]))), true);
+    const cell = (v: string) => {
+      const n = Number(v.replace(/[$,\s]/g, ""));
+      return field.money && v && Number.isFinite(n) ? gridTotal(field, n) : v;
+    };
+    for (const row of rows) drawRow(row.label, field.columns.map((c) => (blank ? "" : cell(row.values[c.key]))));
+    if (field.total) drawRow("Total", field.columns.map((c) => (blank ? "" : gridTotal(field, totals[c.key]))), true);
     this.y -= 10;
   }
 

@@ -4,7 +4,6 @@ Placeholders in the prototype that need real content or decisions. Search the co
 `TODO(` to find each one.
 
 ## Content (Stage 2)
-- **Claims phone number**: source copy says "0800 xxx xxxx" (`src/content/site.ts`).
 - **Claims page**: the intro paragraph and claim forms blurb are draft copy; the original mockup used admin@tai.co.nz, now the Otta claims address.
 - **Contact page**: intro paragraph drawn from the product copy.
 - **Claims email**: domain confirmed as `ottainsurance.co.nz`; the claims address `claims@ottainsurance.co.nz` is assumed and needs confirming. Brevo must be set up to send from `no-reply@ottainsurance.co.nz` (or change `ENQUIRY_FROM_EMAIL`).
@@ -16,7 +15,8 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Hero video**: `public/media/hero.mp4` is a watermarked, low-resolution iStock preview (iStock 1390591506) used as a placeholder. License the full clip (or replace it) and swap both `hero.mp4` and `hero-poster.jpg` before launch.
 - **Photography**: product pages, the home page product columns, property banner and About Us banner now use real photos (`public/images/`, set per product in `products.ts`). Still placeholders: the Case Studies page images and the About us page values (the home page case study uses a stock photo for now). Confirm the stock photo licences.
 - **Home page case study**: heading, summary and copy are placeholders.
-- **Documents**: policy wordings are in (rebranded from TAI, `public/documents/policy-wordings/`, listed in `src/content/documents.ts`). Still needed: fact sheets, claim forms, and proposal forms for Personal Accident and Liability. The Landlord Protect application and the No Claims / Material Changes Declaration (Renewal Declarations) are online forms with PDF downloads.
+- **Documents**: policy wordings are in (rebranded from TAI, `public/documents/policy-wordings/`, listed in `src/content/documents.ts`). Still needed: fact sheets, claim forms, and a proposal form for Personal Accident. The Landlord Protect application and the No Claims / Material Changes Declaration (Renewal Declarations) are online forms with PDF downloads.
+- **Professional Indemnity proposal**: the TAI form asked "Does any one client account for more than 25% of your annual income?" twice; the second (under Contractual Agreements, followed by "if yes, please provide a copy") is worded online as "Do you use a standard contractual agreement with your clients?". Please confirm.
 - **Policy wordings, please check before publishing**: the legal wording is unchanged and still names Insurance Wholesale Limited as coverholder. Contact details were changed as follows and need confirming: TAIClaims@gbtpa.co.nz (Gallagher Bassett) to claims@ottainsurance.co.nz; admin@, claims@ and craigf@tai.co.nz to the same names @ottainsurance.co.nz; www.tai.co.nz to www.ottainsurance.co.nz; the cover address (3 Morton Street) to 3/527A Rosebank Road. The Property wording is linked to Rental Property, Social and Community Housing and Landlord; the Inbound Workers wording to Corporate Travel.
 - **Product page "Why choose Otta" text**: the paragraph under each statement is draft copy drawn from the product summaries (`statementDetails` in `products.ts`).
 - **Coverage taglines**: only Corporate Travel had one in the mockup ("Smart organisations don't leave home without Otta onboard."); the others are drafts in `products.ts`.

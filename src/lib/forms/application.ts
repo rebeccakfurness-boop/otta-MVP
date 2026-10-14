@@ -55,9 +55,16 @@ export function visibleFields(form: FormDefinition, answers: Answers) {
   return [...visibleSections(form, answers).flatMap((s) => s.fields), ...signOffFields(form)];
 }
 
-const num = (v: string | undefined) => (v && Number.isFinite(Number(v)) ? Number(v) : 0);
+const clean = (v: string | undefined) => (v ?? "").replace(/[$,\s]/g, "");
+const num = (v: string | undefined) => (clean(v) && Number.isFinite(Number(clean(v))) ? Number(clean(v)) : 0);
 
 /** A grid's rows with their values, plus column totals. */
+/** A grid total as it should be shown (dollars for money grids). */
+export function gridTotal(field: GridField, value: number | null) {
+  if (value === null) return "";
+  return field.money ? value.toLocaleString("en-NZ", { style: "currency", currency: "NZD", maximumFractionDigits: 0 }) : String(value);
+}
+
 export function gridValues(field: GridField, answers: Answers) {
   const rows = field.rows.map((r) => ({
     ...r,
@@ -113,7 +120,7 @@ export function validate(form: FormDefinition, answers: Answers): Errors {
       for (const row of grid.rows) {
         for (const col of field.columns) {
           const key = `${field.name}.${row.key}.${col.key}`;
-          if (row.values[col.key] && !/^\d+(\.\d+)?$/.test(row.values[col.key])) errors[key] = "Enter a number";
+          if (row.values[col.key] && !/^\d+(\.\d+)?$/.test(clean(row.values[col.key]))) errors[key] = "Enter a number";
         }
       }
       continue;
@@ -184,7 +191,7 @@ export function summaryText(form: FormDefinition, answers: Answers) {
         }
         if (field.total) {
           const totalled = field.columns.filter((c) => grid.totals[c.key] !== null);
-          lines.push(`    Total: ${totalled.map((c) => `${c.label} ${grid.totals[c.key]}`).join(", ")}`);
+          lines.push(`    Total: ${totalled.map((c) => `${c.label} ${gridTotal(field, grid.totals[c.key])}`).join(", ")}`);
         }
       } else if (field.kind === "units") {
         unitRows(field, answers).forEach((row) => {

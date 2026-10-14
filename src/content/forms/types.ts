@@ -39,7 +39,10 @@ export type Field =
   /** A fixed table of numbers (rows by columns) with a totals row, e.g. travel days by region. */
   | (Base & { kind: "grid"; rows: { key: string; label: string }[]; columns: { key: string; label: string }[];
       /** Add a totals row: true for every column, or the keys of the columns to total. */
-      total?: boolean | string[] });
+      total?: boolean | string[];
+      /** Show totals as dollars. */
+      money?: boolean;
+    });
 
 export type TextBlock = {
   heading?: string;

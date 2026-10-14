@@ -13,8 +13,7 @@ export const site = {
   phone: "0800 003 545",
   email: "hello@ottainsurance.co.nz",
   claimsEmail: "claims@ottainsurance.co.nz",
-  // TODO(stage 2): claims phone number is "0800 xxx xxxx" in the source copy.
-  claimsPhone: "0800 XXX XXXX",
+  claimsPhone: "0800 003 545",
   address: ["Level 1", "3/527A Rosebank Road", "Avondale, Auckland 1026", "New Zealand"],
   // The "Account Login" button: the broker portal on its own subdomain.
   portalUrl: portalLoginUrl,

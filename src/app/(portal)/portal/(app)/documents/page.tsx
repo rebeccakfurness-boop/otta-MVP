@@ -64,7 +64,7 @@ async function Documents() {
               <div className="flex flex-wrap gap-2">
                 {wordingsFor(p.slug).length === 0 && <DownloadButton label="Policy wording" />}
                 {wordingsFor(p.slug).map((d) => (
-                  <DownloadButton key={d.file} file={d.file} label={wordingsFor(p.slug).length > 1 ? d.title.replace(/ Insurance Policy$| Policy$/, "") : "Policy wording"} />
+                  <DownloadButton key={d.file} file={d.file} label={wordingsFor(p.slug).length > 1 ? d.title.replace(/ Insurance Policy| Policy/, "") : "Policy wording"} />
                 ))}
                 <DownloadButton label="Fact sheet" />
               </div>

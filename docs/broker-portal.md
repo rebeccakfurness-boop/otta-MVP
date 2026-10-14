@@ -29,6 +29,7 @@ Applications page):
 | Building Insurance Application | `/forms/building-application` | `/apply/building/...` | `/downloads/building-application.pdf` |
 | Landlord Protect Application | `/forms/landlord-protect-application` | `/apply/landlord-protect/...` | `/downloads/landlord-protect-application.pdf` |
 | Corporate Travel Proposal | `/forms/corporate-travel-proposal` | `/apply/corporate-travel/...` | `/downloads/corporate-travel-proposal.pdf` |
+| Professional Indemnity Proposal | `/forms/professional-indemnity-proposal` | `/apply/professional-indemnity/...` | `/downloads/professional-indemnity-proposal.pdf` |
 | No Claims / Material Changes Declaration | `/forms/no-claims-declaration` | `/apply/no-claims-declaration/...` | `/downloads/no-claims-declaration.pdf` |
 
 Every form works the same way: validation, the branded PDF (blank or filled),

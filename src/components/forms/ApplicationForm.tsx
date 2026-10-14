@@ -8,6 +8,7 @@ import { getForm, type Field, type FormDefinition, type Section } from "@/conten
 import {
   answersFromFormData,
   CONFIRM_FIELD,
+  gridTotal,
   gridValues,
   isShown,
   MAX_UNIT_ROWS,
@@ -629,7 +630,7 @@ function GridInput({ field, answers, errors }: { field: GridField; answers: Answ
                 </th>
                 {field.columns.map((c) => (
                   <td key={c.key} className="px-4 py-2.5" aria-live="polite">
-                    {totals[c.key] ?? ""}
+                    {gridTotal(field, totals[c.key])}
                   </td>
                 ))}
               </tr>

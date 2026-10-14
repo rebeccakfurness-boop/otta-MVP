@@ -41,6 +41,21 @@ export const policyWordings: ProductDocument[] = [
     file: wording("Otta-Liability-Policy.pdf"),
     productSlugs: ["liability-insurance"],
   },
+  {
+    title: "Liability Policy, Technology",
+    file: wording("Otta-Liability-Policy-Technology.pdf"),
+    productSlugs: ["liability-insurance"],
+  },
+  {
+    title: "Professional Indemnity Policy",
+    file: wording("Otta-Professional-Indemnity-Policy.pdf"),
+    productSlugs: ["liability-insurance"],
+  },
+  {
+    title: "Professional Indemnity Policy, Recruitment",
+    file: wording("Otta-Professional-Indemnity-Policy-Recruitment.pdf"),
+    productSlugs: ["liability-insurance"],
+  },
 ];
 
 export const wordingsFor = (productSlug: string) => policyWordings.filter((d) => d.productSlugs.includes(productSlug));

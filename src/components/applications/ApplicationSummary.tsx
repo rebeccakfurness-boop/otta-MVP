@@ -1,6 +1,6 @@
 import { Card, CardHeader } from "@/components/portal/ui";
 import type { FormDefinition } from "@/content/forms";
-import { displayValue, gridValues, moneyText, signOffFields, unitRows, visibleSections, type Answers } from "@/lib/forms/application";
+import { displayValue, gridTotal, gridValues, moneyText, signOffFields, unitRows, visibleSections, type Answers } from "@/lib/forms/application";
 
 /** Read-only answers of a submitted application, section by section. */
 export function ApplicationSummary({ form, answers }: { form: FormDefinition; answers: Answers }) {
@@ -46,7 +46,7 @@ export function ApplicationSummary({ form, answers }: { form: FormDefinition; an
                                 <td className="py-2 text-charcoal">Total</td>
                                 {field.columns.map((c) => (
                                   <td key={c.key} className="py-2 text-charcoal">
-                                    {grid.totals[c.key] ?? ""}
+                                    {gridTotal(field, grid.totals[c.key])}
                                   </td>
                                 ))}
                               </tr>
