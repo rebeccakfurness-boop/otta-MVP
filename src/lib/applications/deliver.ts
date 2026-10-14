@@ -1,11 +1,14 @@
 import "server-only";
+import { after } from "next/server";
 import type { FormDefinition } from "@/content/forms";
 import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 import { keyName, summaryText, type Answers } from "@/lib/forms/application";
 import { buildApplicationPdf } from "@/lib/forms/application-pdf";
+import { generateBrief } from "@/lib/uw/brief";
 import { buildWorksheet, propertyLocation } from "@/lib/uw/worksheet";
-import { getLink, newId, newReference, saveApplication, saveLink, type ApplicationSource } from "./store";
+import { getLink, newId, newReference, saveApplication, saveLink, type Application, type ApplicationSource } from "./store";
+import { adminUrl } from "./urls";
 
 type Delivery = {
   form: FormDefinition;
@@ -38,7 +41,7 @@ export async function deliverApplication(d: Delivery) {
   const createdAt = new Date().toISOString();
   const viaClient = d.source === "client";
 
-  await saveApplication({
+  const application: Application = {
     id,
     form: form.id,
     reference,
@@ -53,7 +56,13 @@ export async function deliverApplication(d: Delivery) {
     linkId: d.linkId,
     answers: d.answers,
     createdAt,
-  });
+  };
+  await saveApplication(application);
+  // Building applications: the underwriting assistant writes its brief in the
+  // background, ready for the underwriter in the admin portal.
+  if (form.underwriting) {
+    after(() => generateBrief(application).catch((error) => console.error("[uw-brief] failed", error)));
+  }
   if (d.linkId) {
     const link = await getLink(d.linkId);
     if (link) await saveLink({ ...link, completedAt: createdAt, applicationId: id });
@@ -83,6 +92,11 @@ export async function deliverApplication(d: Delivery) {
   if (form.underwriting) {
     const location = propertyLocation(d.answers);
     floodLines = [
+      `UNDERWRITING ASSISTANT`,
+      `  The AI brief (red flags, missing information, a draft email to the broker) and copy-and-paste blocks for the V13 worksheet:`,
+      `  ${await adminUrl(`/applications/${id}`)}`,
+      `  Rating region: ${location.rating.region || "not found, choose it on the worksheet"}`,
+      ``,
       `FLOOD MAPPING`,
       `  Property: ${detail}${location.region ? ` (${location.region})` : ""}`,
       `  Complete flood map (national): ${location.flood.national.url}`,

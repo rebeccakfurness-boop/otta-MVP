@@ -3,10 +3,13 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import ExcelJS from "exceljs";
 import { floodMapsFor } from "@/content/flood-maps";
+import { ratingRegions } from "@/content/rating-regions";
 import { buildingApplication } from "@/content/forms";
 import { displayValue, unitRows, visibleSections, type Answers } from "@/lib/forms/application";
 import { nzRegion } from "@/lib/nz-region";
 import { allBrokerages, allUsers } from "@/lib/portal/accounts";
+import { ratingRegion } from "./rating-region";
+import { splitAddress } from "./split-address";
 import type { Brokerage, PortalUser } from "@/lib/portal/types";
 
 // The property underwriting worksheet (UW Notes, V13, 1 July 2026), pre-filled
@@ -21,31 +24,21 @@ import type { Brokerage, PortalUser } from "@/lib/portal/types";
 const TEMPLATE = path.join(process.cwd(), "src/lib/uw/uw-worksheet-template.xlsx");
 const LOGO = path.join(process.cwd(), "public/brand/otta-logo.png");
 
+export { splitAddress };
+
 export type WorksheetMeta = { reference: string; brokerageName: string; brokerName: string; createdAt: string };
 
-/** Splits "12 Rata Street, Mount Eden, Auckland 1024" into its parts. */
-export function splitAddress(address = "") {
-  const parts = address.split(",").map((p) => p.trim()).filter(Boolean);
-  let postcode = "";
-  const m = /^(.*?)\s*(\d{4})$/.exec(parts.at(-1) ?? "");
-  if (m) {
-    postcode = m[2];
-    if (m[1]) parts[parts.length - 1] = m[1];
-    else parts.pop();
-  }
-  return {
-    street: parts[0] ?? "",
-    suburb: parts.length > 2 ? parts.slice(1, -1).join(", ") : "",
-    city: parts.length > 1 ? parts.at(-1)! : "",
-    postcode,
-  };
-}
+/** Extras from the underwriting assistant: the underwriter's chosen rating region and the brief's notes. */
+export type WorksheetExtras = { ratingRegion?: string; underwriterNotes?: string };
 
-/** Region and flood map links for the insured property. */
+/**
+ * Where the insured property is: its council region (for the flood maps) and
+ * its rating region (the worksheet's Region dropdown).
+ */
 export function propertyLocation(answers: Answers) {
   const loc = splitAddress(answers.propertyAddress);
   const region = nzRegion(`${loc.suburb}, ${loc.city}`, loc.postcode);
-  return { ...loc, region, flood: floodMapsFor(region) };
+  return { ...loc, region, rating: ratingRegion(loc), flood: floodMapsFor(region) };
 }
 
 const money = (v?: string) => {
@@ -57,7 +50,7 @@ const isoDate = (v?: string) => (v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? new Date(`
 type CellValue = string | number | Date | null;
 
 /** The yellow boxes the application fills, by cell. */
-export function worksheetValues(a: Answers, meta: WorksheetMeta): Record<string, CellValue> {
+export function worksheetValues(a: Answers, meta: WorksheetMeta, extras: WorksheetExtras = {}): Record<string, CellValue> {
   const loc = propertyLocation(a);
   const multi = a.isMultiUnit === "yes";
   const notes = underwritingNotes(a, meta).split("\n");
@@ -72,12 +65,13 @@ export function worksheetValues(a: Answers, meta: WorksheetMeta): Record<string,
     C32: loc.suburb,
     C33: loc.city,
     C34: loc.postcode,
-    C35: loc.region,
+    C35: extras.ratingRegion || loc.rating.region,
     C37: money(multi && a.unitsSumInsured ? a.unitsSumInsured : a.sumInsured),
     C38: Number(multi ? a.unitsTotal : a.selfContainedUnits) || null,
     C56: money(a.chattelsValue),
     // Notes run down the eight Location 1 note boxes.
     ...Object.fromEntries(Array.from({ length: 8 }, (_, i) => [`C${41 + i}`, i < 7 ? (notes[i] ?? null) : notes.slice(7).join(" ") || null])),
+    B86: extras.underwriterNotes || null,
   };
 }
 
@@ -125,8 +119,8 @@ export function underwritingNotes(a: Answers, meta: WorksheetMeta) {
 
 const exists = (p: string) => access(p).then(() => true, () => false);
 
-export async function buildWorksheet(answers: Answers, meta: WorksheetMeta) {
-  const values = worksheetValues(answers, meta);
+export async function buildWorksheet(answers: Answers, meta: WorksheetMeta, extras: WorksheetExtras = {}) {
+  const values = worksheetValues(answers, meta, extras);
   const wb = new ExcelJS.Workbook();
   if (await exists(TEMPLATE)) {
     await wb.xlsx.load((await readFile(TEMPLATE)) as unknown as ExcelJS.Buffer);
@@ -379,7 +373,7 @@ async function buildOttaWorksheet(
 
   band(84, "Underwriter use only: notes and rationale");
   ws.mergeCells("B86:F93");
-  box("B86", "yellow").alignment = { wrapText: true, vertical: "top" };
+  box("B86", "yellow", v.B86).alignment = { wrapText: true, vertical: "top" };
 
   // Flood mapping links for this address
   const loc = propertyLocation(answers);
@@ -407,6 +401,25 @@ async function buildOttaWorksheet(
     const c = set(addr, { formula }, { numFmt: fmt });
     c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: C.yellow } };
   }
+
+  // Region dropdowns: the V13 rating regions, listed on their own sheet.
+  const lists = wb.addWorksheet("Lists", { views: [{ showGridLines: false }] });
+  lists.getColumn(1).width = 34;
+  lists.getCell("A1").value = "Rating regions";
+  lists.getCell("A1").font = font({ bold: true });
+  ratingRegions.forEach((r, i) => (lists.getCell(`A${i + 2}`).value = r));
+  for (const col of "CDEF") {
+    ws.getCell(`${col}35`).dataValidation = {
+      type: "list",
+      allowBlank: true,
+      formulae: [`Lists!$A$2:$A$${ratingRegions.length + 1}`],
+      showErrorMessage: true,
+      errorStyle: "stop",
+      errorTitle: "Region",
+      error: "Choose a region from the list.",
+    };
+  }
+  if (v.C35 === "") set("D35", "Choose the region", { italic: true, color: C.red });
 
   // Rates used by the levy formulas (editable).
   const rates = wb.addWorksheet("Rates", { views: [{ showGridLines: false }] });
@@ -448,4 +461,45 @@ async function buildOttaWorksheet(
   ws.eachRow((row) => {
     if (!row.height) row.height = 17;
   });
+}
+
+// --- Copy and paste into the V13 worksheet ---
+
+export type PasteBlock = { range: string; label: string; rows: { label: string; value: string }[] };
+
+const pasteText = (v: CellValue | undefined) => {
+  if (v === null || v === undefined) return "";
+  if (v instanceof Date) return `${v.getUTCDate()}/${String(v.getUTCMonth() + 1).padStart(2, "0")}/${v.getUTCFullYear()}`;
+  return String(v).replace(/[\t\r\n]+/g, " ");
+};
+
+/**
+ * The yellow boxes as blocks of cells that line up with the V13 worksheet,
+ * skipping its formula cells, so each block can be pasted in one go.
+ */
+export function pasteBlocks(v: Record<string, CellValue>): PasteBlock[] {
+  const block = (range: string, label: string, cells: [string, string][]): PasteBlock => ({
+    range,
+    label,
+    rows: cells.map(([cell, l]) => ({ label: `${cell} ${l}`, value: pasteText(v[cell]) })),
+  });
+  return [
+    block("C7", "Risk type", [["C7", "Risk Type"]]),
+    block("C11:C12", "Broker details", [["C11", "Broking firm"], ["C12", "Broker"]]),
+    block("C25:C26", "The insured", [["C25", "The Insured"], ["C26", "Inception Date"]]),
+    block("F25", "Interested party", [["F25", "Interested Party"]]),
+    block("C31:C38", "Location 1", [
+      ["C31", "Street Address"],
+      ["C32", "Suburb"],
+      ["C33", "City"],
+      ["C34", "Post Code"],
+      ["C35", "Region"],
+      ["C36", "(blank row)"],
+      ["C37", "Sum Insured"],
+      ["C38", "Number of Units"],
+    ]),
+    block("C41:C48", "Notes", Array.from({ length: 8 }, (_, i): [string, string] => [`C${41 + i}`, `Notes ${i + 1}`])),
+    block("C56", "Landlords chattels", [["C56", "Landlords Chattels (LC)"]]),
+    block("B86", "Underwriter notes and rationale", [["B86", "Notes and rationale"]]),
+  ].filter((b) => b.rows.some((r) => r.value));
 }

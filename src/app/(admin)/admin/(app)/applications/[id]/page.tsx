@@ -12,6 +12,7 @@ import { brokerageNames } from "@/lib/admin/data";
 import { getApplication } from "@/lib/applications/store";
 import { formatDate } from "@/lib/portal/status";
 import { propertyLocation } from "@/lib/uw/worksheet";
+import { UnderwritingAssistant } from "./UnderwritingAssistant";
 
 export const metadata: Metadata = { title: "Application" };
 
@@ -41,7 +42,7 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
           <>
             {form.underwriting && (
               <ButtonLink href={adminPath(`/applications/${app.id}/worksheet`)} variant="secondary" icon="download" external>
-                UW worksheet (Excel)
+                V13 worksheet (Excel)
               </ButtonLink>
             )}
             <ButtonLink href={adminPath(`/applications/${app.id}/pdf`)} icon="download" external>
@@ -63,6 +64,7 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
           ]}
         />
       </Card>
+      {form.underwriting && <UnderwritingAssistant app={app} brokerageName={names[app.brokerageId] ?? app.brokerageId} />}
       {form.underwriting && <FloodMaps address={app.propertyAddress} location={propertyLocation(app.answers)} />}
       <ApplicationSummary form={form} answers={app.answers} />
     </>

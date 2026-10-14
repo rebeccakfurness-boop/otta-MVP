@@ -19,6 +19,33 @@ the broker portal, so what staff see is exactly what brokers see.
 - **Data sources**: which records came from InsuredHQ and which were entered
   manually.
 
+## Underwriting assistant
+
+Every building insurance application gets an AI brief, written in the
+background as soon as it is submitted (`src/lib/uw/brief.ts`, instructions in
+`src/content/uw-assistant.ts`). On the application page in the admin portal:
+
+- **The brief**: a recommendation (within appetite, refer, outside appetite),
+  a summary, red flags by severity, what's still needed from the broker, and a
+  draft email to the broker (copy it, or open it in your email app). "Write
+  again" rewrites it. The underwriter makes every decision.
+- **Copy into the V13 worksheet**: the yellow boxes as blocks that line up with
+  the V13 worksheet (C7, C11:C12, C25:C26, F25, C31:C38, C41:C48, C56, B86),
+  skipping its formula cells. Copy a block, click its first cell in V13 and
+  paste: only values go in, so the formatting, dropdowns and formulas stay.
+- **Region (C35)**: worked out from the suburb, town or post code as one of the
+  47 V13 rating regions (`src/content/rating-regions.ts`,
+  `src/lib/uw/rating-region.ts`). The underwriter can change it; the copy
+  blocks and the Excel download follow their choice. In the Excel worksheet the
+  Region cells are a dropdown of the same 47 regions (Lists sheet).
+- **V13 worksheet (Excel)** includes the brief's notes in the "Underwriter use
+  only" box.
+
+The brief is written by Claude (`claude-opus-5-5`) when `ANTHROPIC_API_KEY` is
+set. Without it, or if the AI call fails, built-in rule checks write a simpler
+brief so the page always works. Briefs are stored in the `records` table
+(collection `uw-briefs`).
+
 ## How it is wired
 
 - Pages live in `src/app/(admin)/admin/`; data reads in `src/lib/admin/data.ts`
