@@ -7,6 +7,8 @@ import { Tabs } from "@/components/Tabs";
 import { factSheetFor, wordingsFor } from "@/content/documents";
 import { importantInformation } from "@/content/legal";
 import { getProduct, products } from "@/content/products";
+import { ProductData } from "@/components/StructuredData";
+import { productSeo } from "@/content/seo";
 import { site } from "@/content/site";
 
 export function generateStaticParams() {
@@ -15,7 +17,18 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/solutions/[slug]">): Promise<Metadata> {
   const product = getProduct((await params).slug);
-  return product ? { title: product.name, description: product.summary } : {};
+  if (!product) return {};
+  const s = productSeo[product.slug];
+  const title = s?.title ?? product.name;
+  const description = s?.description ?? product.summary;
+  return {
+    title,
+    description,
+    keywords: s?.keywords,
+    alternates: { canonical: `/solutions/${product.slug}` },
+    openGraph: { title, description, url: `/solutions/${product.slug}`, images: [{ url: product.image.src, alt: product.image.alt }] },
+    twitter: { card: "summary_large_image", title, description, images: [product.image.src] },
+  };
 }
 
 const smallButton =
@@ -39,6 +52,12 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
 
   return (
     <>
+      <ProductData
+        slug={product.slug}
+        name={product.name}
+        description={productSeo[product.slug]?.description ?? product.summary}
+        underwriter={product.atAGlance.find((r) => r.label === "Underwriter")?.value}
+      />
       {/* Split hero: image left, introduction right */}
       <section className="grid lg:min-h-[710px] lg:grid-cols-[46%_1fr]">
         <div className="relative min-h-[320px] lg:min-h-full">

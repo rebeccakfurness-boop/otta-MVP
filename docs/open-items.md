@@ -70,3 +70,11 @@ Placeholders in the prototype that need real content or decisions. Search the co
 ## Later stages
 - Compliance review (Privacy Act 2020, FMC Act, Fair Trading Act, CoFI, etc.).
 - Remove `robots: noindex` in `src/app/layout.tsx` at launch.
+
+## Website analytics and SEO (launch steps)
+
+- **Search engines**: the site stays out of Google (robots.txt disallows everything, pages say noindex) while the Coming Soon page is on. On launch day set `SITE_GATE=off` and redeploy: robots.txt then allows the website (never `/portal`, `/admin` or client form links) and points to `/sitemap.xml`.
+- **Google Search Console**: verify ottainsurance.co.nz and submit `https://www.ottainsurance.co.nz/sitemap.xml`.
+- **Analytics**: in Vercel, open the project's Analytics tab and enable Web Analytics and Speed Insights. They show visitors, where they came from, and which pages and products they look at, without cookies.
+- **Google Analytics (optional)**: set `NEXT_PUBLIC_GA_ID` to a GA4 measurement id and redeploy. Mention it in the privacy policy.
+- **Wording**: page titles and descriptions for each product are in `src/content/seo.ts`.
