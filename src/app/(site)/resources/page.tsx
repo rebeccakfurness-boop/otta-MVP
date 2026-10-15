@@ -10,6 +10,7 @@ const blurbs: Record<string, string> = {
   "Proposal Forms": "Forms to apply for cover, completed by you or your broker.",
   "Renewal Declarations": "Declarations to complete when your policy comes up for renewal.",
   "Claim Forms": "Forms to lodge a claim, along with the supporting documents we need.",
+  FAQs: "Answers to common questions about our cover, applying, claims and the Broker Portal.",
 };
 
 export default function ResourcesPage() {
@@ -17,7 +18,7 @@ export default function ResourcesPage() {
     <section className="pt-[118px] pb-[120px]">
       <Container>
         <PageIntro title="Resources">
-          <p>Fact sheets, policy wordings and forms for every Otta product.</p>
+          <p>Fact sheets, policy wordings, forms and answers to common questions for every Otta product.</p>
         </PageIntro>
         <div className="mt-[72px] grid gap-9 md:grid-cols-2 lg:grid-cols-3">
           {resourcesNav.map((r) => (
@@ -25,7 +26,7 @@ export default function ResourcesPage() {
               <h2 className="text-[20px] font-semibold tracking-normal text-charcoal">{r.label}</h2>
               <p className="mt-4 flex-1 text-[15px] leading-[1.75] text-body">{blurbs[r.label]}</p>
               <div className="mt-6">
-                <GreyButton href={r.href}>View {r.label.toLowerCase()}</GreyButton>
+                <GreyButton href={r.href}>View {r.label === "FAQs" ? "FAQs" : r.label.toLowerCase()}</GreyButton>
               </div>
             </GreyBlock>
           ))}

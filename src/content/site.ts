@@ -39,6 +39,7 @@ export const resourcesNav: NavItem[] = [
   { label: "Proposal Forms", href: "/resources/proposal-forms" },
   { label: "Renewal Declarations", href: "/resources/renewal-declarations" },
   { label: "Claim Forms", href: "/resources/claim-forms" },
+  { label: "FAQs", href: "/resources/faqs" },
 ];
 
 export const mainNav: NavItem[] = [

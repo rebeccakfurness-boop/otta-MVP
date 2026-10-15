@@ -1,9 +1,21 @@
 // Pages the website search covers beyond the product pages (which are indexed
 // from products.ts automatically). Keywords are extra words people might type.
 
+import { faqGroups, faqId, faqText } from "./faqs";
+
 export type SearchPage = { title: string; href: string; section: string; text: string; keywords?: string };
 
 export const searchPages: SearchPage[] = [
+  {
+    title: "FAQs",
+    href: "/resources/faqs",
+    section: "Resources",
+    text: "Answers to common questions about Otta insurance, applying for cover, claims and the Otta Broker Portal.",
+    keywords: "faq questions help answers",
+  },
+  ...faqGroups.flatMap((g) =>
+    g.faqs.map((f) => ({ title: f.q, href: `/resources/faqs#${faqId(f.q)}`, section: "FAQs", text: faqText(f.a).slice(0, 220) })),
+  ),
   {
     title: "Home",
     href: "/",

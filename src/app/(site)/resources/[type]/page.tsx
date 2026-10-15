@@ -7,7 +7,8 @@ import { onlineForms } from "@/content/forms";
 import { products } from "@/content/products";
 import { resourcesNav } from "@/content/site";
 
-const types = resourcesNav.map((r) => ({ type: r.href.split("/").pop()!, label: r.label }));
+// FAQs has its own page; every other Resources item is a list of documents.
+const types = resourcesNav.filter((r) => r.href !== "/resources/faqs").map((r) => ({ type: r.href.split("/").pop()!, label: r.label }));
 
 export function generateStaticParams() {
   return types.map(({ type }) => ({ type }));

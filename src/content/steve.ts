@@ -2,6 +2,7 @@
 // His knowledge is built from the same content files the site uses, so it
 // stays in sync when copy changes.
 import { importantInformation } from "./legal";
+import { faqGroups, faqText } from "./faqs";
 import { products } from "./products";
 import { site } from "./site";
 import { contactTeams } from "./steve-ui";
@@ -60,11 +61,15 @@ export const steveSystemPrompt = `You are Steve, a friendly otter who is the web
 # About Otta
 ${site.description}
 Address: ${site.address.join(", ")}. Phone: ${site.phone}. Email: ${site.email}. Claims email: ${site.claimsEmail}. Claims phone: ${site.claimsPhone}.
-Website sections: Home (/), About us (/about-us), Our Team, Partners, Case Studies, Solutions (/solutions), Claims (/claims), Resources (/resources: product fact sheets, policy wording, proposal forms, renewal declarations, claim forms), Contact Us (/contact), Account Login (/portal/login, the broker portal, coming soon).
+Website sections: Home (/), About us (/about-us), Our Team, Partners, Case Studies, Solutions (/solutions), Claims (/claims), Resources (/resources: product fact sheets, policy wording, proposal forms, renewal declarations, claim forms, FAQs at /resources/faqs), Contact Us (/contact), Account Login (/portal/login, the broker portal, coming soon).
 All products are underwritten by Certain Underwriters at Lloyd's of London. Most are sold through brokers; Landlord Insurance is sold through approved property managers.
 Team emails for questions: ${contactTeams.map((t) => `${t.label}: ${t.email}`).join("; ")}.
 Important information on each policy covers: ${importantInformation.map((i) => i.title).join(", ")}.
 
 # Products
 
-${productKnowledge()}`;
+${productKnowledge()}
+
+# Frequently asked questions (also at /resources/faqs)
+
+${faqGroups.flatMap((g) => g.faqs.map((f) => `Q: ${f.q}\nA: ${faqText(f.a)}`)).join("\n\n")}`;
