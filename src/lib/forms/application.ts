@@ -15,12 +15,26 @@ export type UnitsField = Extract<Field, { kind: "units" }>;
 export type GridField = Extract<Field, { kind: "grid" }>;
 
 export const CONFIRM_FIELD = "declarationConfirmed";
+
+/** Where a signature field keeps its image (a PNG data URL) and, once submitted, when and how it was signed. */
+export const sigImage = (name: string) => `${name}__sig`;
+export const sigSignedAt = (name: string) => `${name}__at`;
+export const sigMethod = (name: string) => `${name}__how`;
+const SIG_IMAGE = /^data:image\/png;base64,[A-Za-z0-9+/=]+$/;
+const MAX_SIG_IMAGE = 120_000;
 export const MAX_UNIT_ROWS = 40;
 
 export function answersFromFormData(data: FormData): Answers {
   const answers: Answers = {};
   for (const [key, value] of data.entries()) {
-    if (typeof value === "string" && key.length < 64 && !key.startsWith("$")) answers[key] = value.trim().slice(0, 4000);
+    if (typeof value !== "string" || key.length >= 64 || key.startsWith("$")) continue;
+    if (key.endsWith("__sig")) {
+      // A signature image: kept whole, and only if it really is a small PNG.
+      if (value.length <= MAX_SIG_IMAGE && SIG_IMAGE.test(value)) answers[key] = value;
+      continue;
+    }
+    if (key.endsWith("__at")) continue; // set by the server when the form is submitted
+    answers[key] = value.trim().slice(0, 4000);
   }
   return answers;
 }
@@ -108,6 +122,7 @@ const checks: Partial<Record<Field["kind"], z.ZodType>> = {
 function requiredMessage(field: Field) {
   if (field.kind === "yesno") return "Choose yes or no";
   if (field.kind === "choice") return "Choose an option";
+  if (field.kind === "signature") return "Type your full name, then sign";
   return "This field is required";
 }
 
@@ -138,6 +153,10 @@ export function validate(form: FormDefinition, answers: Answers): Errors {
       continue;
     }
     const value = answers[field.name] ?? "";
+    if (field.kind === "signature" && value && !answers[sigImage(field.name)]) {
+      errors[field.name] = "Sign in the box: draw your signature, or choose Type to sign with your name";
+      continue;
+    }
     if (!value) {
       if (!field.optional) errors[field.name] = requiredMessage(field);
       continue;
@@ -204,7 +223,7 @@ export function summaryText(form: FormDefinition, answers: Answers) {
   }
   lines.push("", "DECLARATION");
   for (const field of signOffFields(form)) {
-    lines.push(`  ${field.label}: ${displayValue(field, answers[field.name])}`);
+    lines.push(`  ${field.label}: ${signatureNote(field, answers) || displayValue(field, answers[field.name])}`);
   }
   lines.push(`  Declaration confirmed: ${answers[CONFIRM_FIELD] === "on" ? "Yes" : "No"}`);
   return lines.join("\n").trim();
@@ -252,4 +271,22 @@ export function withContact(form: FormDefinition): FormDefinition {
       ...rest,
     ],
   };
+}
+
+/** Stamps each signature with the time it was submitted, so the record shows when it was signed. */
+export function stampSignatures(form: FormDefinition, answers: Answers, at = new Date().toISOString()): Answers {
+  const stamped = { ...answers };
+  for (const field of signOffFields(form)) {
+    if (field.kind === "signature" && answers[sigImage(field.name)]) stamped[sigSignedAt(field.name)] = at;
+  }
+  return stamped;
+}
+
+/** "Signed electronically by Jane Smith on 15 October 2026, 2:14 pm (drawn)", for summaries and the PDF. */
+export function signatureNote(field: Field, answers: Answers) {
+  if (field.kind !== "signature" || !answers[sigImage(field.name)]) return "";
+  const at = answers[sigSignedAt(field.name)];
+  const when = at ? new Date(at).toLocaleString("en-NZ", { timeZone: "Pacific/Auckland", day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit" }) : "";
+  const how = answers[sigMethod(field.name)] === "typed" ? "typed" : "drawn";
+  return `Signed electronically by ${answers[field.name] || "the signatory"}${when ? ` on ${when}` : ""} (${how})`;
 }

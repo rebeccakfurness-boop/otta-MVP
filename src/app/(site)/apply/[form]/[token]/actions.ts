@@ -1,6 +1,7 @@
 "use server";
 
 import { openLink } from "@/lib/applications/client-link";
+import { readAttachments } from "@/lib/applications/attachments";
 import { deliverApplication } from "@/lib/applications/deliver";
 import { getLink } from "@/lib/applications/store";
 import { portalUrl } from "@/lib/applications/urls";
@@ -18,6 +19,8 @@ export async function submitClientApplication(token: string, _prev: SubmitState,
   const answers = answersFromFormData(formData);
   const errors = validate(form, answers);
   if (Object.keys(errors).length > 0) return { status: "invalid", errors };
+  const uploads = await readAttachments(formData);
+  if ("error" in uploads) return { status: "error", message: uploads.error };
 
   try {
     const base = await portalUrl("/applications");
@@ -32,6 +35,7 @@ export async function submitClientApplication(token: string, _prev: SubmitState,
       submittedBy: answers.signatoryName || link.clientName,
       submittedByEmail: answers.email || link.clientEmail || "",
       linkId: link.id,
+      files: uploads.files,
       portalUrl: (id) => `${base}/${id}`,
     });
     // The client doesn't get a portal link.

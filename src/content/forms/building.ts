@@ -242,10 +242,10 @@ export const buildingApplication: FormDefinition = {
       ],
       signOff: [
         {
-          kind: "text",
+          kind: "signature",
           name: "signature",
           label: "Authorised signature",
-          hint: "Type the applicant's name to sign.",
+          hint: "Type the applicant's name, then sign with your finger, mouse or by typing.",
           span: 2,
         },
         { kind: "text", name: "signatoryName", label: "Full name of individual", span: 2 },

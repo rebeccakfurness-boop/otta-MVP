@@ -27,6 +27,8 @@ type Base = {
 
 export type Field =
   | (Base & { kind: "text" | "email" | "tel" | "date" | "money" | "number" | "year" | "textarea" })
+  /** An electronic signature: the signer's printed name, plus a drawn or typed signature image. */
+  | (Base & { kind: "signature" })
   | (Base & { kind: "yesno" })
   | (Base & {
       kind: "choice";

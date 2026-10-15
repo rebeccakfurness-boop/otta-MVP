@@ -136,7 +136,7 @@ export const paClaimForm: FormDefinition = {
         },
       ],
       signOff: [
-        { kind: "text", name: "signature", label: "Claimant's signature", hint: "The claimant types their name to sign.", span: 3 },
+        { kind: "signature", name: "signature", label: "Claimant's signature", hint: "The claimant types their name to sign.", span: 3 },
         { kind: "date", name: "signedDate", label: "Date", span: 3 },
       ],
     },

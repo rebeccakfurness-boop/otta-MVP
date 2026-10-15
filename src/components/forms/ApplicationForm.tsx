@@ -4,6 +4,9 @@ import { startTransition, useActionState, useEffect, useMemo, useRef, useState, 
 import { Icon } from "@/components/portal/Icon";
 import { Card } from "@/components/portal/ui";
 import { AddressInput, AddressSearchUrl } from "./AddressInput";
+import { SignaturePad } from "./SignaturePad";
+import { AttachmentsInput } from "./AttachmentsInput";
+import { uploadHint, uploadsCopy } from "@/content/forms/uploads";
 import { getForm, type Field, type FormDefinition, type Section } from "@/content/forms";
 import {
   answersFromFormData,
@@ -196,6 +199,17 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
                 <SectionCard key={section.id} section={section} answers={answers} errors={errors} defaults={defaults} />
               ))}
 
+              {part.signOff && (
+                <Card className="px-6 py-6 md:px-8">
+                  <h3 className="text-[19px] font-semibold tracking-normal text-[#2e7d74]">
+                    {uploadsCopy.title} <span className="text-[14px] font-normal text-body">{uploadsCopy.optional}</span>
+                  </h3>
+                  <div className="mt-4">
+                    <AttachmentsInput hint={uploadHint(form)} />
+                  </div>
+                </Card>
+              )}
+
               {part.text && (
                 <Card className="px-6 py-6 md:px-8">
                   <div className="space-y-6 text-[14px] leading-relaxed text-body">
@@ -264,7 +278,14 @@ function Form({ formId, audience, action, defaults, pdfUrl, links, brokerageName
                   <h3 className="text-[19px] font-semibold tracking-normal text-[#2e7d74]">Sign off</h3>
                   <div className="mt-5 grid grid-cols-6 gap-x-5 gap-y-5">
                     {part.signOff.map((field) => (
-                      <FieldInput key={field.name} field={field} error={errors[field.name]} defaultValue={defaults[field.name]} />
+                      <div key={field.name} className={field.kind === "signature" ? "col-span-6" : `col-span-6 ${span[field.span ?? 6]}`}>
+                        <FieldInput
+                          field={field}
+                          error={errors[field.name]}
+                          defaultValue={defaults[field.name]}
+                          onSigned={() => setAnswers(answersFromFormData(readForm()))}
+                        />
+                      </div>
                     ))}
                   </div>
                   <label className="mt-6 flex cursor-pointer items-start gap-3 text-[14px] leading-relaxed text-charcoal">
@@ -390,7 +411,7 @@ function FieldError({ name, error }: { name: string; error?: string }) {
   ) : null;
 }
 
-function FieldInput({ field, error, defaultValue }: { field: Field; error?: string; defaultValue?: string }) {
+function FieldInput({ field, error, defaultValue, onSigned }: { field: Field; error?: string; defaultValue?: string; onSigned?: () => void }) {
   const id = fieldId(field.name);
   const described = [field.hint && `${id}-hint`, error && errorId(field.name)].filter(Boolean).join(" ") || undefined;
   const common = { id, name: field.name, "aria-invalid": !!error, "aria-describedby": described, defaultValue };
@@ -457,6 +478,19 @@ function FieldInput({ field, error, defaultValue }: { field: Field; error?: stri
         </div>
         <FieldError name={field.name} error={error} />
       </fieldset>
+    );
+  }
+
+  if (field.kind === "signature") {
+    return (
+      <div>
+        <Label field={field} htmlFor={id} />
+        <span id={`${id}-hint`}>
+          <Hint text={field.hint} />
+        </span>
+        <SignaturePad name={field.name} inputProps={common} invalid={!!error} onSigned={onSigned} />
+        <FieldError name={field.name} error={error} />
+      </div>
     );
   }
 

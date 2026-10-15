@@ -1,6 +1,7 @@
 "use server";
 
 import { getForm } from "@/content/forms";
+import { readAttachments } from "@/lib/applications/attachments";
 import { deliverApplication } from "@/lib/applications/deliver";
 import { answersFromFormData, validate, type SubmitState } from "@/lib/forms/application";
 import { requirePlacingBroker } from "@/lib/portal/auth";
@@ -12,6 +13,8 @@ export async function submitApplication(formId: string, _prev: SubmitState, form
   const answers = answersFromFormData(formData);
   const errors = validate(form, answers);
   if (Object.keys(errors).length > 0) return { status: "invalid", errors };
+  const uploads = await readAttachments(formData);
+  if ("error" in uploads) return { status: "error", message: uploads.error };
 
   try {
     const sent = await deliverApplication({
@@ -24,6 +27,7 @@ export async function submitApplication(formId: string, _prev: SubmitState, form
       brokerEmail: broker.email,
       submittedBy: broker.name,
       submittedByEmail: broker.email,
+      files: uploads.files,
     });
     return { status: "sent", ...sent };
   } catch (error) {

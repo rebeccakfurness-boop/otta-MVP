@@ -161,7 +161,7 @@ export const landlordProtectApplication: FormDefinition = {
         },
       ],
       signOff: [
-        { kind: "text", name: "signature", label: "Landlord's signature", hint: "Type your name to sign.", span: 3 },
+        { kind: "signature", name: "signature", label: "Landlord's signature", hint: "Type your name, then sign with your finger, mouse or by typing.", span: 3 },
         { kind: "date", name: "signedDate", label: "Date", span: 3 },
       ],
     },

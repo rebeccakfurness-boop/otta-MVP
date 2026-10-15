@@ -276,7 +276,7 @@ export const professionalIndemnityProposal: FormDefinition = {
         },
       ],
       signOff: [
-        { kind: "text", name: "signature", label: "Authorised signature", hint: "Type your name to sign.", span: 3 },
+        { kind: "signature", name: "signature", label: "Authorised signature", hint: "Type your name, then sign with your finger, mouse or by typing.", span: 3 },
         { kind: "text", name: "signatoryName", label: "Full name of individual", span: 3 },
         { kind: "text", name: "position", label: "Position", span: 3 },
         { kind: "date", name: "signedDate", label: "Date", span: 3 },

@@ -5,7 +5,7 @@ import fontkit from "@pdf-lib/fontkit";
 import { BlendMode, PDFDocument, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import type { Field, FormDefinition } from "@/content/forms";
 import { site } from "@/content/site";
-import { CONFIRM_FIELD, displayValue, gridTotal, gridValues, moneyText, unitRows, visibleSections, type Answers, type GridField } from "./application";
+import { CONFIRM_FIELD, displayValue, gridTotal, gridValues, moneyText, sigImage, signatureNote, unitRows, visibleSections, type Answers, type GridField } from "./application";
 
 // Draws an online form (building application, travel proposal, ...) as an A4 PDF in Otta branding.
 // Used for the broker's "Download PDF" button and the copy attached to the
@@ -58,6 +58,16 @@ export async function buildApplicationPdf(
   doc.setAuthor(site.name);
   doc.setSubject(meta.reference ? `Application ${meta.reference}` : form.title);
 
+  // Electronic signatures: embed each signed image once.
+  const signatures: Record<string, PDFImage> = {};
+  if (!blank) {
+    for (const field of form.parts.flatMap((p) => p.signOff ?? [])) {
+      const data = field.kind === "signature" ? answers[sigImage(field.name)] : undefined;
+      const image = data ? await doc.embedPng(Buffer.from(data.split(",")[1], "base64")).catch(() => null) : null;
+      if (image) signatures[field.name] = image;
+    }
+  }
+
   const w = new Writer(doc, fonts, logo, form);
 
   for (const part of form.parts) {
@@ -87,7 +97,7 @@ export async function buildApplicationPdf(
     }
     if (part.signOff) {
       w.gap(4);
-      w.signOff(part.signOff, answers, blank);
+      w.signOff(part.signOff, answers, blank, signatures);
       if (!blank && answers[CONFIRM_FIELD] === "on") {
         const note =
           meta.completedBy === "client" || meta.completedBy === "public"
@@ -415,19 +425,33 @@ class Writer {
     this.y -= 10;
   }
 
-  signOff(fields: Field[], answers: Answers, blank: boolean) {
-    this.need(46);
+  signOff(fields: Field[], answers: Answers, blank: boolean, signatures: Record<string, PDFImage> = {}) {
+    const signed = Object.keys(signatures).length > 0;
+    const boxH = signed ? 46 : 24;
+    this.need(boxH + 40);
     const gap = 12;
     const colW = (CONTENT - gap * (fields.length - 1)) / fields.length;
     fields.forEach((field, i) => {
       const x = M + i * (colW + gap);
       this.page.drawText(field.label, { x, y: this.y - 10, size: 9, font: this.f.semibold, color: colour.tealText });
-      this.page.drawRectangle({ x, y: this.y - 40, width: colW, height: 24, color: colour.box, borderColor: colour.boxLine, borderWidth: 0.6 });
+      this.page.drawRectangle({ x, y: this.y - 16 - boxH, width: colW, height: boxH, color: colour.box, borderColor: colour.boxLine, borderWidth: 0.6 });
+      const image = signatures[field.name];
+      if (image) {
+        const scale = Math.min((colW - 8) / image.width, (boxH - 6) / image.height);
+        this.page.drawImage(image, { x: x + 4, y: this.y - 16 - boxH + 3, width: image.width * scale, height: image.height * scale });
+        return;
+      }
       const value = blank ? "" : displayValue(field, answers[field.name]);
-      const font = field.name === "signature" ? this.f.heading : this.f.regular;
-      if (value) this.page.drawText(this.wrap(value, font, 10, colW - 12)[0], { x: x + 6, y: this.y - 32, size: 10, font, color: colour.charcoal });
+      const font = field.kind === "signature" ? this.f.heading : this.f.regular;
+      if (value) this.page.drawText(this.wrap(value, font, 10, colW - 12)[0], { x: x + 6, y: this.y - 8 - boxH, size: 10, font, color: colour.charcoal });
     });
-    this.y -= 54;
+    this.y -= boxH + 30;
+    if (!blank) {
+      for (const field of fields) {
+        const note = signatureNote(field, answers);
+        if (note) this.paragraph(note, { size: 8.5, colour: colour.tealText });
+      }
+    }
   }
 
   footers(meta: { reference?: string; brokerage?: string; submittedBy?: string }) {

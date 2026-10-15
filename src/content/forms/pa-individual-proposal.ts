@@ -236,7 +236,7 @@ export const paIndividualProposal: FormDefinition = {
         },
       ],
       signOff: [
-        { kind: "text", name: "signature", label: "Signed", hint: "Type your name to sign.", span: 3 },
+        { kind: "signature", name: "signature", label: "Signed", hint: "Type your name, then sign with your finger, mouse or by typing.", span: 3 },
         { kind: "date", name: "signedDate", label: "Date", span: 3 },
       ],
     },

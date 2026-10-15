@@ -1,9 +1,20 @@
 import { Card, CardHeader } from "@/components/portal/ui";
 import type { FormDefinition } from "@/content/forms";
-import { displayValue, gridTotal, gridValues, moneyText, signOffFields, unitRows, visibleSections, type Answers } from "@/lib/forms/application";
+import { displayValue, gridTotal, gridValues, moneyText, sigImage, signatureNote, signOffFields, unitRows, visibleSections, type Answers } from "@/lib/forms/application";
 
 /** Read-only answers of a submitted application, section by section. */
-export function ApplicationSummary({ form, answers }: { form: FormDefinition; answers: Answers }) {
+export function ApplicationSummary({
+  form,
+  answers,
+  files = [],
+  fileHref,
+}: {
+  form: FormDefinition;
+  answers: Answers;
+  /** Supporting documents sent with the form. */
+  files?: { id: string; name: string; size: number }[];
+  fileHref?: (id: string) => string;
+}) {
   const signOff = signOffFields(form);
   return (
     <div className="space-y-6">
@@ -92,13 +103,41 @@ export function ApplicationSummary({ form, answers }: { form: FormDefinition; an
           </dl>
         </Card>
       ))}
+      {files.length > 0 && (
+        <Card>
+          <CardHeader title="Supporting documents" />
+          <ul className="divide-y divide-[#f0f0f0]">
+            {files.map((f) => (
+              <li key={f.id} className="flex items-center gap-3 px-6 py-3 text-[14px]">
+                <span className="min-w-0 flex-1 truncate text-charcoal">{f.name}</span>
+                <span className="text-[12px] text-body">{f.size < 1048576 ? `${Math.max(1, Math.round(f.size / 1024))} KB` : `${(f.size / 1048576).toFixed(1)} MB`}</span>
+                {fileHref && (
+                  <a href={fileHref(f.id)} target="_blank" rel="noopener" className="text-[12px] font-medium tracking-[0.1em] text-site-teal uppercase hover:underline">
+                    Open
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
       <Card>
         <CardHeader title="Declaration" />
         <dl className="divide-y divide-[#f0f0f0]">
           {signOff.map((field) => (
             <div key={field.name} className="grid gap-1 px-6 py-3 sm:grid-cols-[1fr_minmax(0,1fr)] sm:gap-6">
               <dt className="text-[14px] text-body">{field.label}</dt>
-              <dd className="text-[14px] text-charcoal">{displayValue(field, answers[field.name])}</dd>
+              <dd className="text-[14px] text-charcoal">
+                {answers[sigImage(field.name)] ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- a signature stored as a data URL */}
+                    <img src={answers[sigImage(field.name)]} alt={`Signature of ${answers[field.name] || "the signatory"}`} className="h-16 w-auto border border-[#eaeaea] bg-white" />
+                    <span className="mt-1 block text-[12px] text-[#2e7d74]">{signatureNote(field, answers)}</span>
+                  </>
+                ) : (
+                  displayValue(field, answers[field.name])
+                )}
+              </dd>
             </div>
           ))}
         </dl>

@@ -35,6 +35,8 @@ export type Application = {
   propertyAddress: string;
   linkId?: string;
   answers: Answers;
+  /** Supporting documents sent with the form (see attachments.ts). */
+  attachments?: { id: string; name: string; type: string; size: number }[];
   createdAt: string;
 };
 

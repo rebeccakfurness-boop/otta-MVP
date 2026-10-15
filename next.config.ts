@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  experimental: {
+    // Online forms carry supporting documents (up to 4 MB in all, under Vercel's 4.5 MB request limit).
+    serverActions: { bodySizeLimit: "5mb" },
+  },
   partialPrefetching: true,
   // The application PDF and underwriting worksheet read files from disk at runtime.
   outputFileTracingIncludes: {

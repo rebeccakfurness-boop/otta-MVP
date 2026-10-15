@@ -3,7 +3,8 @@ import { after } from "next/server";
 import type { FormDefinition } from "@/content/forms";
 import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
-import { keyName, summaryText, type Answers } from "@/lib/forms/application";
+import { keyName, stampSignatures, summaryText, type Answers } from "@/lib/forms/application";
+import { saveAttachments, type IncomingFile } from "./attachments";
 import { buildApplicationPdf } from "@/lib/forms/application-pdf";
 import { recordActivity } from "@/lib/activity";
 import { generateBrief } from "@/lib/uw/brief";
@@ -25,6 +26,8 @@ type Delivery = {
   linkId?: string;
   /** Link to the application in the broker portal, for the broker's email. */
   portalUrl?: (id: string) => string;
+  /** Supporting documents attached to the form. */
+  files?: IncomingFile[];
 };
 
 /**
@@ -32,14 +35,18 @@ type Delivery = {
  * emails it with the PDF attached, and tells the broker when their client
  * completed it.
  */
-export async function deliverApplication(d: Delivery) {
-  const { form } = d;
+export async function deliverApplication(delivery: Delivery) {
+  const { form } = delivery;
+  const createdAt = new Date().toISOString();
+  // Electronic signatures are stamped with the moment the form was submitted.
+  const d = { ...delivery, answers: stampSignatures(form, delivery.answers, createdAt) };
   const id = newId("app");
   const reference = newReference({ building: "BA", "corporate-travel": "CT", "landlord-protect": "LP", "no-claims-declaration": "ND", "professional-indemnity": "PI", "pa-group": "PG", "pa-individual": "PA", "pa-health": "HD", "pa-claim": "CL", "travel-claim": "TC", accountants: "AQ", "pi-renewal": "PR" }[form.id] ?? "AP");
   const name = keyName(form, d.answers);
   const detail = d.answers[form.keyFields.detail] ?? "";
   const noun = form.shortTitle.toLowerCase();
-  const createdAt = new Date().toISOString();
+  const files = d.files ?? [];
+  const attachments = files.length ? await saveAttachments(id, files) : undefined;
   const viaClient = d.source === "client";
 
   const application: Application = {
@@ -56,6 +63,7 @@ export async function deliverApplication(d: Delivery) {
     propertyAddress: detail,
     linkId: d.linkId,
     answers: d.answers,
+    attachments,
     createdAt,
   };
   await saveApplication(application);
@@ -144,11 +152,12 @@ export async function deliverApplication(d: Delivery) {
         : `The completed form is attached as a PDF. Reply to this email to contact ${contact}.`,
       ``,
       ...floodLines,
+      ...(files.length ? [`Supporting documents attached: ${files.map((f) => f.name).join(", ")}`, ``] : []),
       summaryText(form, d.answers),
     ]
       .filter((l, i, all) => !(l === "" && all[i - 1] === ""))
       .join("\n"),
-    attachments: worksheet ? [attachment, worksheet] : [attachment],
+    attachments: [attachment, ...(worksheet ? [worksheet] : []), ...files.map((f) => ({ name: f.name, content: f.bytes }))],
   }).catch((error) => {
     console.error("[application] email to the Otta team failed", reference, error);
     emailFailed = true;

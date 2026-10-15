@@ -66,7 +66,7 @@ async function Detail({ params }: { params: PageProps<"/admin/applications/[id]"
       </Card>
       {form.underwriting && <UnderwritingAssistant app={app} brokerageName={names[app.brokerageId] ?? app.brokerageId} />}
       {form.underwriting && <FloodMaps address={app.propertyAddress} location={propertyLocation(app.answers)} />}
-      <ApplicationSummary form={form} answers={app.answers} />
+      <ApplicationSummary form={form} answers={app.answers} files={app.attachments} fileHref={(f) => adminPath(`/applications/${app.id}/files/${f}`)} />
     </>
   );
 }

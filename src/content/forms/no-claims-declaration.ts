@@ -48,7 +48,7 @@ export const noClaimsDeclaration: FormDefinition = {
         },
       ],
       signOff: [
-        { kind: "text", name: "signature", label: "Signed", hint: "Type your name to sign.", span: 2 },
+        { kind: "signature", name: "signature", label: "Signed", hint: "Type your name, then sign with your finger, mouse or by typing.", span: 2 },
         { kind: "text", name: "signatoryName", label: "Full name", span: 2 },
         { kind: "date", name: "signedDate", label: "Date", span: 2 },
       ],

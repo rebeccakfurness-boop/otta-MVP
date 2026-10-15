@@ -53,7 +53,7 @@ async function ApplicationDetail({ params }: { params: PageProps<"/portal/applic
           ]}
         />
       </Card>
-      <ApplicationSummary form={form} answers={app.answers} />
+      <ApplicationSummary form={form} answers={app.answers} files={app.attachments} fileHref={(f) => portalPath(`/applications/${app.id}/files/${f}`)} />
     </>
   );
 }
