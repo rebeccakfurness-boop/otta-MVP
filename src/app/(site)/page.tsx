@@ -133,17 +133,8 @@ export default function Home() {
       </section>
 
       {/* Property banner */}
-      <section className="relative flex min-h-[260px] items-center justify-center overflow-hidden px-5 py-16 md:min-h-[340px]">
-        <Image
-          src="/images/property-houses.jpg"
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover"
-          style={{ objectPosition: "center 65%" }}
-        />
-        <div aria-hidden className="absolute inset-0 bg-ocean-700/85" />
-        <h2 className="relative max-w-[900px] text-center text-[28px] font-semibold tracking-normal text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.25)] md:text-[34px]">
+      <section className="flex min-h-[260px] items-center justify-center bg-ocean-600 px-5 py-16 md:min-h-[340px]">
+        <h2 className="max-w-[900px] text-center text-[28px] font-semibold tracking-normal text-white md:text-[34px]">
           Comprehensive cover for landlords to protect their investment
         </h2>
       </section>
