@@ -78,3 +78,7 @@ Placeholders in the prototype that need real content or decisions. Search the co
 - **Analytics**: in Vercel, open the project's Analytics tab and enable Web Analytics and Speed Insights. They show visitors, where they came from, and which pages and products they look at, without cookies.
 - **Google Analytics (optional)**: set `NEXT_PUBLIC_GA_ID` to a GA4 measurement id and redeploy. Mention it in the privacy policy.
 - **Wording**: page titles and descriptions for each product are in `src/content/seo.ts`.
+
+## Phase 2
+
+- **Case studies**: hidden from the website (menu, home page block, "Discover our case studies" buttons, search, sitemap and chat). To bring them back, add the copy and photos, then set `features.caseStudies` to `true` in `src/content/site.ts`.

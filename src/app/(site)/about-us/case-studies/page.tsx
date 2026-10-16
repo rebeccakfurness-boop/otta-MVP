@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { notFound } from "next/navigation";
+import { site } from "@/content/site";
 import { Container, PageIntro, SquareButton } from "@/components/Mockup";
 
 export const metadata: Metadata = { title: "Case Studies" };
@@ -7,6 +9,8 @@ export const metadata: Metadata = { title: "Case Studies" };
 // TODO(stage 2): real case studies and their own photos.
 const photos = ["/images/about-team-meeting.jpg", "/images/about-floor-plans.jpg", "/images/about-sky-tower.jpg"];
 export default function CaseStudiesPage() {
+  // Hidden until Phase 2: the page answers "not found" while the feature is off.
+  if (!site.features.caseStudies) notFound();
   return (
     <>
       <section className="pt-[118px] pb-[110px]">

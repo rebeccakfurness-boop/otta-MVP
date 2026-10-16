@@ -1,6 +1,7 @@
 // Pages the website search covers beyond the product pages (which are indexed
 // from products.ts automatically). Keywords are extra words people might type.
 
+import { site } from "./site";
 import { faqGroups, faqId, faqText } from "./faqs";
 
 export type SearchPage = { title: string; href: string; section: string; text: string; keywords?: string };
@@ -43,13 +44,17 @@ export const searchPages: SearchPage[] = [
     text: "Every Otta policy is underwritten by Certain Underwriters at Lloyd's of London. Our lead syndicates are Canopius 4444, Beazley 2623 and MS Amlin.",
     keywords: "lloyds underwriter syndicate security insurer",
   },
-  {
-    title: "Case Studies",
-    href: "/about-us/case-studies",
-    section: "About us",
-    text: "How Otta has helped clients place complex and unusual risks, with quick turnaround and direct access to the underwriter.",
-    keywords: "examples clients stories",
-  },
+  ...(site.features.caseStudies
+    ? [
+        {
+          title: "Case Studies",
+          href: "/about-us/case-studies",
+          section: "About us",
+          text: "How Otta has helped clients place complex and unusual risks, with quick turnaround and direct access to the underwriter.",
+          keywords: "examples clients stories",
+        },
+      ]
+    : []),
   {
     title: "Our Solutions",
     href: "/solutions",

@@ -17,6 +17,8 @@ export const site = {
   address: ["Level 1", "3/527A Rosebank Road", "Avondale, Auckland 1026", "New Zealand"],
   // The "Account Login" button: the broker portal on its own subdomain.
   portalUrl: portalLoginUrl,
+  /** Parts of the site switched off until they're ready. Case studies come in Phase 2. */
+  features: { caseStudies: false },
 };
 
 export type NavItem = { label: string; href: string; children?: NavItem[] };
@@ -50,7 +52,7 @@ export const mainNav: NavItem[] = [
     children: [
       { label: "Our Team", href: "/about-us/our-team" },
       { label: "Partners", href: "/about-us/partners" },
-      { label: "Case Studies", href: "/about-us/case-studies" },
+      ...(site.features.caseStudies ? [{ label: "Case Studies", href: "/about-us/case-studies" }] : []),
     ],
   },
   { label: "Solutions", href: "/solutions", children: solutionsNav },

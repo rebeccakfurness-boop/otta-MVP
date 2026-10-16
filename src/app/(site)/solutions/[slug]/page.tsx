@@ -161,7 +161,8 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
               </article>
             ))}
           </div>
-          <div className="pt-[78px] pb-[68px] text-center">
+          {site.features.caseStudies && (
+            <div className="pt-[78px] pb-[68px] text-center">
             <h2 className="mx-auto max-w-[520px] text-[32px] leading-[1.3] font-semibold tracking-normal text-white md:text-[37px]">
               Discover how Otta keeps Company Name moving
             </h2>
@@ -169,6 +170,7 @@ export default async function ProductPage({ params }: PageProps<"/solutions/[slu
               <SquareButton href="/about-us/case-studies">Discover our case studies</SquareButton>
             </div>
           </div>
+          )}
         </Container>
         {/* Angled divider into the next section */}
         <svg aria-hidden viewBox="0 0 1488 110" preserveAspectRatio="none" className="block h-[60px] w-full bg-white md:h-[110px]">

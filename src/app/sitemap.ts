@@ -20,7 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page("/about-us", 0.6),
     page("/about-us/our-team", 0.5),
     page("/about-us/partners", 0.4),
-    page("/about-us/case-studies", 0.5),
+    ...(site.features.caseStudies ? [page("/about-us/case-studies", 0.5)] : []),
     page("/complaints", 0.3, "yearly"),
     page("/fair-insurance-code", 0.3, "yearly"),
   ];

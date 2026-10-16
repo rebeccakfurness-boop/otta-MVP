@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { site } from "@/content/site";
 import Link from "next/link";
 import { Container, SquareButton } from "@/components/Mockup";
 import { products } from "@/content/products";
@@ -35,7 +36,8 @@ export default function SolutionsPage() {
           ))}
         </div>
 
-        <div className="mt-[90px] text-center">
+        {site.features.caseStudies && (
+          <div className="mt-[90px] text-center">
           <h2 className="mx-auto max-w-[520px] text-[32px] leading-[1.2] font-semibold tracking-normal text-white md:text-[37px]">
             Discover how Otta keeps Company Name moving
           </h2>
@@ -43,6 +45,7 @@ export default function SolutionsPage() {
             <SquareButton href="/about-us/case-studies">Discover our case studies</SquareButton>
           </div>
         </div>
+        )}
       </Container>
     </section>
   );

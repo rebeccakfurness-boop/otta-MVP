@@ -1,3 +1,4 @@
+import { site } from "@/content/site";
 import Image from "next/image";
 import Link from "next/link";
 import { HeroVideo } from "@/components/HeroVideo";
@@ -147,7 +148,8 @@ export default function Home() {
         </h2>
       </section>
 
-      {/* Case study */}
+      {/* Case study (Phase 2) */}
+      {site.features.caseStudies && (
       <section className="bg-site-teal py-[104px]">
         <div className="mx-auto max-w-[1366px] px-5 md:px-4">
           <h2 className="text-center text-[34px] leading-[1.15] font-bold tracking-[-0.04em] text-white md:text-[44px]">
@@ -180,6 +182,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* About us banner */}
       <section className="relative flex min-h-[380px] items-center justify-center overflow-hidden px-5 py-20 md:min-h-[460px]">
