@@ -12,7 +12,6 @@ export const team: TeamMember[] = [
   { name: "Michelle Smith", role: "Operations Manager" },
   { name: "Jemma Lee-Matson", role: "Claims Manager" },
   { name: "Gaby Cook", role: "People & Capability Partner" },
-  { name: "Carmel Cross", role: "Finance and Accounting Partner" },
   { name: "Jen Whitcombe", role: "Operations" },
   { name: "Rebecca Furness", role: "Operations", photo: "/team/rebecca-furness.jpg" },
 ];
